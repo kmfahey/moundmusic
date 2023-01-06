@@ -1,7 +1,103 @@
 
--- CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
+ALTER TABLE albums_artists DROP CONSTRAINT fk_albums;
+
+ALTER TABLE albums_artists DROP CONSTRAINT fk_artists;
+
+ALTER TABLE album_covers DROP CONSTRAINT fk_albums;
+
+ALTER TABLE albums_genres DROP CONSTRAINT fk_albums;
+
+ALTER TABLE albums_genres DROP CONSTRAINT fk_genres;
+
+ALTER TABLE albums DROP CONSTRAINT fk_album_covers;
+
+ALTER TABLE albums DROP CONSTRAINT fk_lyrics;
+
+ALTER TABLE albums_songs DROP CONSTRAINT fk_albums;
+
+ALTER TABLE albums_songs DROP CONSTRAINT fk_songs;
+
+ALTER TABLE buyer_accounts DROP CONSTRAINT fk_users;
+
+ALTER TABLE lyrics DROP CONSTRAINT fk_songs;
+
+ALTER TABLE user_passwords DROP CONSTRAINT fk_users;
+
+ALTER TABLE seller_accounts DROP CONSTRAINT fk_users;
+
+ALTER TABLE to_buy_listings DROP CONSTRAINT fk_albums;
+
+ALTER TABLE to_sell_listings DROP CONSTRAINT fk_albums;
+
+
+DROP INDEX IF EXISTS idx_album_covers_album_cover_id;
+
+DROP INDEX IF EXISTS idx_artists_artist_id;
+
+DROP INDEX IF EXISTS idx_buyer_accounts_buyer_id;
+
+DROP INDEX IF EXISTS idx_genres_genre_id;
+
+DROP INDEX IF EXISTS idx_lyrics_lyrics_id;
+
+DROP INDEX IF EXISTS idx_user_passwords_password_id;
+
+DROP INDEX IF EXISTS idx_seller_accounts_seller_id;
+
+DROP INDEX IF EXISTS idx_songs_song_id;
+
+DROP INDEX IF EXISTS idx_to_buy_listings_to_buy_listing_id;
+
+DROP INDEX IF EXISTS idx_to_sell_listings_to_sell_listing_id;
+
+DROP INDEX IF EXISTS idx_users_user_id;
+
+DROP INDEX IF EXISTS idx_albums_artists_album_id;
+
+DROP INDEX IF EXISTS idx_albums_artists_artist_id;
+
+DROP INDEX IF EXISTS idx_albums_genres_album_id;
+
+DROP INDEX IF EXISTS idx_albums_genres_genre_id;
+
+DROP INDEX IF EXISTS idx_albums_songs_album_id;
+
+DROP INDEX IF EXISTS idx_albums_songs_song_id;
+
 
 DROP TABLE IF EXISTS album_covers;
+
+DROP TABLE IF EXISTS albums;
+
+DROP TABLE IF EXISTS artists;
+
+DROP TABLE IF EXISTS buyer_accounts;
+
+DROP TABLE IF EXISTS genres;
+
+DROP TABLE IF EXISTS lyrics;
+
+DROP TABLE IF EXISTS user_passwords;
+
+DROP TABLE IF EXISTS seller_accounts;
+
+DROP TABLE IF EXISTS songs;
+
+DROP TABLE IF EXISTS to_buy_listings;
+
+DROP TABLE IF EXISTS to_sell_listings;
+
+DROP TABLE IF EXISTS users;
+
+DROP TABLE IF EXISTS albums_artists;
+
+DROP TABLE IF EXISTS albums_genres;
+
+DROP TABLE IF EXISTS albums_songs;
+
+
+-- CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
+
 
 CREATE TABLE album_covers (
     album_cover_id SERIAL PRIMARY KEY,
@@ -10,7 +106,6 @@ CREATE TABLE album_covers (
     album_id INTEGER 
 );
 
-DROP TABLE IF EXISTS albums;
 
 CREATE TABLE albums (
     album_id SERIAL PRIMARY KEY,
@@ -24,7 +119,6 @@ CREATE TABLE albums (
 
 -- CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
-DROP TABLE IF EXISTS artists;
 
 CREATE TABLE artists (
     artist_id SERIAL PRIMARY KEY,
@@ -34,7 +128,6 @@ CREATE TABLE artists (
     birth_date DATE NOT NULL
 );
 
-DROP TABLE IF EXISTS buyer_accounts;
 
 CREATE TABLE buyer_accounts (
     buyer_id SERIAL PRIMARY KEY,
@@ -43,14 +136,12 @@ CREATE TABLE buyer_accounts (
     user_id INTEGER
 );
 
-DROP TABLE IF EXISTS genres;
 
 CREATE TABLE genres (
     genre_id SERIAL PRIMARY KEY,
     genre_name VARCHAR(64) NOT NULL
 );
 
-DROP TABLE IF EXISTS lyrics;
 
 CREATE TABLE lyrics (
     lyrics_id SERIAL PRIMARY KEY,
@@ -58,7 +149,6 @@ CREATE TABLE lyrics (
     song_id INTEGER
 );
 
-DROP TABLE IF EXISTS user_passwords;
 
 CREATE TABLE user_passwords (
     password_id SERIAL PRIMARY KEY,
@@ -66,7 +156,6 @@ CREATE TABLE user_passwords (
     user_id INTEGER
 );
 
-DROP TABLE IF EXISTS seller_accounts;
 
 CREATE TABLE seller_accounts (
     seller_id SERIAL PRIMARY KEY,
@@ -75,7 +164,6 @@ CREATE TABLE seller_accounts (
     user_id INTEGER
 );
 
-DROP TABLE IF EXISTS songs;
 
 CREATE TABLE songs (
     song_id SERIAL PRIMARY KEY,
@@ -85,7 +173,6 @@ CREATE TABLE songs (
     lyrics_id INTEGER
 );
 
-DROP TABLE IF EXISTS to_buy_listings;
 
 CREATE TABLE to_buy_listings (
     to_buy_listing_id SERIAL PRIMARY KEY,
@@ -95,7 +182,6 @@ CREATE TABLE to_buy_listings (
     buyer_id INTEGER
 );
 
-DROP TABLE IF EXISTS to_sell_listings;
 
 CREATE TABLE to_sell_listings (
     to_sell_listing_id SERIAL PRIMARY KEY,
@@ -105,7 +191,6 @@ CREATE TABLE to_sell_listings (
     seller_id INTEGER
 );
 
-DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
@@ -117,23 +202,23 @@ CREATE TABLE users (
 );
 
 
-DROP TABLE IF EXISTS albums_artists;
 
 CREATE TABLE albums_artists (
+    albums_artists_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     artist_id INTEGER
 );
 
-DROP TABLE IF EXISTS albums_genres;
 
 CREATE TABLE albums_genres (
+    albums_genres_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     genre_id INTEGER
 );
 
-DROP TABLE IF EXISTS albums_songs;
 
 CREATE TABLE albums_songs (
+    albums_songs_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     disc_number SMALLINT NOT NULL,
     track_number SMALLINT NOT NULL,
@@ -230,6 +315,7 @@ ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES albums (album_id)
 ON DELETE SET NULL;
+
 
 CREATE INDEX idx_album_covers_album_cover_id ON album_covers USING HASH(album_cover_id);
 
