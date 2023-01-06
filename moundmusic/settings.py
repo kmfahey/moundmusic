@@ -77,10 +77,18 @@ WSGI_APPLICATION = 'moundmusic.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+with open(os.path.join(BASE_DIR, "postgres_auth.dat"), mode="r") as postgres_auth_file:
+    username = next(postgres_auth_file).strip()
+    password = next(postgres_auth_file).strip()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'moundmusic',
+        'USER': username,
+        'PASSWORD': password,
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -109,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
