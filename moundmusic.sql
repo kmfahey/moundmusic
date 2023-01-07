@@ -1,13 +1,25 @@
 
-ALTER TABLE albums_artists DROP CONSTRAINT fk_albums;
+ALTER TABLE artists_albums DROP CONSTRAINT fk_albums;
 
-ALTER TABLE albums_artists DROP CONSTRAINT fk_artists;
+ALTER TABLE artists_albums DROP CONSTRAINT fk_artists;
+
+ALTER TABLE artists_songs DROP CONSTRAINT fk_songs;
+
+ALTER TABLE artists_songs DROP CONSTRAINT fk_artists;
 
 ALTER TABLE album_covers DROP CONSTRAINT fk_albums;
 
 ALTER TABLE albums_genres DROP CONSTRAINT fk_albums;
 
 ALTER TABLE albums_genres DROP CONSTRAINT fk_genres;
+
+ALTER TABLE artists_genres DROP CONSTRAINT fk_artists;
+
+ALTER TABLE artists_genres DROP CONSTRAINT fk_genres;
+
+ALTER TABLE songs_genres DROP CONSTRAINT fk_songs;
+
+ALTER TABLE songs_genres DROP CONSTRAINT fk_genres;
 
 ALTER TABLE albums DROP CONSTRAINT fk_album_covers;
 
@@ -58,9 +70,9 @@ DROP INDEX IF EXISTS idx_to_sell_listings_to_sell_listing_id;
 
 DROP INDEX IF EXISTS idx_users_user_id;
 
-DROP INDEX IF EXISTS idx_albums_artists_album_id;
+DROP INDEX IF EXISTS idx_artists_albums_album_id;
 
-DROP INDEX IF EXISTS idx_albums_artists_artist_id;
+DROP INDEX IF EXISTS idx_artists_albums_artist_id;
 
 DROP INDEX IF EXISTS idx_albums_genres_album_id;
 
@@ -95,9 +107,15 @@ DROP TABLE IF EXISTS to_sell_listings;
 
 DROP TABLE IF EXISTS users;
 
-DROP TABLE IF EXISTS albums_artists;
+DROP TABLE IF EXISTS artists_albums;
+
+DROP TABLE IF EXISTS artists_songs;
 
 DROP TABLE IF EXISTS albums_genres;
+
+DROP TABLE IF EXISTS artists_genres;
+
+DROP TABLE IF EXISTS songs_genres;
 
 DROP TABLE IF EXISTS albums_songs;
 
@@ -208,20 +226,23 @@ CREATE TABLE users (
 );
 
 
-
-CREATE TABLE albums_artists (
-    albums_artists_id SERIAL PRIMARY KEY,
-    album_id INTEGER,
-    artist_id INTEGER
-);
-
-
 CREATE TABLE albums_genres (
     albums_genres_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     genre_id INTEGER
 );
 
+CREATE TABLE artists_genres (
+    artists_genres_id SERIAL PRIMARY KEY,
+    artist_id INTEGER,
+    genre_id INTEGER
+);
+
+CREATE TABLE songs_genres (
+    songs_genres_id SERIAL PRIMARY KEY,
+    song_id INTEGER,
+    genre_id INTEGER
+);
 
 CREATE TABLE albums_songs (
     albums_songs_id SERIAL PRIMARY KEY,
@@ -231,17 +252,41 @@ CREATE TABLE albums_songs (
     song_id INTEGER
 );
 
+CREATE TABLE artists_albums (
+    artists_albums_id SERIAL PRIMARY KEY,
+    album_id INTEGER,
+    artist_id INTEGER
+);
 
-ALTER TABLE albums_artists
+CREATE TABLE artists_songs (
+    artists_songs_id SERIAL PRIMARY KEY,
+    song_id INTEGER,
+    artist_id INTEGER
+);
+
+
+ALTER TABLE artists_albums
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES albums (album_id)
 ON DELETE SET NULL;
 
-ALTER TABLE albums_artists
+ALTER TABLE artists_albums
 ADD CONSTRAINT fk_artists
 FOREIGN KEY (artist_id)
 REFERENCES artists (artist_id)
+ON DELETE SET NULL;
+
+ALTER TABLE artists_songs
+ADD CONSTRAINT fk_artists
+FOREIGN KEY (artist_id)
+REFERENCES artists (artist_id)
+ON DELETE SET NULL;
+
+ALTER TABLE artists_songs
+ADD CONSTRAINT fk_songs
+FOREIGN KEY (song_id)
+REFERENCES songs (song_id)
 ON DELETE SET NULL;
 
 ALTER TABLE album_covers
@@ -257,6 +302,30 @@ REFERENCES albums (album_id)
 ON DELETE SET NULL;
 
 ALTER TABLE albums_genres
+ADD CONSTRAINT fk_genres
+FOREIGN KEY (genre_id)
+REFERENCES genres (genre_id)
+ON DELETE SET NULL;
+
+ALTER TABLE artists_genres
+ADD CONSTRAINT fk_artists
+FOREIGN KEY (artist_id)
+REFERENCES artists (artist_id)
+ON DELETE SET NULL;
+
+ALTER TABLE artists_genres
+ADD CONSTRAINT fk_genres
+FOREIGN KEY (genre_id)
+REFERENCES genres (genre_id)
+ON DELETE SET NULL;
+
+ALTER TABLE songs_genres
+ADD CONSTRAINT fk_songs
+FOREIGN KEY (song_id)
+REFERENCES songs (song_id)
+ON DELETE SET NULL;
+
+ALTER TABLE songs_genres
 ADD CONSTRAINT fk_genres
 FOREIGN KEY (genre_id)
 REFERENCES genres (genre_id)
@@ -334,7 +403,6 @@ FOREIGN KEY (seller_id)
 REFERENCES seller_accounts (seller_id)
 ON DELETE SET NULL;
 
-
 ALTER TABLE user_passwords
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
@@ -364,13 +432,25 @@ CREATE INDEX idx_to_sell_listings_to_sell_listing_id ON to_sell_listings USING H
 
 CREATE INDEX idx_users_user_id ON users USING HASH(user_id);
 
-CREATE INDEX idx_albums_artists_album_id ON albums_artists USING HASH(album_id);
+CREATE INDEX idx_artists_albums_album_id ON artists_albums USING HASH(album_id);
 
-CREATE INDEX idx_albums_artists_artist_id ON albums_artists USING HASH(artist_id);
+CREATE INDEX idx_artists_albums_artist_id ON artists_albums USING HASH(artist_id);
+
+CREATE INDEX idx_artists_songs_song_id ON artists_songs USING HASH(song_id);
+
+CREATE INDEX idx_artists_songs_artist_id ON artists_songs USING HASH(artist_id);
 
 CREATE INDEX idx_albums_genres_album_id ON albums_genres USING HASH(album_id);
 
 CREATE INDEX idx_albums_genres_genre_id ON albums_genres USING HASH(genre_id);
+
+CREATE INDEX idx_artists_genres_artist_id ON artists_genres USING HASH(artist_id);
+
+CREATE INDEX idx_artists_genres_genre_id ON artists_genres USING HASH(genre_id);
+
+CREATE INDEX idx_songs_genres_song_id ON songs_genres USING HASH(song_id);
+
+CREATE INDEX idx_songs_genres_genre_id ON songs_genres USING HASH(genre_id);
 
 CREATE INDEX idx_albums_songs_album_id ON albums_songs USING HASH(album_id);
 

@@ -40,21 +40,6 @@ class Albums(models.Model):
         app_label = 'albums'
 
 
-# FIXME: needs ArtistsSongs for individual artist authoriship of particular songs on a Various-Artists type album (such as a soundtrack).
-
-# FIXME: needs ArtistsGenres and SongsGenres
-
-class AlbumsArtists(models.Model):
-    albums_artists_id = models.AutoField(primary_key=True)
-    album = models.ForeignKey(Albums, blank=True, null=True, on_delete=models.SET_NULL)
-    artist = models.ForeignKey('Artists', blank=True, null=True, on_delete=models.SET_NULL)
-
-    class Meta:
-        managed = False
-        db_table = 'albums_artists'
-        app_label = 'albums'
-
-
 class AlbumsGenres(models.Model):
     albums_genres_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Albums, blank=True, null=True, on_delete=models.SET_NULL)
@@ -92,6 +77,37 @@ class Artists(models.Model):
         app_label = 'albums'
 
 
+class ArtistsAlbums(models.Model):
+    artists_albums_id = models.AutoField(primary_key=True)
+    album = models.ForeignKey(Albums, models.DO_NOTHING, blank=True, null=True)
+    artist = models.ForeignKey(Artists, models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'artists_albums'
+        app_label = 'albums'
+
+
+#class ArtistsGenres(models.Model):
+#    artists_genres_id = models.AutoField(primary_key=True)
+#    artist = models.ForeignKey(Artists, models.DO_NOTHING, blank=True, null=True)
+#    genre = models.ForeignKey('Genres', models.DO_NOTHING, blank=True, null=True)
+#
+#    class Meta:
+#        managed = False
+#        db_table = 'artists_genres'
+
+
+#class ArtistsSongs(models.Model):
+#    artists_songs_id = models.AutoField(primary_key=True)
+#    song = models.ForeignKey('Songs', models.DO_NOTHING, blank=True, null=True)
+#    artist = models.ForeignKey(Artists, models.DO_NOTHING, blank=True, null=True)
+#
+#    class Meta:
+#        managed = False
+#        db_table = 'artists_songs'
+
+
 #class BuyerAccounts(models.Model):
 #    buyer_id = models.AutoField("buyer ID", primary_key=True)
 #    storefront_name = models.CharField("storefront name", max_length=64, blank=True, null=True)
@@ -121,6 +137,16 @@ class Genres(models.Model):
 #    class Meta:
 #        managed = False
 #        db_table = 'seller_accounts'
+
+
+#class SongsGenres(models.Model):
+#    songs_genres_id = models.AutoField(primary_key=True)
+#    song = models.ForeignKey(Songs, models.DO_NOTHING, blank=True, null=True)
+#    genre = models.ForeignKey(Genres, models.DO_NOTHING, blank=True, null=True)
+#
+#    class Meta:
+#        managed = False
+#        db_table = 'songs_genres'
 
 
 class SongLyrics(models.Model):
