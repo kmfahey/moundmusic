@@ -40,6 +40,10 @@ class Albums(models.Model):
         app_label = 'albums'
 
 
+# FIXME: needs ArtistsSongs for individual artist authoriship of particular songs on a Various-Artists type album (such as a soundtrack).
+
+# FIXME: needs ArtistsGenres and SongsGenres
+
 class AlbumsArtists(models.Model):
     albums_artists_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Albums, blank=True, null=True, on_delete=models.SET_NULL)
