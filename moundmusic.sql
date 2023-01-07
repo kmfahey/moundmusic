@@ -11,7 +11,7 @@ ALTER TABLE albums_genres DROP CONSTRAINT fk_genres;
 
 ALTER TABLE albums DROP CONSTRAINT fk_album_covers;
 
-ALTER TABLE albums DROP CONSTRAINT fk_lyrics;
+ALTER TABLE albums DROP CONSTRAINT fk_song_lyrics;
 
 ALTER TABLE albums_songs DROP CONSTRAINT fk_albums;
 
@@ -19,15 +19,21 @@ ALTER TABLE albums_songs DROP CONSTRAINT fk_songs;
 
 ALTER TABLE buyer_accounts DROP CONSTRAINT fk_users;
 
-ALTER TABLE lyrics DROP CONSTRAINT fk_songs;
+ALTER TABLE song_lyrics DROP CONSTRAINT fk_songs;
 
-ALTER TABLE user_passwords DROP CONSTRAINT fk_users;
+ALTER TABLE songs DROP CONSTRAINT fk_song_lyrics;
 
 ALTER TABLE seller_accounts DROP CONSTRAINT fk_users;
+
+ALTER TABLE to_buy_listings DROP CONSTRAINT fk_buyer_accounts;
 
 ALTER TABLE to_buy_listings DROP CONSTRAINT fk_albums;
 
 ALTER TABLE to_sell_listings DROP CONSTRAINT fk_albums;
+
+ALTER TABLE to_sell_listings DROP CONSTRAINT fk_seller_accounts;
+
+ALTER TABLE user_passwords DROP CONSTRAINT fk_users;
 
 
 DROP INDEX IF EXISTS idx_album_covers_album_cover_id;
@@ -38,7 +44,7 @@ DROP INDEX IF EXISTS idx_buyer_accounts_buyer_id;
 
 DROP INDEX IF EXISTS idx_genres_genre_id;
 
-DROP INDEX IF EXISTS idx_lyrics_lyrics_id;
+DROP INDEX IF EXISTS idx_song_lyrics_song_lyrics_id;
 
 DROP INDEX IF EXISTS idx_user_passwords_password_id;
 
@@ -75,7 +81,7 @@ DROP TABLE IF EXISTS buyer_accounts;
 
 DROP TABLE IF EXISTS genres;
 
-DROP TABLE IF EXISTS lyrics;
+DROP TABLE IF EXISTS song_lyrics;
 
 DROP TABLE IF EXISTS user_passwords;
 
@@ -114,7 +120,7 @@ CREATE TABLE albums (
     number_of_tracks SMALLINT NOT NULL,
     release_date DATE,
     album_cover_id INTEGER,
-    lyrics_id INTEGER
+    song_lyrics_id INTEGER
 );
 
 -- CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
@@ -143,8 +149,8 @@ CREATE TABLE genres (
 );
 
 
-CREATE TABLE lyrics (
-    lyrics_id SERIAL PRIMARY KEY,
+CREATE TABLE song_lyrics (
+    song_lyrics_id SERIAL PRIMARY KEY,
     lyrics TEXT NOT NULL,
     song_id INTEGER
 );
@@ -170,7 +176,7 @@ CREATE TABLE songs (
     title VARCHAR(256) NOT NULL,
     length_minutes SMALLINT NOT NULL,
     length_seconds SMALLINT NOT NULL,
-    lyrics_id INTEGER
+    song_lyrics_id INTEGER
 );
 
 
@@ -263,9 +269,9 @@ REFERENCES album_covers (album_cover_id)
 ON DELETE SET NULL;
 
 ALTER TABLE albums
-ADD CONSTRAINT fk_lyrics
-FOREIGN KEY (lyrics_id)
-REFERENCES lyrics (lyrics_id)
+ADD CONSTRAINT fk_song_lyrics
+FOREIGN KEY (song_lyrics_id)
+REFERENCES song_lyrics (song_lyrics_id)
 ON DELETE SET NULL;
 
 ALTER TABLE albums_songs
@@ -286,16 +292,10 @@ FOREIGN KEY (user_id)
 REFERENCES users (user_id)
 ON DELETE SET NULL;
 
-ALTER TABLE lyrics
+ALTER TABLE song_lyrics
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES songs (song_id)
-ON DELETE SET NULL;
-
-ALTER TABLE user_passwords
-ADD CONSTRAINT fk_users
-FOREIGN KEY (user_id)
-REFERENCES users (user_id)
 ON DELETE SET NULL;
 
 ALTER TABLE seller_accounts
@@ -304,16 +304,41 @@ FOREIGN KEY (user_id)
 REFERENCES users (user_id)
 ON DELETE SET NULL;
 
+ALTER TABLE songs
+ADD CONSTRAINT fk_song_lyrics
+FOREIGN KEY (song_lyrics_id)
+REFERENCES song_lyrics (song_lyrics_id)
+ON DELETE SET NULL;
+
 ALTER TABLE to_buy_listings
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES albums (album_id)
 ON DELETE SET NULL;
 
+ALTER TABLE to_buy_listings
+ADD CONSTRAINT fk_buyer_accounts
+FOREIGN KEY (buyer_id)
+REFERENCES buyer_accounts (buyer_id)
+ON DELETE SET NULL;
+
 ALTER TABLE to_sell_listings
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES albums (album_id)
+ON DELETE SET NULL;
+
+ALTER TABLE to_sell_listings
+ADD CONSTRAINT fk_seller_accounts
+FOREIGN KEY (seller_id)
+REFERENCES seller_accounts (seller_id)
+ON DELETE SET NULL;
+
+
+ALTER TABLE user_passwords
+ADD CONSTRAINT fk_users
+FOREIGN KEY (user_id)
+REFERENCES users (user_id)
 ON DELETE SET NULL;
 
 
@@ -325,7 +350,7 @@ CREATE INDEX idx_buyer_accounts_buyer_id ON buyer_accounts USING HASH(buyer_id);
 
 CREATE INDEX idx_genres_genre_id ON genres USING HASH(genre_id);
 
-CREATE INDEX idx_lyrics_lyrics_id ON lyrics USING HASH(lyrics_id);
+CREATE INDEX idx_song_lyrics_song_lyrics_id ON song_lyrics USING HASH(song_lyrics_id);
 
 CREATE INDEX idx_user_passwords_password_id ON user_passwords USING HASH(password_id);
 

@@ -10,16 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import django
-
-django.setup()
-
 import os.path
+
+__export__ = ("BASE_DIR", "DEBUG", "ALLOWED_HOSTS", "INSTALLED_APPS", "MIDDLEWARE", "ROOT_URLCONF", "TEMPLATES",
+              "WSGI_APPLICATION", "DATABASES", "AUTH_PASSWORD_VALIDATORS", "LANGUAGE_CODE", "TIME_ZONE", "USE_I18N",
+              "USE_L10N", "USE_TZ", "STATIC_URL", "DEFAULT_AUTO_FIELD")
 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -39,13 +40,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'albums',
+    'albums.apps.AlbumsConfig',
 ]
 
 MIDDLEWARE = [
