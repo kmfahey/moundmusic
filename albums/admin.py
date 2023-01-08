@@ -1,21 +1,20 @@
 from django.contrib import admin
 
-from .models import AlbumCovers
-from .models import Albums
-from .models import AlbumsGenres
-from .models import AlbumsSongs
-from .models import Artists
-from .models import ArtistsAlbums
-from .models import Genres
-from .models import SongLyrics
-from .models import Songs
+from .models import AlbumCover
+from .models import Album
+from .models import AlbumGenreBridge
+from .models import AlbumSongBridge
+from .models import Artist
+from .models import ArtistAlbumBridge
+from .models import Genre
+from .models import Song
 
-admin.site.register(AlbumCovers)
-admin.site.register(Albums)
-admin.site.register(AlbumsGenres)
-admin.site.register(AlbumsSongs)
-admin.site.register(Artists)
-admin.site.register(ArtistsAlbums)
-admin.site.register(Genres)
-admin.site.register(SongLyrics)
-admin.site.register(Songs)
+
+admin.site.register(AlbumCover)
+admin.site.register(Album)
+admin.site.register(AlbumGenreBridge)
+admin.site.register(AlbumSongBridge)
+admin.site.register(Artist)
+admin.site.register(ArtistAlbumBridge)
+admin.site.register(Genre)
+admin.site.register(Song)
