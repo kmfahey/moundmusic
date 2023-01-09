@@ -18,8 +18,8 @@ class Album(models.Model):
     number_of_discs = models.SmallIntegerField()
     number_of_tracks = models.SmallIntegerField()
     release_date = models.DateField(blank=True, null=True)
-    album_cover = models.ForeignKey('AlbumCover', models.DO_NOTHING, blank=True, null=True)
-    song_lyrics = models.ForeignKey('SongLyrics', models.DO_NOTHING, blank=True, null=True)
+    album_cover = models.ForeignKey('AlbumCover', models.SET_NULL, blank=True, null=True)
+    song_lyrics = models.ForeignKey('SongLyrics', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -31,7 +31,7 @@ class AlbumCover(models.Model):
     album_cover_id = models.AutoField(primary_key=True)
     image_file_type = models.TextField()  # This field type is a guess.
     image_data = models.BinaryField()
-    src_album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
+    src_album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -41,8 +41,8 @@ class AlbumCover(models.Model):
 
 class AlbumGenreBridge(models.Model):
     albums_genres_id = models.AutoField(primary_key=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
-    genre = models.ForeignKey('Genre', models.DO_NOTHING, blank=True, null=True)
+    album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
+    genre = models.ForeignKey('Genre', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -52,10 +52,10 @@ class AlbumGenreBridge(models.Model):
 
 class AlbumSongBridge(models.Model):
     albums_songs_id = models.AutoField(primary_key=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
+    album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
     disc_number = models.SmallIntegerField()
     track_number = models.SmallIntegerField()
-    song = models.ForeignKey('Song', models.DO_NOTHING, blank=True, null=True)
+    song = models.ForeignKey('Song', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -78,8 +78,8 @@ class Artist(models.Model):
 
 class ArtistAlbumBridge(models.Model):
     artists_albums_id = models.AutoField(primary_key=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
-    artist = models.ForeignKey(Artist, models.DO_NOTHING, blank=True, null=True)
+    album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
+    artist = models.ForeignKey(Artist, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -89,8 +89,8 @@ class ArtistAlbumBridge(models.Model):
 
 class ArtistGenreBridge(models.Model):
     artists_genres_id = models.AutoField(primary_key=True)
-    artist = models.ForeignKey(Artist, models.DO_NOTHING, blank=True, null=True)
-    genre = models.ForeignKey('Genre', models.DO_NOTHING, blank=True, null=True)
+    artist = models.ForeignKey(Artist, models.SET_NULL, blank=True, null=True)
+    genre = models.ForeignKey('Genre', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -100,8 +100,8 @@ class ArtistGenreBridge(models.Model):
 
 class ArtistSongBridge(models.Model):
     artists_songs_id = models.AutoField(primary_key=True)
-    song = models.ForeignKey('Song', models.DO_NOTHING, blank=True, null=True)
-    artist = models.ForeignKey(Artist, models.DO_NOTHING, blank=True, null=True)
+    song = models.ForeignKey('Song', models.SET_NULL, blank=True, null=True)
+    artist = models.ForeignKey(Artist, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -113,7 +113,7 @@ class BuyerAccount(models.Model):
     buyer_id = models.AutoField(primary_key=True)
     storefront_name = models.CharField(max_length=64, blank=True, null=True)
     date_created = models.DateField()
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -135,7 +135,7 @@ class SellerAccount(models.Model):
     seller_id = models.AutoField(primary_key=True)
     postboard_name = models.CharField(max_length=64, blank=True, null=True)
     date_created = models.DateField()
-    user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -148,7 +148,7 @@ class Song(models.Model):
     title = models.CharField(max_length=256)
     length_minutes = models.SmallIntegerField()
     length_seconds = models.SmallIntegerField()
-    song_lyrics = models.ForeignKey('SongLyrics', models.DO_NOTHING, blank=True, null=True)
+    song_lyrics = models.ForeignKey('SongLyrics', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -158,8 +158,8 @@ class Song(models.Model):
 
 class SongGenreBridge(models.Model):
     songs_genres_id = models.AutoField(primary_key=True)
-    song = models.ForeignKey(Song, models.DO_NOTHING, blank=True, null=True)
-    genre = models.ForeignKey(Genre, models.DO_NOTHING, blank=True, null=True)
+    song = models.ForeignKey(Song, models.SET_NULL, blank=True, null=True)
+    genre = models.ForeignKey(Genre, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -170,7 +170,7 @@ class SongGenreBridge(models.Model):
 class SongLyrics(models.Model):
     song_lyrics_id = models.AutoField(primary_key=True)
     lyrics = models.TextField()
-    src_song = models.ForeignKey(Song, models.DO_NOTHING, blank=True, null=True)
+    src_song = models.ForeignKey(Song, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -182,8 +182,8 @@ class ToBuyListing(models.Model):
     to_buy_listing_id = models.AutoField(primary_key=True)
     max_accepting_price = models.DecimalField(max_digits=65535, decimal_places=65535)
     date_posted = models.DateField(blank=True, null=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
-    buyer = models.ForeignKey(BuyerAccount, models.DO_NOTHING, blank=True, null=True)
+    album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
+    buyer = models.ForeignKey(BuyerAccount, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -195,8 +195,8 @@ class ToSellListing(models.Model):
     to_sell_listing_id = models.AutoField(primary_key=True)
     asking_price = models.DecimalField(max_digits=65535, decimal_places=65535)
     date_posted = models.DateField(blank=True, null=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, blank=True, null=True)
-    seller = models.ForeignKey(SellerAccount, models.DO_NOTHING, blank=True, null=True)
+    album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
+    seller = models.ForeignKey(SellerAccount, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -221,7 +221,7 @@ class User(models.Model):
 class UserPassword(models.Model):
     password_id = models.AutoField(primary_key=True)
     password_ciphertext = models.CharField(max_length=256)
-    user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
