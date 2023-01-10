@@ -23,8 +23,6 @@ ALTER TABLE song_genre_bridge DROP CONSTRAINT fk_genres;
 
 ALTER TABLE album DROP CONSTRAINT fk_album_covers;
 
-ALTER TABLE album DROP CONSTRAINT fk_song_lyrics;
-
 ALTER TABLE album_song_bridge DROP CONSTRAINT fk_albums;
 
 ALTER TABLE album_song_bridge DROP CONSTRAINT fk_songs;
@@ -123,7 +121,7 @@ DROP TABLE IF EXISTS album_song_bridge;
 -- CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
 
 
-CREATE TABLE album_cover (
+CREATE TABLE album_cover ( -- check
     album_cover_id SERIAL PRIMARY KEY,
     image_file_type image_type NOT NULL,
     image_data BYTEA NOT NULL,
@@ -131,20 +129,19 @@ CREATE TABLE album_cover (
 );
 
 
-CREATE TABLE album (
+CREATE TABLE album ( -- check
     album_id SERIAL PRIMARY KEY,
     title VARCHAR(256) NOT NULL,
     number_of_discs SMALLINT NOT NULL DEFAULT 1,
     number_of_tracks SMALLINT NOT NULL,
     release_date DATE,
-    album_cover_id INTEGER,
-    song_lyrics_id INTEGER
+    album_cover_id INTEGER
 );
 
 -- CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
 
-CREATE TABLE artist (
+CREATE TABLE artist ( -- check
     artist_id SERIAL PRIMARY KEY,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
@@ -161,13 +158,13 @@ CREATE TABLE buyer_account (
 );
 
 
-CREATE TABLE genre (
+CREATE TABLE genre ( -- check
     genre_id SERIAL PRIMARY KEY,
     genre_name VARCHAR(64) NOT NULL
 );
 
 
-CREATE TABLE song_lyrics (
+CREATE TABLE song_lyrics ( -- check
     song_lyrics_id SERIAL PRIMARY KEY,
     lyrics TEXT NOT NULL,
     song_id INTEGER
@@ -189,7 +186,7 @@ CREATE TABLE seller_account (
 );
 
 
-CREATE TABLE song (
+CREATE TABLE song ( -- check
     song_id SERIAL PRIMARY KEY,
     title VARCHAR(256) NOT NULL,
     length_minutes SMALLINT NOT NULL,
@@ -226,40 +223,40 @@ CREATE TABLE user_ (
 );
 
 
-CREATE TABLE album_genre_bridge (
-    albums_genres_id SERIAL PRIMARY KEY,
+CREATE TABLE album_genre_bridge ( -- check
+    album_genre_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE artist_genre_bridge (
-    artists_genres_id SERIAL PRIMARY KEY,
+CREATE TABLE artist_genre_bridge ( -- check
+    artist_genre_bridge_id SERIAL PRIMARY KEY,
     artist_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE song_genre_bridge (
-    songs_genres_id SERIAL PRIMARY KEY,
+CREATE TABLE song_genre_bridge ( -- check
+    song_genre_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE album_song_bridge (
-    albums_songs_id SERIAL PRIMARY KEY,
+CREATE TABLE album_song_bridge ( -- check
+    album_song_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     disc_number SMALLINT NOT NULL,
     track_number SMALLINT NOT NULL,
     song_id INTEGER
 );
 
-CREATE TABLE artist_album_bridge (
-    artists_albums_id SERIAL PRIMARY KEY,
+CREATE TABLE artist_album_bridge ( -- check
+    artist_album_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     artist_id INTEGER
 );
 
-CREATE TABLE artist_song_bridge (
-    artists_songs_id SERIAL PRIMARY KEY,
+CREATE TABLE artist_song_bridge ( -- check
+    artist_song_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER,
     artist_id INTEGER
 );
@@ -335,12 +332,6 @@ ALTER TABLE album
 ADD CONSTRAINT fk_album_covers
 FOREIGN KEY (album_cover_id)
 REFERENCES album_cover (album_cover_id)
-ON DELETE SET NULL;
-
-ALTER TABLE album
-ADD CONSTRAINT fk_song_lyrics
-FOREIGN KEY (song_lyrics_id)
-REFERENCES song_lyrics (song_lyrics_id)
 ON DELETE SET NULL;
 
 ALTER TABLE album_song_bridge
