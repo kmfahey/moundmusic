@@ -7,6 +7,7 @@ import operator
 import psycopg2
 import random
 import re
+import bcrypt
 
 from psycopg2 import Error
 
@@ -22,34 +23,59 @@ def main():
     with psycopg2.connect(user=username, password=password, host="127.0.0.1", port="5432", database="moundmusic") as connection:
         with connection.cursor() as cursor:
             table_seeder = Table_Seeder(faker_obj, cursor)
+
             print("Seeding `album` table....")
             table_seeder.seed_album_table()
             print("Seeding `album_cover` table....")
             table_seeder.seed_album_cover_table()
-            print("Updateing `album` table_with_album_cover_ids....")
+            print("Updating `album` table with album_cover_ids....")
             table_seeder.update_album_table_with_album_cover_ids()
+
             print("Seeding `artist` table....")
             table_seeder.seed_artist_table()
+
             print("Seeding `genre` table....")
             table_seeder.seed_genre_table()
+
             print("Seeding `song` table....")
             table_seeder.seed_song_table()
             print("Seeding `song_lyrics` table....")
             table_seeder.seed_song_lyrics_table()
-            print("Updateing `song` table_with_song_lyrics_ids....")
+            print("Updating `song` table with song_lyrics_ids....")
             table_seeder.update_song_table_with_song_lyrics_ids()
+
             print("Seeding `artist_genre_bridge` table....")
             table_seeder.seed_artist_genre_bridge_table()
             print("Seeding `album_genre_bridge` table....")
             table_seeder.seed_album_genre_bridge_table()
             print("Seeding `song_genre_bridge` table....")
             table_seeder.seed_song_genre_bridge_table()
+
             print("Seeding `artist_album_bridge` table....")
             table_seeder.seed_artist_album_bridge_table()
             print("Seeding `album_song_bridge` table....")
             table_seeder.seed_album_song_bridge_table()
             print("Seeding `artist_song_bridge` table....")
             table_seeder.seed_artist_song_bridge_table()
+
+            print("Seeding `user_` table....")
+            table_seeder.seed_user_table()
+            print("Seeding `user_password` table....")
+            table_seeder.seed_user_password_table()
+
+            print("Seeding `seller_account` table....")
+            table_seeder.seed_seller_account_table()
+            print("Updating `user_` table with seller_ids....")
+            table_seeder.update_user_table_with_seller_ids()
+
+            print("Seeding `buyer_account` table....")
+            table_seeder.seed_buyer_account_table()
+            print("Updating `user_` table with buyer_ids....")
+            table_seeder.update_user_table_with_buyer_ids()
+            print("Seeing `to_buy_listing` table....")
+            table_seeder.seed_to_buy_listing_table()
+            print("Seeing `to_sell_listing` table....")
+            table_seeder.seed_to_sell_listing_table()
 
 
 def title_case(strval):
@@ -72,7 +98,8 @@ class Table_Seeder(object):
     __slots__ = ("faker_obj", "cursor", "gender_list", "album_ids", "artist_ids", "genre_ids", "song_ids",
                  "total_tracks_on_albums", "song_ids_to_incidences", "song_ids_to_song_lyrics_ids",
                  "album_ids_to_album_cover_ids", "song_ids_to_song_lyrics_ids", "song_ids", "album_ids_to_artist_ids",
-                 "album_ids_to_params", "album_ids_to_tracklists")
+                 "album_ids_to_params", "album_ids_to_tracklists", "user_ids", "user_ids_to_seller_ids",
+                 "user_ids_to_buyer_ids")
 
     Lyrics_Wordcount = 500
 
@@ -123,19 +150,23 @@ class Table_Seeder(object):
             self.cursor.execute("UPDATE album SET album_cover_id = %s WHERE album_id = %s;", (album_cover_id, album_id))
         self.cursor.execute("COMMIT;")
 
+    def _random_gender_first_last_names(self):
+        gender = random.choice(("male",) * 10 + ("female",) * 10 + ("nonbinary",))
+        if gender == "male":
+            first_name = self.faker_obj.first_name_male()
+            last_name = self.faker_obj.last_name_male()
+        elif gender == "female":
+            first_name = self.faker_obj.first_name_female()
+            last_name = self.faker_obj.last_name_female()
+        else:  # gender == "nonbinary"
+            first_name = self.faker_obj.first_name_nonbinary()
+            last_name = self.faker_obj.last_name_nonbinary()
+        return gender, first_name, last_name
+
     def seed_artist_table(self):
         self.cursor.execute("DELETE FROM artist;")
         for _ in range(25):
-            gender = random.choice(("male",) * 10 + ("female",) * 10 + ("nonbinary",))
-            if gender == "male":
-                first_name = self.faker_obj.first_name_male()
-                last_name = self.faker_obj.last_name_male()
-            elif gender == "female":
-                first_name = self.faker_obj.first_name_female()
-                last_name = self.faker_obj.last_name_female()
-            else:  # gender == "nonbinary"
-                first_name = self.faker_obj.first_name_nonbinary()
-                last_name = self.faker_obj.last_name_nonbinary()
+            gender, first_name, last_name = self._random_gender_first_last_names()
             birth_date = self.faker_obj.date_between_dates(datetime.date(1925,1,1), datetime.date(1989,12,31))
             self.cursor.execute("INSERT INTO artist (first_name, last_name, gender, birth_date)"
                            "VALUES (%s, %s, %s, %s);", (first_name, last_name, gender, birth_date))
@@ -283,6 +314,83 @@ class Table_Seeder(object):
                     artist_id_counts[artist_id] += 1
             album_id_to_artist_id_counts[album_id] = artist_id_counts
         self.cursor.execute("COMMIT;")
+
+    def seed_user_table(self):
+        self.cursor.execute("DELETE FROM user_;")
+        for _ in range(50):
+            user_name = self.faker_obj.user_name()
+            while len(user_name) > 16:
+                user_name = self.faker_obj.user_name()
+            gender, first_name, last_name = self._random_gender_first_last_names()
+            birth_date = self.faker_obj.date_between_dates(datetime.date(1925,1,1), datetime.date(1989,12,31))
+            age_of_majority_date = birth_date + datetime.timedelta(days=(18*365.24))
+            date_joined = self.faker_obj.date_between_dates(age_of_majority_date, datetime.date.today())
+            self.cursor.execute("INSERT INTO user_ (user_name, first_name, last_name, gender, date_joined) "
+                                "VALUES (%s, %s, %s, %s, %s);", (user_name, first_name, last_name, gender, date_joined))
+        self.cursor.execute("COMMIT;")
+        self.cursor.execute("SELECT user_id FROM user_;")
+        self.user_ids = list(map(operator.itemgetter(0), self.cursor.fetchall()))
+
+    def seed_user_password_table(self):
+        self.cursor.execute("DELETE FROM user_password;")
+        for user_id in self.user_ids:
+            password = self.faker_obj.password().encode("utf8")
+            salt = bcrypt.gensalt()
+            encrypted_password = bcrypt.hashpw(password, salt)
+            self.cursor.execute("INSERT INTO user_password (encrypted_password, user_id) VALUES (%s, %s);", (encrypted_password, user_id))
+        self.cursor.execute("COMMIT;")
+
+    def _seed_buyer_seller_account_table(self, table_name, id_col_name, display_col_name, save_dict_attr_name):
+        setattr(self, save_dict_attr_name, dict())
+        delete_sql = f"DELETE FROM {table_name};"
+        insert_sql = f"INSERT INTO {table_name} ({display_col_name}, date_created, user_id) VALUES (%s, %s, %s);"
+        select_ids_sql = f"SELECT user_id, {id_col_name} FROM {table_name};"
+        self.cursor.execute(delete_sql)
+        for user_id in self.user_ids:
+            if random.randint(1, 10) in (1, 2, 3, 4, 5, 6):
+                display_col_value = title_case(' '.join(self.faker_obj.words(random.randint(2,6))))
+                three_years_ago_date = datetime.date.today() - datetime.timedelta(days=(365.24*3))
+                date_created = self.faker_obj.date_between_dates(three_years_ago_date, datetime.date.today())
+                self.cursor.execute(insert_sql, (display_col_value, date_created, user_id))
+        self.cursor.execute("COMMIT;")
+        self.cursor.execute(select_ids_sql)
+        getattr(self, save_dict_attr_name).update(self.cursor.fetchall())
+
+    def seed_seller_account_table(self):
+        self._seed_buyer_seller_account_table('seller_account', 'seller_id', 'storefront_name', 'user_ids_to_seller_ids')
+
+    def update_user_table_with_seller_ids(self):
+        for user_id, seller_id in self.user_ids_to_seller_ids.items():
+            self.cursor.execute("UPDATE user_ SET seller_id = %s WHERE user_id = %s;", (seller_id, user_id))
+        self.cursor.execute("COMMIT;")
+
+    def seed_buyer_account_table(self):
+        self._seed_buyer_seller_account_table('buyer_account', 'buyer_id', 'postboard_name', 'user_ids_to_buyer_ids')
+
+    def update_user_table_with_buyer_ids(self):
+        for user_id, buyer_id in self.user_ids_to_buyer_ids.items():
+            self.cursor.execute("UPDATE user_ SET buyer_id = %s WHERE user_id = %s;", (buyer_id, user_id))
+        self.cursor.execute("COMMIT;")
+
+    def _seed_to_buy_or_sell_listing_table(self, table_name, id_col_name, price_col_name, saved_dict_attr_name):
+        delete_sql = f"DELETE FROM {table_name};"
+        insert_sql = (f"INSERT INTO {table_name} ({price_col_name}, date_posted, album_id, {id_col_name}) "
+                      "VALUES (%s, %s, %s, %s);")
+        self.cursor.execute(delete_sql)
+        three_months_ago_date = datetime.date.today() - datetime.timedelta(days=(365.24 / 12 * 3))
+        for id_datum in getattr(self, saved_dict_attr_name).values():
+            for _ in range(random.randint(1,5)):
+                album_id = random.choice(self.album_ids)
+                price = round(2.50 + random.random() * 5.00, ndigits=2)
+                date_posted = self.faker_obj.date_between_dates(three_months_ago_date, datetime.date.today())
+                self.cursor.execute(insert_sql, (price, date_posted, album_id, id_datum))
+        self.cursor.execute("COMMIT;")
+
+    def seed_to_buy_listing_table(self):
+        self._seed_to_buy_or_sell_listing_table('to_buy_listing', 'buyer_id', 'max_accepting_price', 'user_ids_to_buyer_ids')
+
+    def seed_to_sell_listing_table(self):
+        self._seed_to_buy_or_sell_listing_table('to_sell_listing', 'seller_id', 'asking_price', 'user_ids_to_seller_ids')
 
 
 
