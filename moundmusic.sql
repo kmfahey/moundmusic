@@ -121,7 +121,7 @@ DROP TABLE IF EXISTS album_song_bridge;
 -- CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
 
 
-CREATE TABLE album_cover ( -- check
+CREATE TABLE album_cover (
     album_cover_id SERIAL PRIMARY KEY,
     image_file_type image_type NOT NULL,
     image_data BYTEA NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE album_cover ( -- check
 );
 
 
-CREATE TABLE album ( -- check
+CREATE TABLE album (
     album_id SERIAL PRIMARY KEY,
     title VARCHAR(256) NOT NULL,
     number_of_discs SMALLINT NOT NULL DEFAULT 1,
@@ -141,7 +141,7 @@ CREATE TABLE album ( -- check
 -- CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
 
-CREATE TABLE artist ( -- check
+CREATE TABLE artist (
     artist_id SERIAL PRIMARY KEY,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
@@ -152,19 +152,19 @@ CREATE TABLE artist ( -- check
 
 CREATE TABLE buyer_account (
     buyer_id SERIAL PRIMARY KEY,
-    storefront_name VARCHAR(64),
+    postboard_name VARCHAR(64),
     date_created DATE NOT NULL,
     user_id INTEGER
 );
 
 
-CREATE TABLE genre ( -- check
+CREATE TABLE genre (
     genre_id SERIAL PRIMARY KEY,
     genre_name VARCHAR(64) NOT NULL
 );
 
 
-CREATE TABLE song_lyrics ( -- check
+CREATE TABLE song_lyrics (
     song_lyrics_id SERIAL PRIMARY KEY,
     lyrics TEXT NOT NULL,
     song_id INTEGER
@@ -173,20 +173,20 @@ CREATE TABLE song_lyrics ( -- check
 
 CREATE TABLE user_password (
     password_id SERIAL PRIMARY KEY,
-    password_ciphertext VARCHAR(256) NOT NULL,
+    encrypted_password BYTEA NOT NULL,
     user_id INTEGER
 );
 
 
 CREATE TABLE seller_account (
     seller_id SERIAL PRIMARY KEY,
-    postboard_name VARCHAR(64),
+    storefront_name VARCHAR(64),
     date_created DATE NOT NULL,
     user_id INTEGER
 );
 
 
-CREATE TABLE song ( -- check
+CREATE TABLE song (
     song_id SERIAL PRIMARY KEY,
     title VARCHAR(256) NOT NULL,
     length_minutes SMALLINT NOT NULL,
@@ -215,33 +215,35 @@ CREATE TABLE to_sell_listing (
 
 CREATE TABLE user_ (
     user_id SERIAL PRIMARY KEY,
-    user_handle VARCHAR(16) NOT NULL,
-    user_name VARCHAR(64) NOT NULL,
+    user_name VARCHAR(16) NOT NULL,
+    first_name VARCHAR(64) NOT NULL,
+    last_name VARCHAR(64) NOT NULL,
+    gender gender_type NOT NULL,
     date_joined DATE NOT NULL,
     buyer_id INTEGER,
     seller_id INTEGER
 );
 
 
-CREATE TABLE album_genre_bridge ( -- check
+CREATE TABLE album_genre_bridge (
     album_genre_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE artist_genre_bridge ( -- check
+CREATE TABLE artist_genre_bridge (
     artist_genre_bridge_id SERIAL PRIMARY KEY,
     artist_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE song_genre_bridge ( -- check
+CREATE TABLE song_genre_bridge (
     song_genre_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER,
     genre_id INTEGER
 );
 
-CREATE TABLE album_song_bridge ( -- check
+CREATE TABLE album_song_bridge (
     album_song_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     disc_number SMALLINT NOT NULL,
@@ -249,13 +251,13 @@ CREATE TABLE album_song_bridge ( -- check
     song_id INTEGER
 );
 
-CREATE TABLE artist_album_bridge ( -- check
+CREATE TABLE artist_album_bridge (
     artist_album_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER,
     artist_id INTEGER
 );
 
-CREATE TABLE artist_song_bridge ( -- check
+CREATE TABLE artist_song_bridge (
     artist_song_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER,
     artist_id INTEGER

@@ -6,7 +6,6 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 
-import os
 import django
 
 from django.db import models
@@ -19,7 +18,6 @@ class Album(models.Model):
     number_of_tracks = models.SmallIntegerField()
     release_date = models.DateField(blank=True, null=True)
     album_cover = models.ForeignKey('AlbumCover', models.SET_NULL, blank=True, null=True)
-    song_lyrics = models.ForeignKey('SongLyrics', models.SET_NULL, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -29,6 +27,9 @@ class Album(models.Model):
 
 class AlbumCover(models.Model):
     album_cover_id = models.AutoField(primary_key=True)
+    # The column below is actually a ENUM('png', 'jpg', 'gif') postgresql custom
+    # type, but django can't handle those. So long as it's only ever set to
+    # (png|jpg|gif) there won't be any problems leaving it as a TextField.
     image_file_type = models.TextField()  # This field type is a guess.
     image_data = models.BinaryField()
     src_album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
@@ -40,7 +41,7 @@ class AlbumCover(models.Model):
 
 
 class AlbumGenreBridge(models.Model):
-    albums_genres_id = models.AutoField(primary_key=True)
+    album_genre_bridge_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
     genre = models.ForeignKey('Genre', models.SET_NULL, blank=True, null=True)
 
@@ -51,7 +52,7 @@ class AlbumGenreBridge(models.Model):
 
 
 class AlbumSongBridge(models.Model):
-    albums_songs_id = models.AutoField(primary_key=True)
+    album_song_bridge_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, models.SET_NULL, blank=True, null=True)
     disc_number = models.SmallIntegerField()
     track_number = models.SmallIntegerField()
@@ -67,6 +68,10 @@ class Artist(models.Model):
     artist_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
+    # The column below is actually a ENUM('male', 'female', 'nonbinary')
+    # postgresql custom type, but django can't handle those. So long as it's
+    # only ever set to (png|jpg|gif) there won't be any problems leaving it as a
+    # TextField.
     gender = models.TextField()  # This field type is a guess.
     birth_date = models.DateField()
 
@@ -99,7 +104,7 @@ class ArtistGenreBridge(models.Model):
 
 
 class ArtistSongBridge(models.Model):
-    artists_songs_id = models.AutoField(primary_key=True)
+    artist_song_bridge_id = models.AutoField(primary_key=True)
     song = models.ForeignKey('Song', models.SET_NULL, blank=True, null=True)
     artist = models.ForeignKey(Artist, models.SET_NULL, blank=True, null=True)
 
@@ -111,7 +116,7 @@ class ArtistSongBridge(models.Model):
 
 class BuyerAccount(models.Model):
     buyer_id = models.AutoField(primary_key=True)
-    storefront_name = models.CharField(max_length=64, blank=True, null=True)
+    postboard_name = models.CharField(max_length=64, blank=True, null=True)
     date_created = models.DateField()
     user = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
 
@@ -133,7 +138,7 @@ class Genre(models.Model):
 
 class SellerAccount(models.Model):
     seller_id = models.AutoField(primary_key=True)
-    postboard_name = models.CharField(max_length=64, blank=True, null=True)
+    storefront_name = models.CharField(max_length=64, blank=True, null=True)
     date_created = models.DateField()
     user = models.ForeignKey('User', models.SET_NULL, blank=True, null=True)
 
@@ -157,7 +162,7 @@ class Song(models.Model):
 
 
 class SongGenreBridge(models.Model):
-    songs_genres_id = models.AutoField(primary_key=True)
+    song_genre_bridge_id = models.AutoField(primary_key=True)
     song = models.ForeignKey(Song, models.SET_NULL, blank=True, null=True)
     genre = models.ForeignKey(Genre, models.SET_NULL, blank=True, null=True)
 
@@ -206,8 +211,14 @@ class ToSellListing(models.Model):
 
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
-    user_handle = models.CharField(max_length=16)
-    user_name = models.CharField(max_length=64)
+    user_name = models.CharField(max_length=16)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
+    # The column below is actually a ENUM('male', 'female', 'nonbinary')
+    # postgresql custom type, but django can't handle those. So long as it's
+    # only ever set to (png|jpg|gif) there won't be any problems leaving it as a
+    # TextField.
+    gender = models.TextField()  # This field type is a guess.
     date_joined = models.DateField()
     buyer_id = models.IntegerField(blank=True, null=True)
     seller_id = models.IntegerField(blank=True, null=True)
@@ -220,7 +231,7 @@ class User(models.Model):
 
 class UserPassword(models.Model):
     password_id = models.AutoField(primary_key=True)
-    password_ciphertext = models.CharField(max_length=256)
+    encrypted_password = models.BinaryField()
     user = models.ForeignKey(User, models.SET_NULL, blank=True, null=True)
 
     class Meta:
