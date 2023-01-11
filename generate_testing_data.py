@@ -71,6 +71,7 @@ def main():
             print("Seeding `buyer_account` table....")
             table_seeder.seed_buyer_account_table()
             print("Updating `user_` table with buyer_ids....")
+
             table_seeder.update_user_table_with_buyer_ids()
             print("Seeing `to_buy_listing` table....")
             table_seeder.seed_to_buy_listing_table()

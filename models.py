@@ -1,10 +1,4 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
+#!/usr/bin/python3
 
 import django
 
@@ -56,7 +50,7 @@ class serializable(object):
         return validatedDict
 
 
-class Album(models.Model, serializable):
+class AbstractAlbum(models.Model, serializable):
     __columns__ = {'album_id':int, 'title':str, 'number_of_discs':int, 'number_of_tracks':int, 'release_date':date,
                    'album_cover_id':int}
     __nullable_cols__ = ('album_id', 'album_cover_id')
@@ -71,10 +65,10 @@ class Album(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'album'
-        app_label = 'albums'
+        abstract = True
 
 
-class AlbumCover(models.Model, serializable):
+class AbstractAlbumCover(models.Model, serializable):
     __columns__ = {'album_cover_id':int, 'image_file_type':('png','jpg','gif'), 'image_data':bytes, 'album_id':int}
     __nullable_cols__ = ('album_cover_id', 'album_id')
 
@@ -89,10 +83,10 @@ class AlbumCover(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'album_cover'
-        app_label = 'albums'
+        abstract = True
 
 
-class AlbumGenreBridge(models.Model):
+class AbstractAlbumGenreBridge(models.Model):
     album_genre_bridge_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, models.CASCADE, blank=True, null=True)
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
@@ -100,10 +94,10 @@ class AlbumGenreBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'album_genre_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class AlbumSongBridge(models.Model):
+class AbstractAlbumSongBridge(models.Model):
     album_song_bridge_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, models.CASCADE, blank=True, null=True)
     disc_number = models.SmallIntegerField()
@@ -113,10 +107,10 @@ class AlbumSongBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'album_song_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class Artist(models.Model):
+class AbstractArtist(models.Model):
     artist_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
@@ -130,10 +124,10 @@ class Artist(models.Model):
     class Meta:
         managed = False
         db_table = 'artist'
-        app_label = 'albums'
+        abstract = True
 
 
-class ArtistAlbumBridge(models.Model):
+class AbstractArtistAlbumBridge(models.Model):
     artist_album_bridge_id = models.AutoField(primary_key=True)
     album = models.ForeignKey(Album, models.CASCADE, blank=True, null=True)
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
@@ -141,10 +135,10 @@ class ArtistAlbumBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'artist_album_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class ArtistGenreBridge(models.Model):
+class AbstractArtistGenreBridge(models.Model):
     artist_genre_bridge_id = models.AutoField(primary_key=True)
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
@@ -152,10 +146,10 @@ class ArtistGenreBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'artist_genre_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class ArtistSongBridge(models.Model):
+class AbstractArtistSongBridge(models.Model):
     artist_song_bridge_id = models.AutoField(primary_key=True)
     song = models.ForeignKey('Song', models.CASCADE, blank=True, null=True)
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
@@ -163,10 +157,10 @@ class ArtistSongBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'artist_song_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class BuyerAccount(models.Model, serializable):
+class AbstractBuyerAccount(models.Model, serializable):
     __columns__ = {'buyer_id':int, 'postboard_name':str, 'date_created':date, 'user_id':int}
     __nullable_cols__ = ('buyer_id', 'user_id')
 
@@ -178,10 +172,10 @@ class BuyerAccount(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'buyer_account'
-        app_label = 'albums'
+        abstract = True
 
 
-class Genre(models.Model, serializable):
+class AbstractGenre(models.Model, serializable):
     __columns__ = {'genre_id':int, 'genre_name':str}
     __nullable_cols__ = ('genre_id',)
 
@@ -191,10 +185,10 @@ class Genre(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'genre'
-        app_label = 'albums'
+        abstract = True
 
 
-class SellerAccount(models.Model, serializable):
+class AbstractSellerAccount(models.Model, serializable):
     __columns__ = {'seller_id':int, 'storefront_name':str, 'date_created':date, 'user_id':int}
     __nullable_cols__ = ('seller_id', 'user_id')
 
@@ -206,10 +200,10 @@ class SellerAccount(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'seller_account'
-        app_label = 'albums'
+        abstract = True
 
 
-class Song(models.Model, serializable):
+class AbstractSong(models.Model, serializable):
     __columns__ = {'song_id':int, 'title':str, 'length_minutes':int, 'length_seconds':int, 'song_lyrics_id':int}
     __nullable_cols__ = ('song_id', 'song_lyrics_id')
 
@@ -222,10 +216,10 @@ class Song(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'song'
-        app_label = 'albums'
+        abstract = True
 
 
-class SongGenreBridge(models.Model):
+class AbstractSongGenreBridge(models.Model):
     song_genre_bridge_id = models.AutoField(primary_key=True)
     song = models.ForeignKey(Song, models.CASCADE, blank=True, null=True)
     genre = models.ForeignKey(Genre, models.CASCADE, blank=True, null=True)
@@ -233,10 +227,10 @@ class SongGenreBridge(models.Model):
     class Meta:
         managed = False
         db_table = 'song_genre_bridge'
-        app_label = 'albums'
+        abstract = True
 
 
-class SongLyrics(models.Model, serializable):
+class AbstractSongLyrics(models.Model, serializable):
     __columns__ = {'song_lyrics_id':int, 'lyrics':str, 'song_id':int}
     __nullable_cols__ = ('song_lyrics_id', 'song_id')
 
@@ -247,10 +241,10 @@ class SongLyrics(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'song_lyrics'
-        app_label = 'albums'
+        abstract = True
 
 
-class ToBuyListing(models.Model, serializable):
+class AbstractToBuyListing(models.Model, serializable):
     __columns__ = {'to_buy_listing_id':int, 'max_accepting_price':float, 'date_posted':date, 'album_id':int, 'buyer_id':int}
     __nullable_cols__ = ('to_buy_listing_id',)
 
@@ -263,10 +257,10 @@ class ToBuyListing(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'to_buy_listing'
-        app_label = 'albums'
+        abstract = True
 
 
-class ToSellListing(models.Model, serializable):
+class AbstractToSellListing(models.Model, serializable):
     __columns__ = {'to_sell_listing_id':int, 'asking_price':float, 'date_posted':date, 'album_id':int, 'seller_id':int}
     __nullable_cols__ = ('to_sell_listing_id',)
 
@@ -279,10 +273,10 @@ class ToSellListing(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'to_sell_listing'
-        app_label = 'albums'
+        abstract = True
 
 
-class User(models.Model, serializable):
+class AbstractUser(models.Model, serializable):
     __columns__ = {'user_id':int, 'user_name':str, 'first_name':str, 'last_name':str,
                    'gender':('male','female','nonbinary'), 'date_joined':date, 'buyer_id':int, 'seller_id':int}
     __nullable_cols__ = ('user_id', 'buyer_id', 'seller_id')
@@ -303,10 +297,10 @@ class User(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'user_'
-        app_label = 'albums'
+        abstract = True
 
 
-class UserPassword(models.Model, serializable):
+class AbstractUserPassword(models.Model, serializable):
     __columns__ = {'password_id':int, 'encrypted_password':str, 'user_id':int}
     __nullable_cols__ = ('password_id', 'user_id')
 
@@ -317,4 +311,4 @@ class UserPassword(models.Model, serializable):
     class Meta:
         managed = False
         db_table = 'user_password'
-        app_label = 'albums'
+        abstract = True

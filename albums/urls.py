@@ -4,8 +4,9 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-
-    # `python manage.py runserver` emits an error claiming this is unnecessary,
-    # but without it then http://localhost:8000/albums/ errors out, so it stays in.
-    path('/', views.index, name='index'),
+    path('<int:album_id>', views.single_album),
+    path('<int:album_id>/songs', views.single_album_songs),
+    path('<int:album_id>/songs/<int:song_id>', views.single_album_single_song),
+    path('<int:album_id>/genres', views.single_album_genres),
+    path('<int:album_id>/genres/<int:genre_id>', views.single_album_single_genre),
 ]

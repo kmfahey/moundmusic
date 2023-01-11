@@ -134,7 +134,7 @@ CREATE TABLE album (
     title VARCHAR(256) NOT NULL,
     number_of_discs SMALLINT NOT NULL DEFAULT 1,
     number_of_tracks SMALLINT NOT NULL,
-    release_date DATE,
+    release_date DATE NOT NULL,
     album_cover_id INTEGER
 );
 
@@ -198,18 +198,18 @@ CREATE TABLE song (
 CREATE TABLE to_buy_listing (
     to_buy_listing_id SERIAL PRIMARY KEY,
     max_accepting_price DECIMAL NOT NULL,
-    date_posted DATE,
-    album_id INTEGER,
-    buyer_id INTEGER
+    date_posted DATE NOT NULL,
+    album_id INTEGER NOT NULL,
+    buyer_id INTEGER NOT NULL
 );
 
 
 CREATE TABLE to_sell_listing (
     to_sell_listing_id SERIAL PRIMARY KEY,
     asking_price DECIMAL NOT NULL,
-    date_posted DATE,
-    album_id INTEGER,
-    seller_id INTEGER
+    date_posted DATE NOT NULL,
+    album_id INTEGER NOT NULL,
+    seller_id INTEGER NOT NULL
 );
 
 
@@ -227,40 +227,40 @@ CREATE TABLE user_ (
 
 CREATE TABLE album_genre_bridge (
     album_genre_bridge_id SERIAL PRIMARY KEY,
-    album_id INTEGER,
-    genre_id INTEGER
+    album_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL
 );
 
 CREATE TABLE artist_genre_bridge (
     artist_genre_bridge_id SERIAL PRIMARY KEY,
-    artist_id INTEGER,
-    genre_id INTEGER
+    artist_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL
 );
 
 CREATE TABLE song_genre_bridge (
     song_genre_bridge_id SERIAL PRIMARY KEY,
-    song_id INTEGER,
-    genre_id INTEGER
+    song_id INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL
 );
 
 CREATE TABLE album_song_bridge (
     album_song_bridge_id SERIAL PRIMARY KEY,
-    album_id INTEGER,
+    album_id INTEGER NOT NULL,
     disc_number SMALLINT NOT NULL,
     track_number SMALLINT NOT NULL,
-    song_id INTEGER
+    song_id INTEGER NOT NULL
 );
 
 CREATE TABLE artist_album_bridge (
     artist_album_bridge_id SERIAL PRIMARY KEY,
-    album_id INTEGER,
-    artist_id INTEGER
+    album_id INTEGER NOT NULL,
+    artist_id INTEGER NOT NULL
 );
 
 CREATE TABLE artist_song_bridge (
     artist_song_bridge_id SERIAL PRIMARY KEY,
-    song_id INTEGER,
-    artist_id INTEGER
+    song_id INTEGER NOT NULL,
+    artist_id INTEGER NOT NULL
 );
 
 
@@ -268,139 +268,139 @@ ALTER TABLE artist_album_bridge
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE artist_album_bridge
 ADD CONSTRAINT fk_artists
 FOREIGN KEY (artist_id)
 REFERENCES artist (artist_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE artist_song_bridge
 ADD CONSTRAINT fk_artists
 FOREIGN KEY (artist_id)
 REFERENCES artist (artist_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE artist_song_bridge
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES song (song_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE album_cover
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE album_genre_bridge
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE album_genre_bridge
 ADD CONSTRAINT fk_genres
 FOREIGN KEY (genre_id)
 REFERENCES genre (genre_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE artist_genre_bridge
 ADD CONSTRAINT fk_artists
 FOREIGN KEY (artist_id)
 REFERENCES artist (artist_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE artist_genre_bridge
 ADD CONSTRAINT fk_genres
 FOREIGN KEY (genre_id)
 REFERENCES genre (genre_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE song_genre_bridge
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES song (song_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE song_genre_bridge
 ADD CONSTRAINT fk_genres
 FOREIGN KEY (genre_id)
 REFERENCES genre (genre_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE album
 ADD CONSTRAINT fk_album_covers
 FOREIGN KEY (album_cover_id)
 REFERENCES album_cover (album_cover_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE album_song_bridge
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE album_song_bridge
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES song (song_id)
-ON DELETE SET NULL;
+ON DELETE NO ACTION;
 
 ALTER TABLE buyer_account
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE song_lyrics
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES song (song_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE seller_account
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE song
 ADD CONSTRAINT fk_song_lyrics
 FOREIGN KEY (song_lyrics_id)
 REFERENCES song_lyrics (song_lyrics_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE to_buy_listing
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE to_buy_listing
 ADD CONSTRAINT fk_buyer_accounts
 FOREIGN KEY (buyer_id)
 REFERENCES buyer_account (buyer_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE to_sell_listing
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE to_sell_listing
 ADD CONSTRAINT fk_seller_accounts
 FOREIGN KEY (seller_id)
 REFERENCES seller_account (seller_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 ALTER TABLE user_password
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE SET NULL;
+ON DELETE CASCADE;
 
 
 CREATE INDEX idx_album_cover_album_cover_id ON album_cover USING HASH(album_cover_id);
