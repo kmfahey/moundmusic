@@ -31,6 +31,40 @@ from .models import Album, AlbumSongBridge, Genre, AlbumGenreBridge, Song
 # PATCH  — Update individual fields of a record
 
 
+
+
+def _dispatch_funcs_by_method(functions, request):
+    dispatch_table = dict()
+    for function in functions:
+        func_name = function.__name__
+        _, method = func_name.rsplit('_', 1)
+        dispatch_table[method] = function
+    method = request.method
+    if method in dispatch_table:
+        return dispatch_table[method]()
+    else:
+        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
+
+
+def _validate_patch_request(request, model_class, model_id_attr_name, model_id_attr_val):
+    try:
+        model_instance = model_class.objects.get(**{model_id_attr_name: model_id_attr_val})
+    except Album.DoesNotExist:
+        return JsonResponse({'message':f'no record with {model_id_attr_name}={model_id_attr_val}'}, status=status.HTTP_404_NOT_FOUND)
+    try:
+        posted_json = parse_json(request.body)
+    except JSONDecodeError as exception:
+        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+    if not len(posted_json):
+        return JsonResponse({'message':'empty JSON object'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        validated_input = model_class.validate_input(posted_json, all_nullable=True)
+    except ValueError as exception:
+        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+    return model_instance, validated_input
+
+
+
 # Create your views here.
 
 @api_view(['GET', 'POST'])
@@ -54,25 +88,6 @@ def index(request):
         return JsonResponse(new_album.serialize(), status=status.HTTP_201_CREATED)
 
     return _dispatch_funcs_by_method((_index_GET, _index_POST), request)
-
-
-
-def _validate_patch_request(request, model_class, model_id_attr_name, model_id_attr_val):
-    try:
-        model_instance = model_class.objects.get(**{model_id_attr_name: model_id_attr_val})
-    except Album.DoesNotExist:
-        return JsonResponse({'message':f'no record with {model_id_attr_name}={model_id_attr_val}'}, status=status.HTTP_404_NOT_FOUND)
-    try:
-        posted_json = parse_json(request.body)
-    except JSONDecodeError as exception:
-        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-    if not len(posted_json):
-        return JsonResponse({'message':'empty JSON object'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        validated_input = model_class.validate_input(posted_json, all_nullable=True)
-    except ValueError as exception:
-        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
-    return model_instance, validated_input
 
 
 @api_view(['GET', 'PATCH', 'DELETE'])
@@ -222,17 +237,3 @@ def single_album_single_genre(request, album_id, genre_id):
 
     return _dispatch_funcs_by_method((_single_album_single_genre_GET,
                                       _single_album_single_genre_DELETE), request)
-
-
-def _dispatch_funcs_by_method(functions, request):
-    dispatch_table = dict()
-    for function in functions:
-        func_name = function.__name__
-        _, method = func_name.rsplit('_', 1)
-        dispatch_table[method] = function
-    method = request.method
-    if method in dispatch_table:
-        return dispatch_table[method]()
-    else:
-        return HttpResponse(status=status.HTTP_400_BAD_REQUEST)
-
