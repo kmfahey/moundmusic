@@ -1,2 +1,2 @@
+#!/usr/bin/python3
 
-default_app_config = 'albums.apps.AlbumsConfig'

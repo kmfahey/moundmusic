@@ -134,3 +134,5 @@ postgres_auth.dat
 
 .*.sw*
 .sw*
+
+*.pdf

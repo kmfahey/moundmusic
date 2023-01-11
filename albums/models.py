@@ -1,9 +1,10 @@
+#!/usr/bin/python3
+
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 
 import django
@@ -69,7 +70,6 @@ class Album(models.Model, serializable):
     album_cover = models.ForeignKey('AlbumCover', models.CASCADE, blank=True, null=True, related_name="+")
 
     class Meta:
-        managed = False
         db_table = 'album'
         app_label = 'albums'
 
@@ -87,7 +87,6 @@ class AlbumCover(models.Model, serializable):
     album = models.ForeignKey(Album, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'album_cover'
         app_label = 'albums'
 
@@ -98,7 +97,6 @@ class AlbumGenreBridge(models.Model):
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'album_genre_bridge'
         app_label = 'albums'
 
@@ -111,7 +109,6 @@ class AlbumSongBridge(models.Model):
     song = models.ForeignKey('Song', models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'album_song_bridge'
         app_label = 'albums'
 
@@ -128,7 +125,6 @@ class Artist(models.Model):
     birth_date = models.DateField()
 
     class Meta:
-        managed = False
         db_table = 'artist'
         app_label = 'albums'
 
@@ -139,7 +135,6 @@ class ArtistAlbumBridge(models.Model):
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'artist_album_bridge'
         app_label = 'albums'
 
@@ -150,7 +145,6 @@ class ArtistGenreBridge(models.Model):
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'artist_genre_bridge'
         app_label = 'albums'
 
@@ -161,7 +155,6 @@ class ArtistSongBridge(models.Model):
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'artist_song_bridge'
         app_label = 'albums'
 
@@ -176,7 +169,6 @@ class BuyerAccount(models.Model, serializable):
     user = models.ForeignKey('User', models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'buyer_account'
         app_label = 'albums'
 
@@ -189,7 +181,6 @@ class Genre(models.Model, serializable):
     genre_name = models.CharField(max_length=64)
 
     class Meta:
-        managed = False
         db_table = 'genre'
         app_label = 'albums'
 
@@ -204,7 +195,6 @@ class SellerAccount(models.Model, serializable):
     user = models.ForeignKey('User', models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'seller_account'
         app_label = 'albums'
 
@@ -220,7 +210,6 @@ class Song(models.Model, serializable):
     song_lyrics = models.ForeignKey('SongLyrics', models.CASCADE, blank=True, null=True, related_name="+")
 
     class Meta:
-        managed = False
         db_table = 'song'
         app_label = 'albums'
 
@@ -231,7 +220,6 @@ class SongGenreBridge(models.Model):
     genre = models.ForeignKey(Genre, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'song_genre_bridge'
         app_label = 'albums'
 
@@ -245,7 +233,6 @@ class SongLyrics(models.Model, serializable):
     song = models.ForeignKey(Song, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'song_lyrics'
         app_label = 'albums'
 
@@ -261,7 +248,6 @@ class ToBuyListing(models.Model, serializable):
     buyer = models.ForeignKey(BuyerAccount, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'to_buy_listing'
         app_label = 'albums'
 
@@ -277,7 +263,6 @@ class ToSellListing(models.Model, serializable):
     seller = models.ForeignKey(SellerAccount, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'to_sell_listing'
         app_label = 'albums'
 
@@ -301,7 +286,6 @@ class User(models.Model, serializable):
     seller_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'user_'
         app_label = 'albums'
 
@@ -315,6 +299,5 @@ class UserPassword(models.Model, serializable):
     user = models.ForeignKey(User, models.CASCADE, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'user_password'
         app_label = 'albums'

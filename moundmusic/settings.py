@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 Django settings for moundmusic project.
 

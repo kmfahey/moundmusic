@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from django.contrib import admin
 
 from .models import AlbumCover

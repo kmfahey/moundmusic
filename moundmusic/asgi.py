@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 ASGI config for moundmusic project.
 
