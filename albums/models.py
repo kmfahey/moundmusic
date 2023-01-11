@@ -18,44 +18,6 @@ class serializable(object):
     def serialize(self):
         return {column: getattr(self, column) for column in self.__columns__.keys()}
 
-    @classmethod
-    def validate_input(self, input_argd, all_nullable=False):
-        validatedDict = dict()
-        difference = set(input_argd.keys()) - set(self.__columns__)
-        if difference:
-            raise ValueError("unexpected key(s) in input: " + ', '.join(difference))
-        for column, value in input_argd.items():
-            column_type = self.__columns__[column]
-            if value is None and not all_nullable and column not in self.__nullable_cols__:
-                raise ValueError(f"value for {column} is null and column not nullable")
-            elif column_type is int:
-                try:
-                    value = int(value)
-                except ValueError:
-                    raise ValueError(f"value for {column} isn't an integer: {value}")
-                if value <= 0:
-                    raise ValueError(f"value for {column} isn't greater than 0: {value}")
-            elif column_type is float:
-                try:
-                    value = float(value)
-                except ValueError:
-                    raise ValueError(f"value for {column} isn't a decimal: {value}")
-                if value <= 0:
-                    raise ValueError(f"value for {column} isn't greater than 0: {value}")
-            elif column_type is str and not len(value):
-                raise ValueError(f"value for {column} is a string of zero length")
-            elif column_type is date:
-                try:
-                    value = date.fromisoformat(value)
-                except ValueError:
-                    raise ValueError(f"value for {column} isn't in format YYYY-MM-DD and column is a DATE")
-            elif isinstance(column_type, tuple):
-                if value not in column_type:
-                    enum_expr = ', '.join(f"'{option}'" for option in column_type[:-1]) + f" or '{column_type[-1]}'"
-                    raise ValueError(f"value for {column} not one of {enum_expr} and column is an ENUM type")
-            validatedDict[column] = value
-        return validatedDict
-
 
 class Album(models.Model, serializable):
     __columns__ = {'album_id':int, 'title':str, 'number_of_discs':int, 'number_of_tracks':int, 'release_date':date,
