@@ -228,19 +228,22 @@ CREATE TABLE user_ (
 CREATE TABLE album_genre_bridge (
     album_genre_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER NOT NULL,
-    genre_id INTEGER NOT NULL
+    genre_id INTEGER NOT NULL,
+    UNIQUE (album_id, genre_id)
 );
 
 CREATE TABLE artist_genre_bridge (
     artist_genre_bridge_id SERIAL PRIMARY KEY,
     artist_id INTEGER NOT NULL,
-    genre_id INTEGER NOT NULL
+    genre_id INTEGER NOT NULL,
+    UNIQUE (artist_id, genre_id)
 );
 
 CREATE TABLE song_genre_bridge (
     song_genre_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER NOT NULL,
-    genre_id INTEGER NOT NULL
+    genre_id INTEGER NOT NULL,
+    UNIQUE (song_id, genre_id)
 );
 
 CREATE TABLE album_song_bridge (
@@ -248,19 +251,22 @@ CREATE TABLE album_song_bridge (
     album_id INTEGER NOT NULL,
     disc_number SMALLINT NOT NULL,
     track_number SMALLINT NOT NULL,
-    song_id INTEGER NOT NULL
+    song_id INTEGER NOT NULL,
+    UNIQUE (album_id, song_id)
 );
 
 CREATE TABLE artist_album_bridge (
     artist_album_bridge_id SERIAL PRIMARY KEY,
     album_id INTEGER NOT NULL,
-    artist_id INTEGER NOT NULL
+    artist_id INTEGER NOT NULL,
+    UNIQUE (album_id, artist_id)
 );
 
 CREATE TABLE artist_song_bridge (
     artist_song_bridge_id SERIAL PRIMARY KEY,
     song_id INTEGER NOT NULL,
-    artist_id INTEGER NOT NULL
+    artist_id INTEGER NOT NULL,
+    UNIQUE (song_id, artist_id)
 );
 
 

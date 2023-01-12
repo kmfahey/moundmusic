@@ -24,6 +24,13 @@ def main():
         with connection.cursor() as cursor:
             table_seeder = Table_Seeder(faker_obj, cursor)
 
+            cursor.execute("DELETE FROM artist_genre_bridge;")
+            cursor.execute("DELETE FROM album_genre_bridge;")
+            cursor.execute("DELETE FROM song_genre_bridge;")
+            cursor.execute("DELETE FROM artist_album_bridge;")
+            cursor.execute("DELETE FROM album_song_bridge;")
+            cursor.execute("DELETE FROM artist_song_bridge;")
+
             print("Seeding `album` table....")
             table_seeder.seed_album_table()
             print("Seeding `album_cover` table....")
@@ -260,6 +267,10 @@ class Table_Seeder(object):
             number_of_artists = random.choice((1,) * 17 + (2,) * 2 + (3,))
             for _ in range(number_of_artists):
                 artist_id = random.choice(self.artist_ids)
+                self.cursor.execute("SELECT artist_id, album_id FROM artist_album_bridge WHERE album_id = %s AND artist_id = %s;",
+                                    (album_id, artist_id))
+                if self.cursor.fetchall():
+                    continue
                 self.cursor.execute("INSERT INTO artist_album_bridge (album_id, artist_id) VALUES (%s, %s);", (album_id, artist_id))
                 self.album_ids_to_artist_ids[album_id].add(artist_id)
         self.cursor.execute("COMMIT;")
@@ -299,6 +310,10 @@ class Table_Seeder(object):
                 tracklist.append((album_song_bridge_row.disc_number, album_song_bridge_row.track_number, song_id))
             self.album_ids_to_tracklists[album_id] = tracklist
         for album_song_bridge_row in insert_values_list:
+            self.cursor.execute("SELECT album_id, song_id FROM album_song_bridge WHERE album_id = %s AND song_id = %s;",
+                                (album_song_bridge_row.album_id, album_song_bridge_row.song_id))
+            if self.cursor.fetchall():
+                continue
             self.cursor.execute("INSERT INTO album_song_bridge (album_id, disc_number, track_number, song_id)"
                                 "VALUES (%s, %s, %s, %s);", album_song_bridge_row)
         self.cursor.execute("COMMIT;")
@@ -310,6 +325,11 @@ class Table_Seeder(object):
             artist_id_counts = collections.defaultdict(int)
             for artist_id in self.album_ids_to_artist_ids[album_id]:
                 for _, _, song_id in tracklist:
+                    artist_id = random.choice(self.artist_ids)
+                    self.cursor.execute("SELECT artist_id, song_id FROM artist_song_bridge WHERE song_id = %s AND artist_id = %s;",
+                                        (song_id, artist_id))
+                    if self.cursor.fetchall():
+                        continue
                     self.cursor.execute("INSERT INTO artist_song_bridge (song_id, artist_id) "
                                         "VALUES (%s, %s);", (song_id, artist_id))
                     artist_id_counts[artist_id] += 1

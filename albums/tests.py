@@ -12,9 +12,10 @@ from json import dumps as json_dumps
 from django.test.client import RequestFactory
 from django.http.response import JsonResponse
 
-from .models import Album, Song, AlbumSongBridge, AlbumGenreBridge, Genre
+from .models import Album, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbumBridge, Genre, Song
+
 from .views import index, single_album, single_album_songs, single_album_single_song, single_album_genres, \
-        single_album_single_genre
+        single_album_single_genre, single_album_artists, single_album_single_artist
 
 request_factory = RequestFactory()
 
@@ -346,7 +347,7 @@ def test_single_album_single_song_PATCH_error_nonexistent_song_id():
     assert response.status_code == 404
     json_content = json_loads(response.content)
     assert 'message' in json_content
-    assert json_content['message'] == f'album with album_id={album_id} has no song with song_id={song_id}'
+    assert json_content['message'] == f'no song with song_id={song_id}'
 
 
 @pytest.mark.django_db
@@ -364,247 +365,6 @@ def test_single_album_single_song_PATCH_error_invalid_args():
     json_content = json_loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"value for 'length_minutes' isn't greater than 0: -1"
-
-
-@pytest.mark.django_db
-def test_single_album_single_song_DELETE():
-    albums = Album.objects.filter()
-    album = random.choice(albums)
-    album_id = album.album_id
-    bridge_rows = AlbumSongBridge.objects.filter(album_id=album_id)
-    bridge_row = random.choice(bridge_rows)
-    song = Song.objects.get(song_id=bridge_row.song_id)
-    song_id = song.song_id
-    request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
-    response = single_album_single_song(request, album_id, song_id)
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f'song with album_id={album_id} and song_id={song_id} deleted'
-    try:
-        Song.objects.get(song_id=song_id)
-        pytest.fail()
-    except Song.DoesNotExist as exception:
-        assert isinstance(exception, Song.DoesNotExist)
-
-
-@pytest.mark.django_db
-def test_single_album_single_song_DELETE_error_nonexistent_album_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    while True:
-        album_id = random.randint(1,9999)
-        if album_id not in album_ids:
-            break
-    song_ids = [song.song_id for song in Song.objects.filter()]
-    while True:
-        song_id = random.randint(1,9999)
-        if song_id not in song_ids:
-            break
-    request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
-    response = single_album_single_song(request, album_id, song_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no album with album_id={album_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_single_song_DELETE_error_nonexistent_song_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    album_id = random.choice(album_ids)
-    song_ids = [song.song_id for song in Song.objects.filter()]
-    while True:
-        song_id = random.randint(1,9999)
-        if song_id not in song_ids:
-            break
-    request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
-    response = single_album_single_song(request, album_id, song_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"album with album_id={album_id} has no song with song_id={song_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_genres_GET():
-    albums = Album.objects.filter()
-    album = random.choice(albums)
-    album_id = album.album_id
-    request = request_factory.get(f"/albums/{album_id}/genres")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
-    assert len(json_content)
-    genre_dict = random.choice(json_content)
-    assert 'genre_id' in genre_dict and isinstance(genre_dict['genre_id'], int)
-    assert 'genre_name' in genre_dict and isinstance(genre_dict['genre_name'], str)
-
-
-@pytest.mark.django_db
-def test_single_album_genres_GET_error_nonexistent_album_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    while True:
-        album_id = random.randint(1,9999)
-        if album_id not in album_ids:
-            break
-    request = request_factory.get(f"/albums/{album_id}/genres")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no album with album_id={album_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_genres_POST():
-    albums = Album.objects.filter()
-    album = random.choice(albums)
-    album_id = album.album_id
-    bridge_rows = AlbumGenreBridge.objects.filter(album_id=album_id)
-    album_already_in_genre_ids = [bridge_row.genre_id for bridge_row in bridge_rows]
-    while True:
-        genre = random.choice(Genre.objects.filter())
-        genre_id = genre.genre_id
-        if genre_id not in album_already_in_genre_ids:
-            break
-    new_genre_assoc_dict = { "genre_id": genre_id }
-    request = request_factory.post(f"/albums/{album_id}/genres", data=new_genre_assoc_dict, content_type="application/json")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
-    assert len(json_content)
-    assert isinstance(json_content, dict)
-    assert json_content["genre_id"] == genre_id
-    assert json_content["genre_name"] == genre.genre_name
-    bridge_rows = AlbumGenreBridge.objects.filter(album_id=album_id)
-    assert any(bridge_row.genre_id == genre_id for bridge_row in bridge_rows)
-
-
-@pytest.mark.django_db
-def test_single_album_genres_POST_error_nonexistent_album_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    while True:
-        album_id = random.randint(1,9999)
-        if album_id not in album_ids:
-            break
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    genre_id = random.choice(genre_ids)
-    new_genre_assoc_dict = { "genre_id": genre_id }
-    request = request_factory.post(f"/albums/{album_id}/genres", data=new_genre_assoc_dict, content_type="application/json")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no album with album_id={album_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_genres_POST_error_nonexistent_genre_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    album_id = random.choice(album_ids)
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    while True:
-        genre_id = random.randint(1,99)
-        if genre_id not in genre_ids:
-            break
-    new_genre_assoc_dict = { "genre_id": genre_id }
-    request = request_factory.post(f"/albums/{album_id}/genres", data=new_genre_assoc_dict, content_type="application/json")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no genre with genre_id={genre_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_genres_POST_error_invalid_args():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    album_id = random.choice(album_ids)
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    genre_id = random.choice(genre_ids)
-    new_genre_assoc_dict = { "genre_id": genre_id, "foo":"bar" }
-    request = request_factory.post(f"/albums/{album_id}/genres", data=new_genre_assoc_dict, content_type="application/json")
-    response = single_album_genres(request, album_id)
-    assert isinstance(response, JsonResponse)
-    assert response.status_code == 400
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"unexpected property: 'foo'"
-
-
-@pytest.mark.django_db
-def test_single_album_single_genre_GET():
-    albums = Album.objects.filter()
-    album = random.choice(albums)
-    album_id = album.album_id
-    bridge_rows = AlbumGenreBridge.objects.filter(album_id=album_id)
-    bridge_row = random.choice(bridge_rows)
-    genre = Genre.objects.get(genre_id=bridge_row.genre_id)
-    genre_id = genre.genre_id
-    request = request_factory.get(f"/albums/{album_id}/genres/{genre_id}")
-    response = single_album_single_genre(request, album_id, genre_id)
-    assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
-    assert len(json_content)
-    assert 'genre_id' in json_content and json_content['genre_id'] == genre_id
-    assert 'genre_name' in json_content and isinstance(json_content['genre_name'], str)
-
-
-@pytest.mark.django_db
-def test_single_album_single_genre_GET_error_nonexistent_album_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    while True:
-        album_id = random.randint(1,9999)
-        if album_id not in album_ids:
-            break
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    genre_id = random.choice(genre_ids)
-    request = request_factory.get(f"/albums/{album_id}/genres/{genre_id}")
-    response = single_album_single_genre(request, album_id, genre_id)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no album with album_id={album_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_single_genre_GET_error_nonexistent_genre_id():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    album_id = random.choice(album_ids)
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    while True:
-        genre_id = random.randint(1,99)
-        if genre_id not in genre_ids:
-            break
-    request = request_factory.get(f"/albums/{album_id}/genres/{genre_id}")
-    response = single_album_single_genre(request, album_id, genre_id)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f"no genre with genre_id={genre_id}"
-
-
-@pytest.mark.django_db
-def test_single_album_single_genre_GET_error_album_not_assoc_w_genre():
-    album_ids = [album.album_id for album in Album.objects.filter()]
-    genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
-    while True:
-        album_id = random.choice(album_ids)
-        genre_id = random.choice(genre_ids)
-        try:
-            bridge_row = AlbumGenreBridge.objects.get(album_id=album_id, genre_id=genre_id)
-        except AlbumGenreBridge.DoesNotExist:
-            break;
-    request = request_factory.get(f"/albums/{album_id}/genres/{genre_id}")
-    response = single_album_single_genre(request, album_id, genre_id)
-    assert response.status_code == 404
-    json_content = json_loads(response.content)
-    assert 'message' in json_content
-    assert json_content['message'] == f'album with album_id={album_id} not associated with genre with genre_id={genre_id}'
 
 
 @pytest.mark.django_db
@@ -681,5 +441,212 @@ def test_single_album_single_genre_DELETE_error_album_not_assoc_w_genre():
     assert json_content['message'] == f'album with album_id={album_id} not associated with genre with genre_id={genre_id}'
 
 
+@pytest.mark.django_db
+def test_single_album_artists_GET():
+    albums = Album.objects.filter()
+    album = random.choice(albums)
+    album_id = album.album_id
+    request = request_factory.get(f"/albums/{album_id}/artists")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    json_content = json_loads(response.content)
+    assert len(json_content)
+    assert isinstance(json_content, list)
+    sample_artist_dict = random.choice(json_content)
+    assert 'artist_id' in sample_artist_dict and isinstance(sample_artist_dict['artist_id'], int)
+    assert 'first_name' in sample_artist_dict and isinstance(sample_artist_dict['first_name'], str)
+    assert 'last_name' in sample_artist_dict and isinstance(sample_artist_dict['last_name'], str)
+    assert 'gender' in sample_artist_dict and sample_artist_dict['gender'] in ('male','female','nonbinary')
+    assert 'birth_date' in sample_artist_dict and matches_date_isoformat(sample_artist_dict['birth_date'])
+
+
+@pytest.mark.django_db
+def test_single_album_artists_GET_error_nonexistent_album_id():
+    albums = Album.objects.filter()
+    album_ids = [album.album_id for album in albums]
+    while True:
+        album_id = random.randint(1,9999)
+        if album_id not in album_ids:
+            break
+    request = request_factory.get(f"/albums/{album_id}/artists")
+    response = single_album_artists(request, album_id)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f'no album with album_id={album_id}'
+
+
+@pytest.mark.django_db
+def test_single_album_artists_POST():
+    albums = Album.objects.filter()
+    album = random.choice(albums)
+    album_id = album.album_id
+    bridge_rows = ArtistAlbumBridge.objects.filter(album_id=album_id)
+    album_already_in_artist_ids = [bridge_row.artist_id for bridge_row in bridge_rows]
+    while True:
+        artist = random.choice(Artist.objects.filter())
+        artist_id = artist.artist_id
+        if artist_id not in album_already_in_artist_ids:
+            break
+    new_artist_assoc_dict = { "artist_id": artist_id }
+    request = request_factory.post(f"/albums/{album_id}/artists", data=new_artist_assoc_dict, content_type="application/json")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    json_content = json_loads(response.content)
+    assert len(json_content)
+    assert isinstance(json_content, dict)
+    assert 'artist_id' in json_content and json_content['artist_id'] == artist.artist_id
+    assert 'first_name' in json_content and json_content['first_name'] == artist.first_name
+    assert 'last_name' in json_content and json_content['last_name'] == artist.last_name
+    assert 'gender' in json_content and json_content['gender'] == artist.gender
+    assert 'birth_date' in json_content and json_content['birth_date'] == artist.birth_date.isoformat()
+    bridge_rows = ArtistAlbumBridge.objects.filter(album_id=album_id)
+    assert any(bridge_row.artist_id == artist_id for bridge_row in bridge_rows)
+
+
+@pytest.mark.django_db
+def test_single_album_artists_POST_error_nonexistent_album_id():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    while True:
+        album_id = random.randint(1,9999)
+        if album_id not in album_ids:
+            break
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    artist_id = random.choice(artist_ids)
+    new_artist_assoc_dict = { "artist_id": artist_id }
+    request = request_factory.post(f"/albums/{album_id}/artists", data=new_artist_assoc_dict, content_type="application/json")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f"no album with album_id={album_id}"
+
+
+@pytest.mark.django_db
+def test_single_album_artists_POST_error_nonexistent_artist_id():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    album_id = random.choice(album_ids)
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    while True:
+        artist_id = random.randint(1,99)
+        if artist_id not in artist_ids:
+            break
+    new_artist_assoc_dict = { "artist_id": artist_id }
+    request = request_factory.post(f"/albums/{album_id}/artists", data=new_artist_assoc_dict, content_type="application/json")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f"no artist with artist_id={artist_id}"
+
+
+@pytest.mark.django_db
+def test_single_album_artists_POST_error_bridge_row_already_exists():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    album_id = random.choice(album_ids)
+    bridge_rows = ArtistAlbumBridge.objects.filter(album_id=album_id)
+    bridge_row = random.choice(bridge_rows)
+    artist_id = bridge_row.artist_id
+    existing_artist_assoc_dict = { "artist_id": artist_id }
+    request = request_factory.post(f"/albums/{album_id}/artists", data=existing_artist_assoc_dict, content_type="application/json")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    assert response.status_code == 400
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == (f"association between artist with artist_id={artist_id} and "
+                                       f"album with album_id={album_id} already exists")
+
+
+@pytest.mark.django_db
+def test_single_album_artists_POST_error_invalid_args():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    album_id = random.choice(album_ids)
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    artist_id = random.choice(artist_ids)
+    new_artist_assoc_dict = { "artist_id": artist_id, "foo":"bar" }
+    request = request_factory.post(f"/albums/{album_id}/artists", data=new_artist_assoc_dict, content_type="application/json")
+    response = single_album_artists(request, album_id)
+    assert isinstance(response, JsonResponse)
+    assert response.status_code == 400
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f"unexpected property in input: 'foo'"
+
+
+@pytest.mark.django_db
+def test_single_album_single_artist_DELETE():
+    albums = Album.objects.filter()
+    album = random.choice(albums)
+    album_id = album.album_id
+    bridge_rows = ArtistAlbumBridge.objects.filter(album_id=album_id)
+    bridge_row = random.choice(bridge_rows)
+    artist = Artist.objects.get(artist_id=bridge_row.artist_id)
+    artist_id = artist.artist_id
+    request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
+    response = single_album_single_artist(request, album_id, artist_id)
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f'association between album with album_id={album_id} and artist with artist_id={artist_id} deleted'
+    try:
+        ArtistAlbumBridge.objects.get(album_id=album_id, artist_id=artist_id)
+        pytest.fail()
+    except ArtistAlbumBridge.DoesNotExist as exception:
+        assert isinstance(exception, ArtistAlbumBridge.DoesNotExist)
+
+
+@pytest.mark.django_db
+def test_single_album_single_artist_DELETE_error_nonexistent_album_id():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    while True:
+        album_id = random.randint(1,9999)
+        if album_id not in album_ids:
+            break
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    artist_id = random.choice(artist_ids)
+    request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
+    response = single_album_single_artist(request, album_id, artist_id)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f"no album with album_id={album_id}"
+
+
+@pytest.mark.django_db
+def test_single_album_single_artist_DELETE_error_nonexistent_artist_id():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    album_id = random.choice(album_ids)
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    while True:
+        artist_id = random.randint(1,99)
+        if artist_id not in artist_ids:
+            break
+    request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
+    response = single_album_single_artist(request, album_id, artist_id)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f"no artist with artist_id={artist_id}"
+
+
+@pytest.mark.django_db
+def test_single_album_single_artist_DELETE_error_album_not_assoc_w_artist():
+    album_ids = [album.album_id for album in Album.objects.filter()]
+    artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
+    while True:
+        album_id = random.choice(album_ids)
+        artist_id = random.choice(artist_ids)
+        try:
+            bridge_row = ArtistAlbumBridge.objects.get(album_id=album_id, artist_id=artist_id)
+        except ArtistAlbumBridge.DoesNotExist:
+            break;
+    request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
+    response = single_album_single_artist(request, album_id, artist_id)
+    assert response.status_code == 404
+    json_content = json_loads(response.content)
+    assert 'message' in json_content
+    assert json_content['message'] == f'album with album_id={album_id} not associated with artist with artist_id={artist_id}'
 
 

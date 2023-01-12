@@ -75,7 +75,11 @@ class AlbumSongBridge(models.Model):
         app_label = 'albums'
 
 
-class Artist(models.Model):
+class Artist(models.Model, serializable):
+    __columns__ = {'artist_id':int, 'first_name':str, 'last_name':str, 'gender':('male','female','nonbinary'),
+                   'birth_date':date}
+    __nullable_cols__ = ()
+
     artist_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
