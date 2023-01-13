@@ -23,5 +23,16 @@ urlpatterns = [
     path('albums', include('albums.urls')),
     path('artists/', include('artists.urls')),
     path('artists', include('artists.urls')),
+    path('buyers', include('buyers.urls')),
+    path('buyers/', include('buyers.urls')),
+    path('genres', include('genres.urls')),
+    path('genres/', include('genres.urls')),
+    path('sellers', include('sellers.urls')),
+    path('sellers/', include('sellers.urls')),
+    path('songs', include('songs.urls')),
+    path('songs/', include('songs.urls')),
+    path('users', include('users.urls')),
+    path('users/', include('users.urls')),
     path('admin/', admin.site.urls)
 ]
+
