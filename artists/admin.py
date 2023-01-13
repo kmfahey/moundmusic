@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 from django.contrib import admin
 
 from .models import Album, AlbumCover, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbumBridge, \
