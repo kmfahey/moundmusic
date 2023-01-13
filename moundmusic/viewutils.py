@@ -191,16 +191,16 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                                                   inner_model_class, inner_model_id_attr_name,
                                                                   bridge_class):
     @api_view(['GET', 'POST'])
-    def single_outer_model_all_of_inner_model(request, outer_model_id_attr_value):
+    def single_outer_model_all_of_inner_model(request, outer_model_obj_id):
 
         def _single_outer_model_all_of_inner_model_GET():
             try:
-                outer_model_class.objects.get(**{outer_model_id_attr_name: outer_model_id_attr_value})
+                outer_model_class.objects.get(**{outer_model_id_attr_name: outer_model_obj_id})
             except outer_model_class.DoesNotExist:
                 return JsonResponse({'message': f'no {outer_model_class.__name__.lower()} with '
-                                                f'{outer_model_id_attr_name}={outer_model_id_attr_value}'},
+                                                f'{outer_model_id_attr_name}={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
-            bridge_rows = bridge_class.objects.filter(**{outer_model_id_attr_name: outer_model_id_attr_value})
+            bridge_rows = bridge_class.objects.filter(**{outer_model_id_attr_name: outer_model_obj_id})
             return_list = [inner_model_class.objects.get(**{inner_model_id_attr_name:
                                                             getattr(bridge_row, inner_model_id_attr_name)}).serialize()
                            for bridge_row in bridge_rows]
@@ -208,10 +208,10 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
 
         def _single_outer_model_all_of_inner_model_POST():
             try:
-                outer_model_class.objects.get(**{outer_model_id_attr_name: outer_model_id_attr_value})
+                outer_model_class.objects.get(**{outer_model_id_attr_name: outer_model_obj_id})
             except outer_model_class.DoesNotExist:
                 return JsonResponse({'message': f'no {outer_model_class.__name__.lower()} '
-                                                f'with {outer_model_id_attr_name}={outer_model_id_attr_value}'},
+                                                f'with {outer_model_id_attr_name}={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             try:
                 posted_json = parse_json(request.body)
@@ -223,27 +223,27 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                 return JsonResponse({'message': f'unexpected propert{"ies" if len(diff) > 1 else "y"} '
                                                 f'in input: {prop_expr}'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            inner_model_id_attr_value = posted_json[inner_model_id_attr_name]
+            inner_model_obj_id = posted_json[inner_model_id_attr_name]
             try:
-                inner_model_obj = inner_model_class.objects.get(**{inner_model_id_attr_name: inner_model_id_attr_value})
+                inner_model_obj = inner_model_class.objects.get(**{inner_model_id_attr_name: inner_model_obj_id})
             except inner_model_class.DoesNotExist:
                 return JsonResponse({'message': f'no {inner_model_class.__name__.lower()} '
-                                                f'with {inner_model_id_attr_name}={inner_model_id_attr_value}'},
+                                                f'with {inner_model_id_attr_name}={inner_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             try:
-                bridge_row = bridge_class.objects.get(**{outer_model_id_attr_name: outer_model_id_attr_value,
-                                                         inner_model_id_attr_name: inner_model_id_attr_value})
+                bridge_row = bridge_class.objects.get(**{outer_model_id_attr_name: outer_model_obj_id,
+                                                         inner_model_id_attr_name: inner_model_obj_id})
             except bridge_class.DoesNotExist:
                 pass
             else:
                 return JsonResponse({'message': f'association between {outer_model_class.__name__.lower()} with '
-                                                f'{outer_model_id_attr_name}={outer_model_id_attr_value} '
+                                                f'{outer_model_id_attr_name}={outer_model_obj_id} '
                                                 f'and {inner_model_class.__name__.lower()} with '
-                                                f'{inner_model_id_attr_name}={inner_model_id_attr_value} '
+                                                f'{inner_model_id_attr_name}={inner_model_obj_id} '
                                                  'already exists'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            bridge_row = bridge_class(**{outer_model_id_attr_name: outer_model_id_attr_value,
-                                         inner_model_id_attr_name: inner_model_id_attr_value})
+            bridge_row = bridge_class(**{outer_model_id_attr_name: outer_model_obj_id,
+                                         inner_model_id_attr_name: inner_model_obj_id})
             bridge_row.save()
             return JsonResponse(inner_model_obj.serialize(), status=status.HTTP_200_OK)
 
@@ -256,15 +256,15 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_
                                                                     inner_model_class, inner_model_id_attr_name,
                                                                     bridge_class):
     @api_view(['GET', 'DELETE'])
-    def single_outer_model_single_inner_model(request, outer_model_id_attr_value, inner_model_id_attr_value):
+    def single_outer_model_single_inner_model(request, outer_model_obj_id, inner_model_obj_id):
 
         def _single_outer_model_single_inner_model_GET():
             result = validate_bridged_table_column_value_pair(outer_model_class,
                                                               outer_model_id_attr_name,
-                                                              outer_model_id_attr_value,
+                                                              outer_model_obj_id,
                                                               inner_model_class,
                                                               inner_model_id_attr_name,
-                                                              inner_model_id_attr_value,
+                                                              inner_model_obj_id,
                                                               bridge_class)
             if isinstance(result, JsonResponse):
                 return result
@@ -275,10 +275,10 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_
         def _single_outer_model_single_inner_model_DELETE():
             result = validate_bridged_table_column_value_pair(outer_model_class,
                                                               outer_model_id_attr_name,
-                                                              outer_model_id_attr_value,
+                                                              outer_model_obj_id,
                                                               inner_model_class,
                                                               inner_model_id_attr_name,
-                                                              inner_model_id_attr_value,
+                                                              inner_model_obj_id,
                                                               bridge_class)
             if isinstance(result, JsonResponse):
                 return result
@@ -286,9 +286,9 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_
                 _, _, bridge_row = result
             bridge_row.delete()
             return JsonResponse({'message': f'association between {outer_model_class.__name__.lower()} with '
-                                            f'{outer_model_id_attr_name}={outer_model_id_attr_value} '
+                                            f'{outer_model_id_attr_name}={outer_model_obj_id} '
                                             f'and {inner_model_class.__name__.lower()} with '
-                                            f'{inner_model_id_attr_name}={inner_model_id_attr_value} deleted'},
+                                            f'{inner_model_id_attr_name}={inner_model_obj_id} deleted'},
                                 status=status.HTTP_200_OK)
 
         return dispatch_funcs_by_method((_single_outer_model_single_inner_model_GET,

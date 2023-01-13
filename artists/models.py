@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from django.db import models
 
 from albums.models import Album, AlbumCover, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbumBridge, \

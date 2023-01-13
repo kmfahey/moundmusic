@@ -6,11 +6,11 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('<int:album_id>', views.single_album),
-    path('<int:album_id>/artists', views.single_album_artists),
-    path('<int:album_id>/artists/<int:artist_id>', views.single_album_single_artist),
-    path('<int:album_id>/songs', views.single_album_songs),
-    path('<int:album_id>/songs/<int:song_id>', views.single_album_single_song),
-    path('<int:album_id>/genres', views.single_album_genres),
-    path('<int:album_id>/genres/<int:genre_id>', views.single_album_single_genre),
+    path('<int:model_obj_id>', views.single_album),
+    path('<int:outer_model_obj_id>/artists', views.single_album_artists),
+    path('<int:outer_model_obj_id>/artists/<int:inner_model_obj_id>', views.single_album_single_artist),
+    path('<int:outer_model_obj_id>/songs', views.single_album_songs),
+    path('<int:outer_model_obj_id>/songs/<int:inner_model_obj_id>', views.single_album_single_song),
+    path('<int:outer_model_obj_id>/genres', views.single_album_genres),
+    path('<int:outer_model_obj_id>/genres/<int:inner_model_obj_id>', views.single_album_single_genre),
 ]
