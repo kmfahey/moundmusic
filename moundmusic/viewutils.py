@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.http.response import JsonResponse
 
 from json.decoder import JSONDecodeError
-from json import loads as parse_json
+from json import loads as json_loads, JSONDecodeError
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -67,7 +67,7 @@ def dispatch_funcs_by_method(functions, request):
 
 def validate_post_request(request, model_class, all_nullable=False):
     try:
-        posted_json = parse_json(request.body)
+        posted_json = json_loads(request.body)
     except JSONDecodeError:
         return JsonResponse({'message':'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -85,7 +85,7 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
                                        f'{model_id_attr_name}={model_id_attr_val}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
-        posted_json = parse_json(request.body)
+        posted_json = json_loads(request.body)
     except JSONDecodeError as exception:
         return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
     if not len(posted_json):
@@ -124,7 +124,7 @@ def validate_bridged_table_column_value_pair(left_model_class, left_model_attr_n
     return left_model_obj, right_model_obj, bridge_row
 
 
-def define_GET_POST_index_closure(model_class, model_obj_attr_name):
+def define_GET_POST_index_closure(model_class, model_id_attr_name):
     @api_view(['GET', 'POST'])
     def index(request):
 
@@ -138,9 +138,9 @@ def define_GET_POST_index_closure(model_class, model_obj_attr_name):
                 return result
             else:
                 validated_args = result
-            if model_obj_attr_name in validated_args:
+            if model_id_attr_name in validated_args:
                 return JsonResponse({'message':f'a new {model_class.__name__.lower()} object '
-                                               f'must not have a {model_obj_attr_name} value'},
+                                               f'must not have a {model_id_attr_name} value'},
                                     status=status.HTTP_400_BAD_REQUEST)
             new_model_obj = model_class(**validated_args)
             new_model_obj.save()
@@ -170,6 +170,10 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
                 return retval
             else:
                 model_obj, validated_input = retval
+            if model_id_attr_name in validated_input:
+                return JsonResponse({'message':f'an updated {model_class.__name__.lower()} object '
+                                               f'must not have a {model_id_attr_name} value'},
+                                    status=status.HTTP_400_BAD_REQUEST)
             for column, column_value in validated_input.items():
                 setattr(model_obj, column, column_value)
             model_obj.save()
@@ -219,7 +223,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                                 f'with {outer_model_id_attr_name}={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             try:
-                posted_json = parse_json(request.body)
+                posted_json = json_loads(request.body)
             except JSONDecodeError as exception:
                 return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
             diff = set(posted_json.keys()) - set((inner_model_id_attr_name,))

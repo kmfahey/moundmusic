@@ -7,9 +7,6 @@ from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from json import loads as parse_json
-from json.decoder import JSONDecodeError
-
 from .models import Album, AlbumSongBridge, Genre, AlbumGenreBridge, Song, Artist, ArtistAlbumBridge
 
 from moundmusic.viewutils import dispatch_funcs_by_method, validate_post_request, \

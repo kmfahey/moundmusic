@@ -7,8 +7,6 @@ ALTER TABLE artist_song_bridge DROP CONSTRAINT fk_songs;
 
 ALTER TABLE artist_song_bridge DROP CONSTRAINT fk_artists;
 
-ALTER TABLE album_cover DROP CONSTRAINT fk_albums;
-
 ALTER TABLE album_genre_bridge DROP CONSTRAINT fk_albums;
 
 ALTER TABLE album_genre_bridge DROP CONSTRAINT fk_genres;
@@ -20,8 +18,6 @@ ALTER TABLE artist_genre_bridge DROP CONSTRAINT fk_genres;
 ALTER TABLE song_genre_bridge DROP CONSTRAINT fk_songs;
 
 ALTER TABLE song_genre_bridge DROP CONSTRAINT fk_genres;
-
-ALTER TABLE album DROP CONSTRAINT fk_album_covers;
 
 ALTER TABLE album_song_bridge DROP CONSTRAINT fk_albums;
 
@@ -45,8 +41,6 @@ ALTER TABLE to_sell_listing DROP CONSTRAINT fk_seller_accounts;
 
 ALTER TABLE user_password DROP CONSTRAINT fk_users;
 
-
-DROP INDEX IF EXISTS idx_album_cover_album_cover_id;
 
 DROP INDEX IF EXISTS idx_artist_artist_id;
 
@@ -80,8 +74,6 @@ DROP INDEX IF EXISTS idx_album_song_bridge_album_id;
 
 DROP INDEX IF EXISTS idx_album_song_bridge_song_id;
 
-
-DROP TABLE IF EXISTS album_cover;
 
 DROP TABLE IF EXISTS album;
 
@@ -118,15 +110,14 @@ DROP TABLE IF EXISTS song_genre_bridge;
 DROP TABLE IF EXISTS album_song_bridge;
 
 
--- CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
+DROP TYPE IF EXISTS gender_type;
+
+DROP TYPE IF EXISTS image_type;
 
 
-CREATE TABLE album_cover (
-    album_cover_id SERIAL PRIMARY KEY,
-    image_file_type image_type NOT NULL,
-    image_data BYTEA NOT NULL,
-    album_id INTEGER 
-);
+CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
+
+CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
 
 CREATE TABLE album (
@@ -134,11 +125,8 @@ CREATE TABLE album (
     title VARCHAR(256) NOT NULL,
     number_of_discs SMALLINT NOT NULL DEFAULT 1,
     number_of_tracks SMALLINT NOT NULL,
-    release_date DATE NOT NULL,
-    album_cover_id INTEGER
+    release_date DATE NOT NULL
 );
-
--- CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
 
 CREATE TABLE artist (
@@ -294,12 +282,6 @@ FOREIGN KEY (song_id)
 REFERENCES song (song_id)
 ON DELETE NO ACTION;
 
-ALTER TABLE album_cover
-ADD CONSTRAINT fk_albums
-FOREIGN KEY (album_id)
-REFERENCES album (album_id)
-ON DELETE NO ACTION;
-
 ALTER TABLE album_genre_bridge
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
@@ -334,12 +316,6 @@ ALTER TABLE song_genre_bridge
 ADD CONSTRAINT fk_genres
 FOREIGN KEY (genre_id)
 REFERENCES genre (genre_id)
-ON DELETE NO ACTION;
-
-ALTER TABLE album
-ADD CONSTRAINT fk_album_covers
-FOREIGN KEY (album_cover_id)
-REFERENCES album_cover (album_cover_id)
 ON DELETE NO ACTION;
 
 ALTER TABLE album_song_bridge
@@ -408,8 +384,6 @@ FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
 ON DELETE NO ACTION;
 
-
-CREATE INDEX idx_album_cover_album_cover_id ON album_cover USING HASH(album_cover_id);
 
 CREATE INDEX idx_artist_artist_id ON artist USING HASH(artist_id);
 

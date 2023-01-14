@@ -33,10 +33,6 @@ def main():
 
             print("Seeding `album` table....")
             table_seeder.seed_album_table()
-            print("Seeding `album_cover` table....")
-            table_seeder.seed_album_cover_table()
-            print("Updating `album` table with album_cover_ids....")
-            table_seeder.update_album_table_with_album_cover_ids()
 
             print("Seeding `artist` table....")
             table_seeder.seed_artist_table()
@@ -105,7 +101,7 @@ def title_case(strval):
 class Table_Seeder(object):
     __slots__ = ("faker_obj", "cursor", "gender_list", "album_ids", "artist_ids", "genre_ids", "song_ids",
                  "total_tracks_on_albums", "song_ids_to_incidences", "song_ids_to_song_lyrics_ids",
-                 "album_ids_to_album_cover_ids", "song_ids_to_song_lyrics_ids", "song_ids", "album_ids_to_artist_ids",
+                 "song_ids_to_song_lyrics_ids", "song_ids", "album_ids_to_artist_ids",
                  "album_ids_to_params", "album_ids_to_tracklists", "user_ids", "user_ids_to_seller_ids",
                  "user_ids_to_buyer_ids")
 
@@ -137,26 +133,6 @@ class Table_Seeder(object):
         self.album_ids_to_params.update(zip(self.album_ids, album_params_list))
         self.cursor.execute("SELECT SUM(number_of_tracks) FROM album;")
         self.total_tracks_on_albums = self.cursor.fetchone()[0]
-
-    def seed_album_cover_table(self):
-        self.album_ids_to_album_cover_ids = dict()
-        if not len(self.album_ids):
-            print("album_ids list is empty; can't seed album_cover without album_ids")
-            exit(1)
-        self.cursor.execute("DELETE FROM album_cover;")
-        for album_id in self.album_ids:
-            image_file_type = random.choice(('jpg', 'png', 'gif'))
-            image_data = self.faker_obj.binary(1024)
-            self.cursor.execute("INSERT INTO album_cover (image_file_type, image_data, album_id)"
-                                "VALUES (%s, %s, %s);", (image_file_type, image_data, album_id))
-        self.cursor.execute("COMMIT;")
-        self.cursor.execute("SELECT album_id, album_cover_id FROM album_cover;")
-        self.album_ids_to_album_cover_ids.update(self.cursor.fetchall())
-
-    def update_album_table_with_album_cover_ids(self):
-        for album_id, album_cover_id in self.album_ids_to_album_cover_ids.items():
-            self.cursor.execute("UPDATE album SET album_cover_id = %s WHERE album_id = %s;", (album_cover_id, album_id))
-        self.cursor.execute("COMMIT;")
 
     def _random_gender_first_last_names(self):
         gender = random.choice(("male",) * 10 + ("female",) * 10 + ("nonbinary",))
@@ -345,7 +321,8 @@ class Table_Seeder(object):
             gender, first_name, last_name = self._random_gender_first_last_names()
             birth_date = self.faker_obj.date_between_dates(datetime.date(1925,1,1), datetime.date(1989,12,31))
             age_of_majority_date = birth_date + datetime.timedelta(days=(18*365.24))
-            date_joined = self.faker_obj.date_between_dates(age_of_majority_date, datetime.date.today())
+            date_joined = self.faker_obj.date_between_dates(datetime.date.today() - datetime.timedelta(days=(365.24*3)),
+                                                            datetime.date.today())
             self.cursor.execute("INSERT INTO user_ (user_name, first_name, last_name, gender, date_joined) "
                                 "VALUES (%s, %s, %s, %s, %s);", (user_name, first_name, last_name, gender, date_joined))
         self.cursor.execute("COMMIT;")

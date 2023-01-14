@@ -4,7 +4,7 @@ import pytest
 import re
 import random
 
-from json import loads as json_loads
+from json import loads as json_loads, JSONDecodeError
 
 from django.test.client import RequestFactory
 from django.http.response import JsonResponse
@@ -35,7 +35,6 @@ def test_index_GET():
     assert isinstance(sample_album_jsobject.get("number_of_tracks"), int)
     assert "release_date" in sample_album_jsobject and isinstance(sample_album_jsobject.get("release_date"), str)
     assert matches_date_isoformat(sample_album_jsobject["release_date"])
-    assert "album_cover_id" in sample_album_jsobject and isinstance(sample_album_jsobject.get("album_cover_id"), int)
 
 
 @pytest.mark.django_db
@@ -100,7 +99,6 @@ def test_single_album_GET():
     assert json_content["release_date"] == album.release_date
     assert matches_date_isoformat(json_content["release_date"])
     assert json_content["album_id"] == album.album_id
-    assert json_content["album_cover_id"] is None
 
 
 @pytest.mark.django_db
@@ -472,7 +470,7 @@ def test_single_album_single_song_DELETE_error_nonexistent_song_id():
     album_id = random.choice(album_ids)
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
-        song_id = random.randint(1, 99)
+        song_id = random.randint(1, 9999)
         if song_id not in song_ids:
             break
     request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")

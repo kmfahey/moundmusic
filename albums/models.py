@@ -8,6 +8,7 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 
 import django
+import codecs
 
 from datetime import date
 from django.db import models
@@ -16,40 +17,29 @@ from django.db import models
 
 class serializable(object):
     def serialize(self):
-        return {column: getattr(self, column) for column in self.__columns__.keys()}
+        serialization = dict()
+        for column in self.__columns__.keys():
+            column_value = getattr(self, column)
+            if isinstance(column_value, bytes):
+                column_value = codecs.decode(column_value)
+            serialization[column] = column_value
+        return serialization
 
 
 class Album(models.Model, serializable):
-    __columns__ = {'album_id':int, 'title':str, 'number_of_discs':int, 'number_of_tracks':int, 'release_date':date,
-                   'album_cover_id':int}
-    __nullable_cols__ = ('album_id', 'album_cover_id')
+    __columns__ = {'album_id':int, 'title':str, 'number_of_discs':int, 'number_of_tracks':int, 'release_date':date}
+    __nullable_cols__ = ('album_id',)
 
     album_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=256)
     number_of_discs = models.SmallIntegerField()
     number_of_tracks = models.SmallIntegerField()
     release_date = models.DateField(blank=True, null=True)
-    album_cover = models.ForeignKey('AlbumCover', models.CASCADE, blank=True, null=True, related_name="+")
 
     class Meta:
+        managed = False
+        managed = False
         db_table = 'album'
-        app_label = 'albums'
-
-
-class AlbumCover(models.Model, serializable):
-    __columns__ = {'album_cover_id':int, 'image_file_type':('png','jpg','gif'), 'image_data':bytes, 'album_id':int}
-    __nullable_cols__ = ('album_cover_id', 'album_id')
-
-    album_cover_id = models.AutoField(primary_key=True)
-    # The column below is actually a ENUM('png', 'jpg', 'gif') postgresql custom
-    # type, but django can't handle those. So long as it's only ever set to
-    # (png|jpg|gif) there won't be any problems leaving it as a TextField.
-    image_file_type = models.TextField()  # This field type is a guess.
-    image_data = models.BinaryField()
-    album = models.ForeignKey(Album, models.CASCADE, blank=True, null=True)
-
-    class Meta:
-        db_table = 'album_cover'
         app_label = 'albums'
 
 
@@ -59,6 +49,7 @@ class AlbumGenreBridge(models.Model):
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'album_genre_bridge'
         app_label = 'albums'
 
@@ -71,6 +62,7 @@ class AlbumSongBridge(models.Model):
     song = models.ForeignKey('Song', models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'album_song_bridge'
         app_label = 'albums'
 
@@ -91,6 +83,7 @@ class Artist(models.Model, serializable):
     birth_date = models.DateField()
 
     class Meta:
+        managed = False
         db_table = 'artist'
         app_label = 'albums'
 
@@ -101,6 +94,7 @@ class ArtistAlbumBridge(models.Model):
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'artist_album_bridge'
         app_label = 'albums'
 
@@ -111,6 +105,7 @@ class ArtistGenreBridge(models.Model):
     genre = models.ForeignKey('Genre', models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'artist_genre_bridge'
         app_label = 'albums'
 
@@ -121,6 +116,7 @@ class ArtistSongBridge(models.Model):
     artist = models.ForeignKey(Artist, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'artist_song_bridge'
         app_label = 'albums'
 
@@ -135,6 +131,7 @@ class BuyerAccount(models.Model, serializable):
     user = models.ForeignKey('User', models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'buyer_account'
         app_label = 'albums'
 
@@ -147,6 +144,7 @@ class Genre(models.Model, serializable):
     genre_name = models.CharField(max_length=64)
 
     class Meta:
+        managed = False
         db_table = 'genre'
         app_label = 'albums'
 
@@ -161,6 +159,7 @@ class SellerAccount(models.Model, serializable):
     user = models.ForeignKey('User', models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'seller_account'
         app_label = 'albums'
 
@@ -176,6 +175,7 @@ class Song(models.Model, serializable):
     song_lyrics = models.ForeignKey('SongLyrics', models.CASCADE, blank=True, null=True, related_name="+")
 
     class Meta:
+        managed = False
         db_table = 'song'
         app_label = 'albums'
 
@@ -186,6 +186,7 @@ class SongGenreBridge(models.Model):
     genre = models.ForeignKey(Genre, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'song_genre_bridge'
         app_label = 'albums'
 
@@ -199,6 +200,7 @@ class SongLyrics(models.Model, serializable):
     song = models.ForeignKey(Song, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'song_lyrics'
         app_label = 'albums'
 
@@ -214,6 +216,7 @@ class ToBuyListing(models.Model, serializable):
     buyer = models.ForeignKey(BuyerAccount, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'to_buy_listing'
         app_label = 'albums'
 
@@ -229,6 +232,7 @@ class ToSellListing(models.Model, serializable):
     seller = models.ForeignKey(SellerAccount, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'to_sell_listing'
         app_label = 'albums'
 
@@ -252,6 +256,7 @@ class User(models.Model, serializable):
     seller_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'user_'
         app_label = 'albums'
 
@@ -265,5 +270,6 @@ class UserPassword(models.Model, serializable):
     user = models.ForeignKey(User, models.CASCADE, blank=True, null=True)
 
     class Meta:
+        managed = False
         db_table = 'user_password'
         app_label = 'albums'
