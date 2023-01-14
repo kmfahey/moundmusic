@@ -4,7 +4,7 @@ from django.shortcuts import render
 
 
 ## GET,POST          /artists
-#index = define_GET_POST_index_closure(Seller)
+#index = define_GET_POST_index_closure(Seller, 'seller_id')
 #
 #
 ### GET,PATCH,DELETE  /sellers/<seller_id>

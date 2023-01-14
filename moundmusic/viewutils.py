@@ -124,7 +124,7 @@ def validate_bridged_table_column_value_pair(left_model_class, left_model_attr_n
     return left_model_obj, right_model_obj, bridge_row
 
 
-def define_GET_POST_index_closure(model_class):
+def define_GET_POST_index_closure(model_class, model_obj_attr_name):
     @api_view(['GET', 'POST'])
     def index(request):
 
@@ -138,6 +138,10 @@ def define_GET_POST_index_closure(model_class):
                 return result
             else:
                 validated_args = result
+            if model_obj_attr_name in validated_args:
+                return JsonResponse({'message':f'a new {model_class.__name__.lower()} object '
+                                               f'must not have a {model_obj_attr_name} value'},
+                                    status=status.HTTP_400_BAD_REQUEST)
             new_model_obj = model_class(**validated_args)
             new_model_obj.save()
             return JsonResponse(new_model_obj.serialize(), status=status.HTTP_201_CREATED)

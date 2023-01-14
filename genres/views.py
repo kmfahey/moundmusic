@@ -10,7 +10,7 @@ from .models import Album, Artist, Genre, Song, AlbumGenreBridge, ArtistGenreBri
 
 
 # GET,POST          /genres
-index = define_GET_POST_index_closure(Genre)
+index = define_GET_POST_index_closure(Genre, 'genre_id')
 
 
 # GET,PATCH,DELETE  /genres/<genre_id>

@@ -33,7 +33,7 @@ from moundmusic.viewutils import define_GET_POST_index_closure, define_single_mo
 
 
 # GET,POST          /albums/
-index = define_GET_POST_index_closure(Album)
+index = define_GET_POST_index_closure(Album, 'album_id')
 
 
 # GET,PATCH,DELETE  /albums/<int:model_obj_id>/

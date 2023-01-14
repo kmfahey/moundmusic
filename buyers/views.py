@@ -7,7 +7,7 @@ from albums.models import BuyerAccount, ToBuyListing
 
 
 ## GET,POST          /artists
-#index = define_GET_POST_index_closure(BuyerAccount)
+#index = define_GET_POST_index_closure(BuyerAccount, 'buyer_id')
 #
 #
 ### GET,PATCH,DELETE  /buyers/<buyer_id>

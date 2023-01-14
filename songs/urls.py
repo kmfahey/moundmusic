@@ -13,4 +13,6 @@ urlpatterns = [
     path('<int:outer_model_obj_id>/artists/<int:inner_model_obj_id>', views.single_song_single_artist),
     path('<int:outer_model_obj_id>/genres', views.single_song_genres),
     path('<int:outer_model_obj_id>/genres/<int:inner_model_obj_id>', views.single_song_single_genre),
+    path('<int:outer_model_obj_id>/lyrics', views.single_song_lyrics),
+    path('<int:outer_model_obj_id>/lyrics/<int:inner_model_obj_id>', views.single_song_single_lyrics),
 ]

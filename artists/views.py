@@ -8,7 +8,7 @@ from .models import Album, Artist, Genre, Song, ArtistAlbumBridge, ArtistGenreBr
 
 
 # GET,POST          /artists
-index = define_GET_POST_index_closure(Artist)
+index = define_GET_POST_index_closure(Artist, 'artist_id')
 
 
 # GET,PATCH,DELETE  /artists/<artist_id>

@@ -298,7 +298,7 @@ ALTER TABLE album_cover
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE album_genre_bridge
 ADD CONSTRAINT fk_albums
@@ -340,7 +340,7 @@ ALTER TABLE album
 ADD CONSTRAINT fk_album_covers
 FOREIGN KEY (album_cover_id)
 REFERENCES album_cover (album_cover_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE album_song_bridge
 ADD CONSTRAINT fk_albums
@@ -358,55 +358,55 @@ ALTER TABLE buyer_account
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE song_lyrics
 ADD CONSTRAINT fk_songs
 FOREIGN KEY (song_id)
 REFERENCES song (song_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE seller_account
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE song
 ADD CONSTRAINT fk_song_lyrics
 FOREIGN KEY (song_lyrics_id)
 REFERENCES song_lyrics (song_lyrics_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE to_buy_listing
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE to_buy_listing
 ADD CONSTRAINT fk_buyer_accounts
 FOREIGN KEY (buyer_id)
 REFERENCES buyer_account (buyer_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE to_sell_listing
 ADD CONSTRAINT fk_albums
 FOREIGN KEY (album_id)
 REFERENCES album (album_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE to_sell_listing
 ADD CONSTRAINT fk_seller_accounts
 FOREIGN KEY (seller_id)
 REFERENCES seller_account (seller_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 ALTER TABLE user_password
 ADD CONSTRAINT fk_users
 FOREIGN KEY (user_id)
 REFERENCES user_ (user_id)
-ON DELETE CASCADE;
+ON DELETE NO ACTION;
 
 
 CREATE INDEX idx_album_cover_album_cover_id ON album_cover USING HASH(album_cover_id);
