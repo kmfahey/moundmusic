@@ -20,8 +20,9 @@ def validate_input(model_class, input_argd, all_nullable=False):
         raise ValueError(f'unexpected propert{"ies" if len(diff) > 1 else "y"} in input: {diff_expr}')
     for column, value in input_argd.items():
         column_type = model_class.__columns__[column]
-        if value is None and not all_nullable and column not in model_class.__nullable_cols__:
-            raise ValueError(f"value for '{column}' is null and column not nullable")
+        if value is None:
+            if not all_nullable and column not in model_class.__nullable_cols__:
+                raise ValueError(f"value for '{column}' is null and column not nullable")
         elif column_type is int:
             try:
                 value = int(value)
