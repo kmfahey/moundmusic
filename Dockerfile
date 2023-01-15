@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 EXPOSE 8000
 
@@ -8,6 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
+
+# psycopg2 depends on pg_config to build, so the prereqs for that build plus
+# postgresql-common (which supplies pg_config) are installed
+RUN apt-get update && apt-get -y install libpq-dev gcc postgresql-common
 
 # Install pip requirements
 COPY requirements.txt .
@@ -22,4 +26,4 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "hello_django.wsgi"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "moundmusic.wsgi:application"]

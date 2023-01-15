@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
     path('albums', include('albums.urls')),
     path('albums/', include('albums.urls')),
     path('artists', include('artists.urls')),
@@ -29,5 +29,5 @@ urlpatterns = [
     path('songs', include('songs.urls')),
     path('songs/', include('songs.urls')),
     path('users', include('users.urls')),
-    path('users/', include('users.urls')),
+    path('users/', include('users.urls'))
 ]

@@ -1,13 +1,6 @@
 #!/usr/bin/python3
 
-from django.contrib import admin
-
-from .models import Album, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbumBridge, ArtistGenreBridge, \
-        ArtistSongBridge, BuyerAccount, Genre, SellerAccount, Song, SongGenreBridge, SongLyrics, ToBuyListing, \
-        ToSellListing, User, UserPassword
-
-
-for model_class in (Album, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbumBridge, ArtistGenreBridge,
-                    ArtistSongBridge, BuyerAccount, Genre, SellerAccount, Song, SongGenreBridge, SongLyrics,
-                    ToBuyListing, ToSellListing, User, UserPassword):
-    admin.site.register(model_class)
+# Because this package reuses model classes between apps, it's not possible to
+# register the models with django.contrib.admin: it leads to an error of the
+# form "django.contrib.admin.sites.AlreadyRegistered: The model Album is already
+# registered in app 'users'."
