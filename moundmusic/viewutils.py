@@ -5,7 +5,6 @@ from datetime import date
 from django.http import HttpResponse
 from django.http.response import JsonResponse
 
-from json.decoder import JSONDecodeError
 from json import loads as json_loads, JSONDecodeError
 
 from rest_framework import status
@@ -69,11 +68,11 @@ def validate_post_request(request, model_class, all_nullable=False):
     try:
         posted_json = json_loads(request.body)
     except JSONDecodeError:
-        return JsonResponse({'message':'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         validated_args = validate_input(model_class, posted_json, all_nullable=all_nullable)
     except ValueError as exception:
-        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
     return validated_args
 
 
@@ -81,19 +80,19 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
     try:
         model_instance = model_class.objects.get(**{model_id_attr_name: model_id_attr_val})
     except model_class.DoesNotExist:
-        return JsonResponse({'message':f'no {model_class.__name__.lower()} with '
-                                       f'{model_id_attr_name}={model_id_attr_val}'},
+        return JsonResponse({'message': f'no {model_class.__name__.lower()} with '
+                                        f'{model_id_attr_name}={model_id_attr_val}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
         posted_json = json_loads(request.body)
     except JSONDecodeError as exception:
-        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
     if not len(posted_json):
-        return JsonResponse({'message':'empty JSON object'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': 'empty JSON object'}, status=status.HTTP_400_BAD_REQUEST)
     try:
         validated_input = validate_input(model_class, posted_json, all_nullable=True)
     except ValueError as exception:
-        return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
     return model_instance, validated_input
 
 
@@ -101,25 +100,25 @@ def validate_bridged_table_column_value_pair(left_model_class, left_model_attr_n
                                              right_model_class, right_model_attr_name, right_model_attr_value,
                                              bridge_model_class):
     try:
-        left_model_obj = left_model_class.objects.get(**{left_model_attr_name:left_model_attr_value})
+        left_model_obj = left_model_class.objects.get(**{left_model_attr_name: left_model_attr_value})
     except left_model_class.DoesNotExist:
-        return JsonResponse({'message':f'no {left_model_class.__name__.lower()} with '
-                                       f'{left_model_attr_name}={left_model_attr_value}'},
+        return JsonResponse({'message': f'no {left_model_class.__name__.lower()} with '
+                                        f'{left_model_attr_name}={left_model_attr_value}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
-        right_model_obj = right_model_class.objects.get(**{right_model_attr_name:right_model_attr_value})
+        right_model_obj = right_model_class.objects.get(**{right_model_attr_name: right_model_attr_value})
     except right_model_class.DoesNotExist:
-        return JsonResponse({'message':f'no {right_model_class.__name__.lower()} with '
-                                       f'{right_model_attr_name}={right_model_attr_value}'},
+        return JsonResponse({'message': f'no {right_model_class.__name__.lower()} with '
+                                        f'{right_model_attr_name}={right_model_attr_value}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
-        bridge_row = bridge_model_class.objects.get(**{left_model_attr_name:left_model_attr_value,
-                                                       right_model_attr_name:right_model_attr_value})
+        bridge_row = bridge_model_class.objects.get(**{left_model_attr_name: left_model_attr_value,
+                                                       right_model_attr_name: right_model_attr_value})
     except bridge_model_class.DoesNotExist:
-        return JsonResponse({'message':f'{left_model_class.__name__.lower()} with '
-                                       f'{left_model_attr_name}={left_model_attr_value} not associated with '
-                                       f'{right_model_class.__name__.lower()} with '
-                                       f'{right_model_attr_name}={right_model_attr_value}'},
+        return JsonResponse({'message': f'{left_model_class.__name__.lower()} with '
+                                        f'{left_model_attr_name}={left_model_attr_value} not associated with '
+                                        f'{right_model_class.__name__.lower()} with '
+                                        f'{right_model_attr_name}={right_model_attr_value}'},
                             status=status.HTTP_404_NOT_FOUND)
     return left_model_obj, right_model_obj, bridge_row
 
@@ -139,8 +138,8 @@ def define_GET_POST_index_closure(model_class, model_id_attr_name):
             else:
                 validated_args = result
             if model_id_attr_name in validated_args:
-                return JsonResponse({'message':f'a new {model_class.__name__.lower()} object '
-                                               f'must not have a {model_id_attr_name} value'},
+                return JsonResponse({'message': f'a new {model_class.__name__.lower()} object '
+                                                f'must not have a {model_id_attr_name} value'},
                                     status=status.HTTP_400_BAD_REQUEST)
             new_model_obj = model_class(**validated_args)
             new_model_obj.save()
@@ -171,8 +170,8 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
             else:
                 model_obj, validated_input = retval
             if model_id_attr_name in validated_input:
-                return JsonResponse({'message':f'an updated {model_class.__name__.lower()} object '
-                                               f'must not have a {model_id_attr_name} value'},
+                return JsonResponse({'message': f'an updated {model_class.__name__.lower()} object '
+                                                f'must not have a {model_id_attr_name} value'},
                                     status=status.HTTP_400_BAD_REQUEST)
             for column, column_value in validated_input.items():
                 setattr(model_obj, column, column_value)
@@ -304,4 +303,3 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_
                                           _single_outer_model_single_inner_model_DELETE), request)
 
     return single_outer_model_single_inner_model
-

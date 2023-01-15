@@ -9,9 +9,6 @@ from rest_framework.decorators import api_view
 
 from .models import Album, AlbumSongBridge, Genre, AlbumGenreBridge, Song, Artist, ArtistAlbumBridge
 
-from moundmusic.viewutils import dispatch_funcs_by_method, validate_post_request, \
-        validate_patch_request, validate_bridged_table_column_value_pair
-
 from moundmusic.viewutils import define_GET_POST_index_closure, define_single_model_GET_PATCH_DELETE_closure, \
         define_single_outer_model_all_of_inner_model_GET_POST_closure, \
         define_single_outer_model_single_inner_model_GET_DELETE_closure
@@ -42,7 +39,8 @@ single_album = define_single_model_GET_PATCH_DELETE_closure(Album, 'album_id')
 def single_album_songs(request, outer_model_obj_id):
     bridge_rows = AlbumSongBridge.objects.filter(album_id=outer_model_obj_id)
     if not len(bridge_rows):
-        return JsonResponse({'message': f'no songs with album_id={outer_model_obj_id}'}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({'message': f'no songs with album_id={outer_model_obj_id}'},
+                            status=status.HTTP_404_NOT_FOUND)
     return_struct = dict()
     rows_by_disc_and_track_numbers = {(bridge_row.disc_number, bridge_row.track_number): bridge_row
                                       for bridge_row in bridge_rows}
@@ -78,4 +76,3 @@ single_album_artists = define_single_outer_model_all_of_inner_model_GET_POST_clo
 # GET,DELETE        /albums/<int:model_obj_id>/artists/<int:artist_id>/
 single_album_single_artist = define_single_outer_model_single_inner_model_GET_DELETE_closure(
                                      Album, 'album_id', Artist, 'artist_id', ArtistAlbumBridge)
-

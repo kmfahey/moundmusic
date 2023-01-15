@@ -7,7 +7,6 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 # Feel free to rename the models, but don't rename db_table values or field names.
 
-import django
 import codecs
 
 from datetime import date
@@ -27,7 +26,7 @@ class serializable(object):
 
 
 class Album(models.Model, serializable):
-    __columns__ = {'album_id':int, 'title':str, 'number_of_discs':int, 'number_of_tracks':int, 'release_date':date}
+    __columns__ = {'album_id': int, 'title': str, 'number_of_discs': int, 'number_of_tracks': int, 'release_date': date}
     __nullable_cols__ = ('album_id',)
 
     album_id = models.AutoField(primary_key=True)
@@ -68,8 +67,8 @@ class AlbumSongBridge(models.Model):
 
 
 class Artist(models.Model, serializable):
-    __columns__ = {'artist_id':int, 'first_name':str, 'last_name':str, 'gender':('male','female','nonbinary'),
-                   'birth_date':date}
+    __columns__ = {'artist_id': int, 'first_name': str, 'last_name': str, 'gender': ('male','female','nonbinary'),
+                   'birth_date': date}
     __nullable_cols__ = ()
 
     artist_id = models.AutoField(primary_key=True)
@@ -122,7 +121,7 @@ class ArtistSongBridge(models.Model):
 
 
 class BuyerAccount(models.Model, serializable):
-    __columns__ = {'buyer_id':int, 'postboard_name':str, 'date_created':date, 'user_id':int}
+    __columns__ = {'buyer_id': int, 'postboard_name': str, 'date_created': date, 'user_id': int}
     __nullable_cols__ = ('buyer_id', 'user_id')
 
     buyer_id = models.AutoField(primary_key=True)
@@ -137,7 +136,7 @@ class BuyerAccount(models.Model, serializable):
 
 
 class Genre(models.Model, serializable):
-    __columns__ = {'genre_id':int, 'genre_name':str}
+    __columns__ = {'genre_id': int, 'genre_name': str}
     __nullable_cols__ = ('genre_id',)
 
     genre_id = models.AutoField(primary_key=True)
@@ -150,7 +149,7 @@ class Genre(models.Model, serializable):
 
 
 class SellerAccount(models.Model, serializable):
-    __columns__ = {'seller_id':int, 'storefront_name':str, 'date_created':date, 'user_id':int}
+    __columns__ = {'seller_id': int, 'storefront_name': str, 'date_created': date, 'user_id': int}
     __nullable_cols__ = ('seller_id', 'user_id')
 
     seller_id = models.AutoField(primary_key=True)
@@ -165,7 +164,7 @@ class SellerAccount(models.Model, serializable):
 
 
 class Song(models.Model, serializable):
-    __columns__ = {'song_id':int, 'title':str, 'length_minutes':int, 'length_seconds':int, 'song_lyrics_id':int}
+    __columns__ = {'song_id': int, 'title': str, 'length_minutes': int, 'length_seconds': int, 'song_lyrics_id': int}
     __nullable_cols__ = ('song_id', 'song_lyrics_id')
 
     song_id = models.AutoField(primary_key=True)
@@ -192,7 +191,7 @@ class SongGenreBridge(models.Model):
 
 
 class SongLyrics(models.Model, serializable):
-    __columns__ = {'song_lyrics_id':int, 'lyrics':str, 'song_id':int}
+    __columns__ = {'song_lyrics_id': int, 'lyrics': str, 'song_id': int}
     __nullable_cols__ = ('song_lyrics_id', 'song_id')
 
     song_lyrics_id = models.AutoField(primary_key=True)
@@ -206,7 +205,7 @@ class SongLyrics(models.Model, serializable):
 
 
 class ToBuyListing(models.Model, serializable):
-    __columns__ = {'to_buy_listing_id':int, 'max_accepting_price':str, 'date_posted':date, 'album_id':int, 'buyer_id':int}
+    __columns__ = {'to_buy_listing_id': int, 'max_accepting_price': str, 'date_posted': date, 'album_id': int, 'buyer_id': int}
     __nullable_cols__ = ('to_buy_listing_id',)
 
     to_buy_listing_id = models.AutoField(primary_key=True)
@@ -222,7 +221,7 @@ class ToBuyListing(models.Model, serializable):
 
 
 class ToSellListing(models.Model, serializable):
-    __columns__ = {'to_sell_listing_id':int, 'asking_price':str, 'date_posted':date, 'album_id':int, 'seller_id':int}
+    __columns__ = {'to_sell_listing_id': int, 'asking_price': str, 'date_posted': date, 'album_id': int, 'seller_id': int}
     __nullable_cols__ = ('to_sell_listing_id',)
 
     to_sell_listing_id = models.AutoField(primary_key=True)
@@ -238,8 +237,8 @@ class ToSellListing(models.Model, serializable):
 
 
 class User(models.Model, serializable):
-    __columns__ = {'user_id':int, 'user_name':str, 'first_name':str, 'last_name':str,
-                   'gender':('male','female','nonbinary'), 'date_joined':date, 'buyer_id':int, 'seller_id':int}
+    __columns__ = {'user_id': int, 'user_name': str, 'first_name': str, 'last_name': str,
+                   'gender': ('male','female','nonbinary'), 'date_joined': date, 'buyer_id': int, 'seller_id': int}
     __nullable_cols__ = ('user_id', 'buyer_id', 'seller_id')
 
     user_id = models.AutoField(primary_key=True)
@@ -262,7 +261,7 @@ class User(models.Model, serializable):
 
 
 class UserPassword(models.Model, serializable):
-    __columns__ = {'password_id':int, 'encrypted_password':str, 'user_id':int}
+    __columns__ = {'password_id': int, 'encrypted_password': str, 'user_id': int}
     __nullable_cols__ = ('password_id', 'user_id')
 
     password_id = models.AutoField(primary_key=True)

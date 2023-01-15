@@ -11,5 +11,3 @@ for model_class in (Album, AlbumGenreBridge, AlbumSongBridge, Artist, ArtistAlbu
                     ArtistSongBridge, BuyerAccount, Genre, SellerAccount, Song, SongGenreBridge, SongLyrics,
                     ToBuyListing, ToSellListing, User, UserPassword):
     admin.site.register(model_class)
-
-

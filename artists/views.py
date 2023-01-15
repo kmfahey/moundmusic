@@ -43,4 +43,3 @@ single_artist_genres = define_single_outer_model_all_of_inner_model_GET_POST_clo
 # GET,DELETE  /artists/<artist_id>/genres/<genre_id>
 single_artist_single_genre = define_single_outer_model_single_inner_model_GET_DELETE_closure(
                                      Artist, 'artist_id', Genre, 'genre_id', ArtistGenreBridge)
-

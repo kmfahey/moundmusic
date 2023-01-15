@@ -12,11 +12,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-from moundmusic.viewutils import  dispatch_funcs_by_method, validate_post_request, \
-        validate_bridged_table_column_value_pair, validate_input
-from moundmusic.viewutils import define_GET_POST_index_closure, define_single_model_GET_PATCH_DELETE_closure, \
-        define_single_outer_model_all_of_inner_model_GET_POST_closure, \
-        define_single_outer_model_single_inner_model_GET_DELETE_closure
+from moundmusic.viewutils import  dispatch_funcs_by_method, validate_post_request, validate_input
+from moundmusic.viewutils import define_GET_POST_index_closure, define_single_model_GET_PATCH_DELETE_closure
 
 from .models import User, UserPassword, BuyerAccount, SellerAccount, ToBuyListing, ToSellListing
 
@@ -30,7 +27,7 @@ def validate_user_password_input(request, user_id):
     try:
         json_content = json_loads(request.body)
     except JSONDecodeError:
-        return JsonResponse({'message':'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
     keys_found = set(json_content.keys())
     keys_found.remove('password')
     if keys_found:
@@ -51,8 +48,8 @@ def define_single_user_any_buyer_or_seller_account_closure(buyer_or_seller_accou
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             if getattr(user, buyer_or_seller_id_col_name) is None:
-                return JsonResponse({"message":f"user with user_id={outer_model_obj_id} has "
-                                                "no associated buyer account"},
+                return JsonResponse({"message": f"user with user_id={outer_model_obj_id} has "
+                                                 "no associated buyer account"},
                                     content_type="application/json", status=status.HTTP_404_NOT_FOUND)
             buyer_account = buyer_or_seller_account_class.objects.get(user_id=outer_model_obj_id)
             return JsonResponse(buyer_account.serialize(), status=status.HTTP_200_OK, safe=False)
@@ -66,9 +63,9 @@ def define_single_user_any_buyer_or_seller_account_closure(buyer_or_seller_accou
             buyer_or_seller_id = getattr(user, buyer_or_seller_id_col_name)
             kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
             if buyer_or_seller_id is not None:
-                return JsonResponse({"message":f"user with user_id={outer_model_obj_id} already has "
-                                               f"a {kind_of_account} account with "
-                                               f"{buyer_or_seller_id_col_name}={buyer_or_seller_id} associated"},
+                return JsonResponse({"message": f"user with user_id={outer_model_obj_id} already has "
+                                                f"a {kind_of_account} account with "
+                                                f"{buyer_or_seller_id_col_name}={buyer_or_seller_id} associated"},
                                     content_type="application/json", status=status.HTTP_404_NOT_FOUND)
             result = validate_post_request(request, buyer_or_seller_account_class)
             if isinstance(result, JsonResponse):
@@ -106,7 +103,7 @@ def define_single_user_single_buyer_or_seller_account_closure(buyer_or_seller_ac
     def single_user_single_buyer_or_seller_account(request, outer_model_obj_id, inner_model_obj_id):
         def _single_user_single_buyer_or_seller_account_GET():
             try:
-                user = User.objects.get(user_id=outer_model_obj_id)
+                User.objects.get(user_id=outer_model_obj_id)
             except User.DoesNotExist:
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
@@ -136,9 +133,9 @@ def define_single_user_single_buyer_or_seller_account_closure(buyer_or_seller_ac
             user.save()
             kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
             buyer_or_seller_account.delete()
-            return JsonResponse({"message":f"{kind_of_account} account with "
-                                           f"{buyer_or_seller_id_col_name}={inner_model_obj_id} associated with "
-                                           f"user with user_id={outer_model_obj_id} disassociated and deleted"},
+            return JsonResponse({"message": f"{kind_of_account} account with "
+                                            f"{buyer_or_seller_id_col_name}={inner_model_obj_id} associated with "
+                                            f"user with user_id={outer_model_obj_id} disassociated and deleted"},
                                 status=status.HTTP_200_OK)
 
         return dispatch_funcs_by_method((_single_user_single_buyer_or_seller_account_GET,
@@ -155,14 +152,13 @@ def define_single_user_single_buyer_or_seller_account_any_listing_closure(buyer_
     def single_user_single_buyer_or_seller_account_any_listing(request, outer_model_obj_id, inner_model_obj_id):
         def _single_user_single_buyer_or_seller_account_any_listing_GET():
             try:
-                user = User.objects.get(user_id=outer_model_obj_id)
+                User.objects.get(user_id=outer_model_obj_id)
             except User.DoesNotExist:
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
             try:
-                buyer_or_seller_account = buyer_or_seller_class.objects.get(
-                                              **{buyer_or_seller_id_col_name: inner_model_obj_id})
+                buyer_or_seller_class.objects.get(**{buyer_or_seller_id_col_name: inner_model_obj_id})
             except buyer_or_seller_class.DoesNotExist:
                 return JsonResponse({'message': f'no {kind_of_account} account with '
                                                 f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
@@ -174,7 +170,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_closure(buyer_
 
         def _single_user_single_buyer_or_seller_account_any_listing_POST():
             try:
-                user = User.objects.get(user_id=outer_model_obj_id)
+                User.objects.get(user_id=outer_model_obj_id)
             except User.DoesNotExist:
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
@@ -189,11 +185,11 @@ def define_single_user_single_buyer_or_seller_account_any_listing_closure(buyer_
             try:
                 json_content = json_loads(request.body)
             except JSONDecodeError:
-                return JsonResponse({'message':'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 json_content = validate_input(to_buy_or_to_sell_listing_class, json_content, all_nullable=True)
             except ValueError as exception:
-                return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
             if buyer_or_seller_class is BuyerAccount:
                 keys_required = set(("max_accepting_price", "album_id"))
             else:
@@ -233,14 +229,13 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
 
         def _single_user_single_buyer_or_seller_account_single_listing_GET():
             try:
-                user = User.objects.get(user_id=outer_model_obj_id)
+                User.objects.get(user_id=outer_model_obj_id)
             except User.DoesNotExist:
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
             try:
-                buyer_or_seller_account = buyer_or_seller_class.objects.get(
-                                              **{buyer_or_seller_id_col_name: inner_model_obj_id})
+                buyer_or_seller_class.objects.get(**{buyer_or_seller_id_col_name: inner_model_obj_id})
             except buyer_or_seller_class.DoesNotExist:
                 return JsonResponse({'message': f'no {kind_of_account} account with '
                                                 f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
@@ -257,14 +252,13 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
 
         def _single_user_single_buyer_or_seller_account_single_listing_DELETE():
             try:
-                user = User.objects.get(user_id=outer_model_obj_id)
+                User.objects.get(user_id=outer_model_obj_id)
             except User.DoesNotExist:
                 return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
             try:
-                buyer_or_seller_account = buyer_or_seller_class.objects.get(
-                                              **{buyer_or_seller_id_col_name: inner_model_obj_id})
+                buyer_or_seller_class.objects.get(**{buyer_or_seller_id_col_name: inner_model_obj_id})
             except buyer_or_seller_class.DoesNotExist:
                 return JsonResponse({'message': f'no {kind_of_account} account with '
                                                 f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
@@ -278,8 +272,8 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
                                                 f'{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             listing.delete()
-            return JsonResponse({"message":f"{kind_of_listing} with "
-                                           f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id} deleted"},
+            return JsonResponse({"message": f"{kind_of_listing} with "
+                                            f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id} deleted"},
                                 status=status.HTTP_200_OK)
 
         return dispatch_funcs_by_method((_single_user_single_buyer_or_seller_account_single_listing_GET,
@@ -326,13 +320,13 @@ def single_user_password_authenticate(request, model_obj_id):
     try:
         user_password = UserPassword.objects.get(user_id=model_obj_id)
     except UserPassword.DoesNotExist:
-        return JsonResponse({'message':f'user with user_id={model_obj_id} has no password set'},
+        return JsonResponse({'message': f'user with user_id={model_obj_id} has no password set'},
                             status=status.HTTP_404_NOT_FOUND)
     password_tocheck = json_content['password'].encode("utf-8")
     salt = bcrypt.gensalt()
     password_onrecord_enc = bytes(user_password.encrypted_password)
     outcome = bcrypt.checkpw(password_tocheck, password_onrecord_enc)
-    return JsonResponse({'authenticates':outcome}, status=status.HTTP_200_OK, safe=False)
+    return JsonResponse({'authenticates': outcome}, status=status.HTTP_200_OK, safe=False)
 
 
 # GET,POST          /users/<ID>/buyer_account

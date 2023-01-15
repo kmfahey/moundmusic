@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-from django.test import TestCase
-
 
 # Because the endpoint functions in artists.views are all implemented as
 # closures returned by define_*_closure() higher-order functions from

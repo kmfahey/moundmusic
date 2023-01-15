@@ -128,13 +128,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Django secret key file
+# Django secret key files
 django_secret_key.dat
 postgres_auth.dat
 
 .*.sw*
 .sw*
-
 *.pdf
 FIXME
 TESTME
+typescript

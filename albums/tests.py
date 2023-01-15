@@ -4,7 +4,7 @@ import pytest
 import re
 import random
 
-from json import loads as json_loads, JSONDecodeError
+from json import loads as json_loads
 
 from django.test.client import RequestFactory
 from django.http.response import JsonResponse
@@ -499,8 +499,6 @@ def test_single_album_single_song_DELETE_error_album_not_assoc_w_song():
     assert 'message' in json_content
     assert json_content['message'] == (f'album with album_id={album_id} not associated with '
                                        f'song with song_id={song_id}')
-#--
-
 
 
 @pytest.mark.django_db

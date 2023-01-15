@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-
 from django.apps import AppConfig
 
 
