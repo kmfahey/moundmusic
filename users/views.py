@@ -13,12 +13,12 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from moundmusic.viewutils import  dispatch_funcs_by_method, validate_post_request, \
-        validate_bridged_table_column_value_pair
+        validate_bridged_table_column_value_pair, validate_input
 from moundmusic.viewutils import define_GET_POST_index_closure, define_single_model_GET_PATCH_DELETE_closure, \
         define_single_outer_model_all_of_inner_model_GET_POST_closure, \
         define_single_outer_model_single_inner_model_GET_DELETE_closure
 
-from .models import User, UserPassword, BuyerAccount, SellerAccount
+from .models import User, UserPassword, BuyerAccount, SellerAccount, ToBuyListing, ToSellListing
 
 
 def validate_user_password_input(request, user_id):
@@ -202,3 +202,114 @@ single_user_any_seller_account = define_single_user_any_buyer_or_seller_account_
 
 # GET,DELETE        /users/##/seller_account/##
 single_user_single_seller_account = define_single_user_single_buyer_or_seller_account_closure(SellerAccount, 'seller_id')
+
+
+@api_view(['GET', 'POST'])
+def single_user_single_buyer_account_any_listing(request, outer_model_obj_id, inner_model_obj_id):
+    def _single_user_single_buyer_account_any_listing_GET():
+        try:
+            user = User.objects.get(user_id=outer_model_obj_id)
+        except User.DoesNotExist:
+            return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            buyer_account = BuyerAccount.objects.get(buyer_id=inner_model_obj_id)
+        except BuyerAccount.DoesNotExist:
+            return JsonResponse({'message': f'no buyer account with buyer_id={inner_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        to_buy_listings = ToBuyListing.objects.filter(buyer_id=inner_model_obj_id)
+        to_buy_listings_serialized = [to_buy_listing.serialize() for to_buy_listing in to_buy_listings]
+        return JsonResponse(to_buy_listings_serialized, status=status.HTTP_200_OK, safe=False)
+
+    def _single_user_single_buyer_account_any_listing_POST():
+        try:
+            user = User.objects.get(user_id=outer_model_obj_id)
+        except User.DoesNotExist:
+            return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            buyer_account = BuyerAccount.objects.get(buyer_id=inner_model_obj_id)
+        except BuyerAccount.DoesNotExist:
+            return JsonResponse({'message': f'no buyer account with buyer_id={inner_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            json_content = json_loads(request.body)
+        except JSONDecodeError:
+            return JsonResponse({'message':'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            json_content = validate_input(ToBuyListing, json_content, all_nullable=True)
+        except ValueError as exception:
+            return JsonResponse({'message':exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        keys_required = set(("max_accepting_price", "album_id"))
+        keys_found = set(json_content.keys())
+        diff = keys_required - keys_found
+        if diff:
+            prop_expr = ', '.join(f"'{property}'" for property in diff)
+            return JsonResponse({'message': f'json object missing required '
+                                            f'propert{"ies" if len(diff) > 1 else "y"}: {prop_expr}'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        diff = keys_found - keys_required
+        if diff:
+            prop_expr = ', '.join(f"'{property}'" for property in diff)
+            return JsonResponse({'message': f'unexpected propert{"ies" if len(diff) > 1 else "y"} '
+                                            f'in input: {prop_expr}'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        json_content['date_posted'] = date.today()
+        to_buy_listing = ToBuyListing(**json_content)
+        to_buy_listing.buyer_id = buyer_account.buyer_id
+        to_buy_listing.save()
+        return JsonResponse(to_buy_listing.serialize(), status=status.HTTP_200_OK)
+
+    return dispatch_funcs_by_method((_single_user_single_buyer_account_any_listing_GET,
+                                     _single_user_single_buyer_account_any_listing_POST), request)
+
+
+@api_view(['GET', 'DELETE'])
+def single_user_single_buyer_account_single_listing(request, outer_model_obj_id, inner_model_obj_id, third_model_obj_id):
+
+    def _single_user_single_buyer_account_single_listing_GET():
+        try:
+            user = User.objects.get(user_id=outer_model_obj_id)
+        except User.DoesNotExist:
+            return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            buyer_account = BuyerAccount.objects.get(buyer_id=inner_model_obj_id)
+        except BuyerAccount.DoesNotExist:
+            return JsonResponse({'message': f'no buyer account with buyer_id={inner_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            to_buy_listing = ToBuyListing.objects.get(to_buy_listing_id=third_model_obj_id)
+        except ToBuyListing.DoesNotExist:
+            return JsonResponse({'message': f'no to-buy listing with to_buy_listing_id={third_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse(to_buy_listing.serialize(), status=status.HTTP_200_OK, safe=False)
+
+    def _single_user_single_buyer_account_single_listing_DELETE():
+        try:
+            user = User.objects.get(user_id=outer_model_obj_id)
+        except User.DoesNotExist:
+            return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            buyer_account = BuyerAccount.objects.get(buyer_id=inner_model_obj_id)
+        except BuyerAccount.DoesNotExist:
+            return JsonResponse({'message': f'no buyer account with buyer_id={inner_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        try:
+            to_buy_listing = ToBuyListing.objects.get(to_buy_listing_id=third_model_obj_id)
+        except ToBuyListing.DoesNotExist:
+            return JsonResponse({'message': f'no to-buy listing with to_buy_listing_id={third_model_obj_id}'},
+                                status=status.HTTP_404_NOT_FOUND)
+        to_buy_listing.delete()
+        return JsonResponse({"message":f"to-buy listing with to_buy_listing_id={third_model_obj_id} deleted"},
+                            status=status.HTTP_200_OK)
+
+    return dispatch_funcs_by_method((_single_user_single_buyer_account_single_listing_GET,
+                                     _single_user_single_buyer_account_single_listing_DELETE), request)
+
+
+
+
+
+

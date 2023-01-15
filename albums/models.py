@@ -206,7 +206,7 @@ class SongLyrics(models.Model, serializable):
 
 
 class ToBuyListing(models.Model, serializable):
-    __columns__ = {'to_buy_listing_id':int, 'max_accepting_price':float, 'date_posted':date, 'album_id':int, 'buyer_id':int}
+    __columns__ = {'to_buy_listing_id':int, 'max_accepting_price':str, 'date_posted':date, 'album_id':int, 'buyer_id':int}
     __nullable_cols__ = ('to_buy_listing_id',)
 
     to_buy_listing_id = models.AutoField(primary_key=True)
@@ -222,7 +222,7 @@ class ToBuyListing(models.Model, serializable):
 
 
 class ToSellListing(models.Model, serializable):
-    __columns__ = {'to_sell_listing_id':int, 'asking_price':float, 'date_posted':date, 'album_id':int, 'seller_id':int}
+    __columns__ = {'to_sell_listing_id':int, 'asking_price':str, 'date_posted':date, 'album_id':int, 'seller_id':int}
     __nullable_cols__ = ('to_sell_listing_id',)
 
     to_sell_listing_id = models.AutoField(primary_key=True)
