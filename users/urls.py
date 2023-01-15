@@ -15,6 +15,6 @@ urlpatterns = [
     path('<int:outer_model_obj_id>/buyer_account/<int:inner_model_obj_id>/listings/<int:third_model_obj_id>', views.single_user_single_buyer_account_single_listing),
     path('<int:outer_model_obj_id>/seller_account', views.single_user_any_seller_account),
     path('<int:outer_model_obj_id>/seller_account/<int:inner_model_obj_id>', views.single_user_single_seller_account),
-#    path('<int:outer_model_obj_id>/seller_account/<int:inner_model_obj_id>/listings', views.single_user_single_seller_account_any_listing),
-#    path('<int:outer_model_obj_id>/seller_account/<int:inner_model_obj_id>/listings/<int:third_model_obj_id>', views.single_user_single_seller_account_single_listing),
+    path('<int:outer_model_obj_id>/seller_account/<int:inner_model_obj_id>/listings', views.single_user_single_seller_account_any_listing),
+    path('<int:outer_model_obj_id>/seller_account/<int:inner_model_obj_id>/listings/<int:third_model_obj_id>', views.single_user_single_seller_account_single_listing),
 ]
