@@ -1,0 +1,54 @@
+version: "3.8"
+volumes:
+  pgdata:
+    name: pgdata
+services:
+  moundmusic:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 moundmusic.wsgi:application
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:14.5
+    restart: always
+    environment:
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_HOST_AUTH_METHOD: trust
+        POSTGRES_DB: moundmusic
+        PGUSER: postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init_db.sh:/docker-entrypoint-initdb.d/1-initialize-database.sh
+      - ./moundmusic_init.sql:/docker-entrypoint-initdb.d/2-create-tables-etc.sql
+      - ./moundmusic_load.sql:/docker-entrypoint-initdb.d/3-populate-tables.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@example.com
+        PGADMIN_DEFAULT_PASSWORD: admin123
+        PGADMIN_LISTEN_PORT: 5433
+        PGADMIN_CONFIG_SERVER_MODE: "False"
+        PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+        PGADMIN_CONFIG_UPGRADE_CHECK_ENABLED: "False"
+    ports:
+      - "5433:5433"
+    depends_on:
+      - postgres

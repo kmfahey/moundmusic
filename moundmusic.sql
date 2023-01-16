@@ -1,45 +1,45 @@
 
-ALTER TABLE artist_album_bridge DROP CONSTRAINT fk_albums;
+ALTER TABLE artist_album_bridge DROP CONSTRAINT IF EXISTS fk_albums;
 
-ALTER TABLE artist_album_bridge DROP CONSTRAINT fk_artists;
+ALTER TABLE artist_album_bridge DROP CONSTRAINT IF EXISTS fk_artists;
 
-ALTER TABLE artist_song_bridge DROP CONSTRAINT fk_songs;
+ALTER TABLE artist_song_bridge DROP CONSTRAINT IF EXISTS fk_songs;
 
-ALTER TABLE artist_song_bridge DROP CONSTRAINT fk_artists;
+ALTER TABLE artist_song_bridge DROP CONSTRAINT IF EXISTS fk_artists;
 
-ALTER TABLE album_genre_bridge DROP CONSTRAINT fk_albums;
+ALTER TABLE album_genre_bridge DROP CONSTRAINT IF EXISTS fk_albums;
 
-ALTER TABLE album_genre_bridge DROP CONSTRAINT fk_genres;
+ALTER TABLE album_genre_bridge DROP CONSTRAINT IF EXISTS fk_genres;
 
-ALTER TABLE artist_genre_bridge DROP CONSTRAINT fk_artists;
+ALTER TABLE artist_genre_bridge DROP CONSTRAINT IF EXISTS fk_artists;
 
-ALTER TABLE artist_genre_bridge DROP CONSTRAINT fk_genres;
+ALTER TABLE artist_genre_bridge DROP CONSTRAINT IF EXISTS fk_genres;
 
-ALTER TABLE song_genre_bridge DROP CONSTRAINT fk_songs;
+ALTER TABLE song_genre_bridge DROP CONSTRAINT IF EXISTS fk_songs;
 
-ALTER TABLE song_genre_bridge DROP CONSTRAINT fk_genres;
+ALTER TABLE song_genre_bridge DROP CONSTRAINT IF EXISTS fk_genres;
 
-ALTER TABLE album_song_bridge DROP CONSTRAINT fk_albums;
+ALTER TABLE album_song_bridge DROP CONSTRAINT IF EXISTS fk_albums;
 
-ALTER TABLE album_song_bridge DROP CONSTRAINT fk_songs;
+ALTER TABLE album_song_bridge DROP CONSTRAINT IF EXISTS fk_songs;
 
-ALTER TABLE buyer_account DROP CONSTRAINT fk_users;
+ALTER TABLE buyer_account DROP CONSTRAINT IF EXISTS fk_users;
 
-ALTER TABLE song_lyrics DROP CONSTRAINT fk_songs;
+ALTER TABLE song_lyrics DROP CONSTRAINT IF EXISTS fk_songs;
 
-ALTER TABLE song DROP CONSTRAINT fk_song_lyrics;
+ALTER TABLE song DROP CONSTRAINT IF EXISTS fk_song_lyrics;
 
-ALTER TABLE seller_account DROP CONSTRAINT fk_users;
+ALTER TABLE seller_account DROP CONSTRAINT IF EXISTS fk_users;
 
-ALTER TABLE to_buy_listing DROP CONSTRAINT fk_buyer_accounts;
+ALTER TABLE to_buy_listing DROP CONSTRAINT IF EXISTS fk_buyer_accounts;
 
-ALTER TABLE to_buy_listing DROP CONSTRAINT fk_albums;
+ALTER TABLE to_buy_listing DROP CONSTRAINT IF EXISTS fk_albums;
 
-ALTER TABLE to_sell_listing DROP CONSTRAINT fk_albums;
+ALTER TABLE to_sell_listing DROP CONSTRAINT IF EXISTS fk_albums;
 
-ALTER TABLE to_sell_listing DROP CONSTRAINT fk_seller_accounts;
+ALTER TABLE to_sell_listing DROP CONSTRAINT IF EXISTS fk_seller_accounts;
 
-ALTER TABLE user_password DROP CONSTRAINT fk_users;
+ALTER TABLE user_password DROP CONSTRAINT IF EXISTS fk_users;
 
 
 DROP INDEX IF EXISTS idx_artist_artist_id;
@@ -112,10 +112,6 @@ DROP TABLE IF EXISTS album_song_bridge;
 
 DROP TYPE IF EXISTS gender_type;
 
-DROP TYPE IF EXISTS image_type;
-
-
-CREATE TYPE image_type AS ENUM('png', 'jpg', 'gif');
 
 CREATE TYPE gender_type AS ENUM('male', 'female', 'nonbinary');
 
@@ -187,8 +183,8 @@ CREATE TABLE to_buy_listing (
     to_buy_listing_id SERIAL PRIMARY KEY,
     max_accepting_price DECIMAL NOT NULL,
     date_posted DATE NOT NULL,
-    album_id INTEGER NOT NULL,
-    buyer_id INTEGER NOT NULL
+    album_id INTEGER,
+    buyer_id INTEGER
 );
 
 
@@ -196,8 +192,8 @@ CREATE TABLE to_sell_listing (
     to_sell_listing_id SERIAL PRIMARY KEY,
     asking_price DECIMAL NOT NULL,
     date_posted DATE NOT NULL,
-    album_id INTEGER NOT NULL,
-    seller_id INTEGER NOT NULL
+    album_id INTEGER,
+    seller_id INTEGER
 );
 
 
@@ -428,3 +424,4 @@ CREATE INDEX idx_song_genre_bridge_genre_id ON song_genre_bridge USING HASH(genr
 CREATE INDEX idx_album_song_bridge_album_id ON album_song_bridge USING HASH(album_id);
 
 CREATE INDEX idx_album_song_bridge_song_id ON album_song_bridge USING HASH(song_id);
+

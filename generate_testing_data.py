@@ -20,7 +20,7 @@ with open('postgres_auth.dat', 'r') as credentials:
 
 def main():
     faker_obj = faker.Faker()
-    with psycopg2.connect(user=username, password=password, host="127.0.0.1", port="5432", database="moundmusic") as connection:
+    with psycopg2.connect(user=username, password=password, host="localhost", port="5432", database="moundmusic") as connection:
         with connection.cursor() as cursor:
             table_seeder = Table_Seeder(faker_obj, cursor)
 
@@ -117,6 +117,7 @@ class Table_Seeder(object):
 
     def seed_album_table(self):
         self.album_ids_to_params = dict()
+        self.cursor.execute("UPDATE to_buy_listing SET album_id = NULL;")
         self.cursor.execute("DELETE FROM album;")
         album_params_list = list()
         for _ in range(100):
