@@ -37,7 +37,6 @@ class Album(models.Model, serializable):
 
     class Meta:
         managed = False
-        managed = False
         db_table = 'album'
         app_label = 'albums'
 

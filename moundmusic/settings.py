@@ -30,8 +30,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-with open(os.path.join(BASE_DIR, "django_secret_key.dat"), mode="r") as secret_key_file:
-    SECRET_KEY = next(secret_key_file).strip()
+# I realize that decouple is the more traditional solution to this problem.
+# However the decouple installable inside the docker container I'm using doesn't
+# export a config function. So I use this instead.
+
+with open(os.path.join(BASE_DIR, "django_secret_key.dat"), mode="r") as django_secret_file:
+    SECRET_KEY = next(django_secret_file).strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,9 +89,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'moundmusic.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+# I realize that decouple is the more traditional solution to this problem.
+# However the decouple installable inside the docker container I'm using doesn't
+# export a config function. So I use this instead.
 
 with open(os.path.join(BASE_DIR, "postgres_auth.dat"), mode="r") as postgres_auth_file:
     username = next(postgres_auth_file).strip()
@@ -99,8 +106,9 @@ DATABASES = {
         'NAME': 'moundmusic',
         'USER': username,
         'PASSWORD': password,
+        #'HOST': 'localhost',
         'HOST': 'postgres',
-        'PORT': '5432',
+        'PORT': 5432
     }
 }
 

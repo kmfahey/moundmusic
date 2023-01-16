@@ -13,7 +13,6 @@ services:
     image: postgres:14.5
     restart: always
     environment:
-    environment:
         POSTGRES_USER: postgres
         POSTGRES_HOST_AUTH_METHOD: trust
         PGUSER: postgres
@@ -24,9 +23,10 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./init_db.sh:/docker-entrypoint-initdb.d/1-initialize-database.sh
-      - ./moundmusic_init.sql:/docker-entrypoint-initdb.d/2-create-tables-etc.sql
-      - ./moundmusic_load.sql:/docker-entrypoint-initdb.d/3-populate-tables.sql
+      - ./postgres/init_db.sh:/docker-entrypoint-initdb.d/1-initialize-database.sh
+      - ./postgres/moundmusic_init.sql:/docker-entrypoint-initdb.d/2-create-tables-etc.sql
+      - ./postgres/moundmusic_load.sql:/docker-entrypoint-initdb.d/3-populate-tables.sql
+      - ./postgres/grant_all.sh:/docker-entrypoint-initdb.d/4-grant-all-on-all-tables.sh
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 5s
