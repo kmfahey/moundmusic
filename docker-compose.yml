@@ -1,7 +1,4 @@
 version: "3.8"
-volumes:
-  pgdata:
-    name: pgdata
 services:
   moundmusic:
     build: .
@@ -19,7 +16,6 @@ services:
     environment:
         POSTGRES_USER: postgres
         POSTGRES_HOST_AUTH_METHOD: trust
-        POSTGRES_DB: moundmusic
         PGUSER: postgres
     logging:
       options:
@@ -28,7 +24,6 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - pgdata:/var/lib/postgresql/data
       - ./init_db.sh:/docker-entrypoint-initdb.d/1-initialize-database.sh
       - ./moundmusic_init.sql:/docker-entrypoint-initdb.d/2-create-tables-etc.sql
       - ./moundmusic_load.sql:/docker-entrypoint-initdb.d/3-populate-tables.sql
