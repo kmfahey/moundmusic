@@ -96,7 +96,7 @@ WSGI_APPLICATION = 'moundmusic.wsgi.application'
 # However the decouple installable inside the docker container I'm using doesn't
 # export a config function. So I use this instead.
 
-with open(os.path.join(BASE_DIR, "postgres_auth.dat"), mode="r") as postgres_auth_file:
+with open(os.path.join(BASE_DIR, "postgres_credentials.dat"), mode="r") as postgres_auth_file:
     username = next(postgres_auth_file).strip()
     password = next(postgres_auth_file).strip()
 
@@ -106,8 +106,8 @@ DATABASES = {
         'NAME': 'moundmusic',
         'USER': username,
         'PASSWORD': password,
-        #'HOST': 'localhost',
-        'HOST': 'postgres',
+        'HOST': 'localhost',
+        #'HOST': 'postgres',
         'PORT': 5432
     }
 }

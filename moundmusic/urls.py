@@ -15,11 +15,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import include, path
 
+from moundmusic import views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', views.site_index),
+    # /admin isn't supported because this package shares model classes between
+    # apps, which makes it impossible to register them with django.contrib.admin
     path('albums', include('albums.urls')),
     path('albums/', include('albums.urls')),
     path('artists', include('artists.urls')),
