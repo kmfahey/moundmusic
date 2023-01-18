@@ -12,7 +12,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import status
 
-from moundmusic.viewutils import  dispatch_funcs_by_method, validate_post_request, validate_input
+from moundmusic.viewutils import dispatch_funcs_by_method, validate_post_request, validate_input
 from moundmusic.viewutils import define_GET_POST_index_closure, define_single_model_GET_PATCH_DELETE_closure
 
 from .models import User, UserPassword, BuyerAccount, SellerAccount, ToBuyListing, ToSellListing
@@ -223,7 +223,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
                                                                              buyer_or_seller_id_col_name,
                                                                              to_buy_or_to_sell_listing_class,
                                                                              to_buy_or_to_sell_listing_id_col_name):
-    @api_view(['GET', 'DELETE'])
+    @api_view(['GET', 'PATCH', 'DELETE'])
     def single_user_single_buyer_or_seller_account_single_listing(request, outer_model_obj_id, inner_model_obj_id,
                                                                   third_model_obj_id):
 
@@ -249,6 +249,39 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
                                                 f'{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             return JsonResponse(listing.serialize(), status=status.HTTP_200_OK, safe=False)
+
+        def _single_user_single_buyer_or_seller_account_single_listing_PATCH():
+            try:
+                User.objects.get(user_id=outer_model_obj_id)
+            except User.DoesNotExist:
+                return JsonResponse({'message': f'no user with user_id={outer_model_obj_id}'},
+                                    status=status.HTTP_404_NOT_FOUND)
+            kind_of_account = buyer_or_seller_id_col_name.split('_')[0]
+            try:
+                buyer_or_seller_class.objects.get(**{buyer_or_seller_id_col_name: inner_model_obj_id})
+            except buyer_or_seller_class.DoesNotExist:
+                return JsonResponse({'message': f'no {kind_of_account} account with '
+                                                f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
+                                    status=status.HTTP_404_NOT_FOUND)
+            kind_of_listing = "to-buy listing" if buyer_or_seller_class is BuyerAccount else "to-sell listing"
+            try:
+                listing = to_buy_or_to_sell_listing_class.objects.get(
+                              **{to_buy_or_to_sell_listing_id_col_name: third_model_obj_id})
+            except to_buy_or_to_sell_listing_class.DoesNotExist:
+                return JsonResponse({'message': f'no {kind_of_listing} with '
+                                                f'{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}'},
+                                    status=status.HTTP_404_NOT_FOUND)
+            result = validate_post_request(request, to_buy_or_to_sell_listing_class, all_nullable=True)
+            if isinstance(result, JsonResponse):
+                return result
+            json_content = result
+            if not len(json_content):
+                return JsonResponse({'message': f'PATCH request submitted with empty JSON object'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            for column in json_content:
+                setattr(listing, column, json_content[column])
+            listing.save()
+            return JsonResponse(listing.serialize(), status=status.HTTP_200_OK)
 
         def _single_user_single_buyer_or_seller_account_single_listing_DELETE():
             try:
@@ -276,7 +309,9 @@ def define_single_user_single_buyer_or_seller_account_single_listing_closure(buy
                                             f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id} deleted"},
                                 status=status.HTTP_200_OK)
 
+
         return dispatch_funcs_by_method((_single_user_single_buyer_or_seller_account_single_listing_GET,
+                                         _single_user_single_buyer_or_seller_account_single_listing_PATCH,
                                          _single_user_single_buyer_or_seller_account_single_listing_DELETE), request)
 
     return single_user_single_buyer_or_seller_account_single_listing
@@ -360,6 +395,7 @@ single_user_single_buyer_account_single_listing = define_single_user_single_buye
 single_user_single_seller_account_any_listing = define_single_user_single_buyer_or_seller_account_any_listing_closure(
                                                     SellerAccount, 'seller_id', ToSellListing)
 
+17
 
 # GET,DELETE       /users/<ID>/seller_account/<ID>/listings/<ID>
 single_user_single_seller_account_single_listing = define_single_user_single_buyer_or_seller_account_single_listing_closure(
