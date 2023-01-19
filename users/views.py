@@ -64,7 +64,9 @@ def single_user_password_set_password(request, model_obj_id):
     try:
         user_password = UserPassword.objects.get(user_id=model_obj_id)
     except UserPassword.DoesNotExist:
-        user_password = UserPassword(encrypted_password=encrypted_password)
+        max_password_id = max(user_password.password_id for user_password in UserPassword.objects.filter())
+        user_password = UserPassword(password_id=max_password_id + 1, encrypted_password=encrypted_password,
+                                     user_id=model_obj_id)
     else:
         user_password.encrypted_password = encrypted_password
     user_password.save()
