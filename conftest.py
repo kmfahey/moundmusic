@@ -6,7 +6,7 @@ import os
 from moundmusic import settings
 
 
-with open(os.path.join(settings.BASE_DIR, "postgres_auth.dat"), mode="r") as postgres_auth_file:
+with open(os.path.join(settings.BASE_DIR, "postgres_credentials.dat"), mode="r") as postgres_auth_file:
     username = next(postgres_auth_file).strip()
     password = next(postgres_auth_file).strip()
 

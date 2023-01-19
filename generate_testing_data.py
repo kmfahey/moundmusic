@@ -13,7 +13,7 @@ from psycopg2 import Error
 
 
 
-with open('postgres_auth.dat', 'r') as credentials:
+with open('postgres_credentials.dat', 'r') as credentials:
     username = next(credentials).strip()
     password = next(credentials).strip()
 

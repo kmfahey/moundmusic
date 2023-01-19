@@ -96,9 +96,9 @@ WSGI_APPLICATION = 'moundmusic.wsgi.application'
 # However the decouple installable inside the docker container I'm using doesn't
 # export a config function. So I use this instead.
 
-with open(os.path.join(BASE_DIR, "postgres_credentials.dat"), mode="r") as postgres_auth_file:
-    username = next(postgres_auth_file).strip()
-    password = next(postgres_auth_file).strip()
+with open(os.path.join(BASE_DIR, "postgres_credentials.dat"), mode="r") as postgres_credentials:
+    username = next(postgres_credentials).strip()
+    password = next(postgres_credentials).strip()
 
 DATABASES = {
     'default': {
@@ -141,7 +141,8 @@ TIME_ZONE = 'America/Los_Angeles'
 
 USE_I18N = True
 
-USE_L10N = True
+# This is deprecated apparently.
+#USE_L10N = True
 
 USE_TZ = True
 

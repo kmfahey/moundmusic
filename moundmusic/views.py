@@ -156,8 +156,7 @@ endpoints_help = {
             },
             "/songs/{{songId}}/lyrics": {
                 "GET": "Returns the song lyrics associated with the song with id {{songId}}.",
-                "POST": "Accepts a {{songLyricsId}} and associates the song lyrics "
-                        "with that id with the song with id {{songId}}."
+                "POST": "Adds the submitted object as new song lyrics associated with the song with id {{songId}}."
             },
             "/songs/{{songId}}/lyrics/{{lyricsId}}": {
                 "GET": "Returns the song lyrics with id {{lyricsId}} associated with the song with id {{songId}}.",

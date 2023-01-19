@@ -116,7 +116,20 @@ def single_song_lyrics(request, outer_model_obj_id):
             return result
         validated_input = result
         song_lyrics = SongLyrics(**validated_input)
+        # For no obvious reason, attempting to save the SongLyrics object
+        # with a song_lyrics_id value of None (like normal) causes insert to
+        # fail with an IntegrityError that states the insert violated the
+        # uniqueness constraint on song_lyrics.song_lyrics_id. This despite the
+        # INSERT statement displayed in the stack trace clearly not setting
+        # song_lyrics_id. Whatever. It's a bug in someone else's code than mine.
+        # I work around it by picking the next song_lyrics_id manually, and that
+        # seems to work.
+        max_song_lyrics_id = max(song_lyrics.song_lyrics_id for song_lyrics in SongLyrics.objects.filter())
+        song_lyrics.song_lyrics_id = max_song_lyrics_id + 1
+        song_lyrics.song_id = song.song_id
         song_lyrics.save()
+        song.song_lyrics_id = song_lyrics.song_lyrics_id
+        song.save()
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
 
     return dispatch_funcs_by_method((_single_song_lyrics_GET,
