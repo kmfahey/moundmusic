@@ -40,7 +40,7 @@ with open(os.path.join(BASE_DIR, "django_secret_key.dat"), mode="r") as django_s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

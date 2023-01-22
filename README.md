@@ -3,6 +3,16 @@
 This project is an exercise in building a REST API using django, completed as
 part of the NuCamp coding bootcamp.
 
+## Important
+
+To run, this package needs two secrets files that were not included.
+django will need its secret; create a file in the base directory named
+'django\_secret\_key.dat' containing only that string. postgres needs its
+username and password as well; create a file named 'postgres\_credentials.dat'
+with the username on the first line and the password on the second.
+
+## Background
+
 This project provides a RESTful interface to a postgres database for
 a discography website (akin to [discogs.com](https://discogs.com/) or
 [musicbrainz.org](https://musicbrainz.org/)), complete with a used CD
