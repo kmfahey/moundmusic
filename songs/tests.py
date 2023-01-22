@@ -3,8 +3,7 @@
 import pytest
 import re
 import random
-
-from json import loads as json_loads
+import json
 
 from django.test.client import RequestFactory
 from django.http.response import JsonResponse
@@ -26,7 +25,7 @@ def test_single_song_albums_GET():
     request = request_factory.get(f"/songs/{song_id}/albums")
     response = single_song_albums(request, song_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     sample_object = random.choice(json_content)
     assert 'disc_number' in sample_object and isinstance(sample_object['disc_number'], int)
@@ -50,7 +49,7 @@ def test_single_song_albums_GET_error_nonexistent_song_id():
     request = request_factory.get(f"/songs/{song_id}/albums")
     response = single_song_albums(request, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song with song_id={song_id}'
 
@@ -67,7 +66,7 @@ def test_single_song_single_album_GET():
     request = request_factory.get(f"/songs/{song_id}/albums/{album_id}")
     response = single_song_single_album(request, song_id, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert 'disc_number' in json_content and isinstance(json_content['disc_number'], int)
     assert 'track_number' in json_content and isinstance(json_content['track_number'], int)
@@ -95,7 +94,7 @@ def test_single_song_single_album_GET_error_nonexistent_song_id():
     response = single_song_single_album(request, song_id, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song with song_id={song_id}'
 
@@ -108,7 +107,7 @@ def test_single_song_lyrics_GET():
     request = request_factory.get(f"/songs/{song_id}/lyrics")
     response = single_song_lyrics(request, song_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert 'song_id' in json_content and isinstance(json_content['song_id'], int)
     assert 'song_lyrics_id' in json_content and isinstance(json_content['song_lyrics_id'], int)
@@ -126,7 +125,7 @@ def test_single_song_lyrics_GET_error_nonexistent_song_id():
     request = request_factory.get(f"/songs/{song_id}/lyrics")
     response = single_song_lyrics(request, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song with song_id={song_id}'
 
@@ -143,7 +142,7 @@ def test_single_song_lyrics_GET_error_nonexistent_song_lyrics_id():
     request = request_factory.get(f"/songs/{song_id}/lyrics")
     response = single_song_lyrics(request, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song lyrics associated with song with song_id={song_id}'
 
@@ -161,7 +160,7 @@ def test_single_song_song_lyrics_POST():
                                    content_type="application/json")
     response = single_song_lyrics(request, song_id)
     assert response.status_code == 200
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'lyrics' in json_content and json_content['lyrics'] == lyrics
     assert 'song_id' in json_content and json_content['song_id'] == song_id
     assert 'song_lyrics_id' in json_content and isinstance(json_content['song_lyrics_id'], int)
@@ -183,7 +182,7 @@ def test_single_song_song_lyrics_POST_error_nonexistent_song_id():
     response = single_song_lyrics(request, song_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no song with song_id={song_id}"
 
@@ -199,7 +198,7 @@ def test_single_song_song_lyrics_POST_song_already_has_song_lyrics_associated():
                                    content_type="application/json")
     response = single_song_lyrics(request, song_id)
     assert response.status_code == 409
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'song with song_id={song_id} already has song lyrics with '\
                                       f'song_lyrics_id={song.song_lyrics_id} associated with it'
@@ -213,7 +212,7 @@ def test_single_song_single_song_lyrics_GET():
     request = request_factory.get(f"/songs/{song_id}/song_lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert 'song_id' in json_content and json_content['song_id'] == song_id
     assert 'song_lyrics_id' in json_content and json_content['song_lyrics_id'] == song_lyrics_id
@@ -233,7 +232,7 @@ def test_single_song_single_lyrics_GET_error_nonexistent_song_id():
     request = request_factory.get(f"/songs/{song_id}/lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song with song_id={song_id}'
 
@@ -251,7 +250,7 @@ def test_single_song_single_lyrics_GET_error_nonexistent_song_lyrics_id():
     request = request_factory.get(f"/songs/{song_id}/lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song lyrics with song_lyrics_id={song_lyrics_id}'
 
@@ -264,7 +263,7 @@ def test_single_song_single_song_lyrics_DELETE():
     request = request_factory.delete(f"/songs/{song_id}/song_lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert response.status_code == 200
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'song lyrics with song_lyrics_id={song_lyrics_id} '
                                        f'associated with song with song_id={song_id} deleted')
@@ -288,7 +287,7 @@ def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_id():
     request = request_factory.delete(f"/songs/{song_id}/song_lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song with song_id={song_id}'
 
@@ -306,7 +305,7 @@ def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_lyrics_id(
     request = request_factory.delete(f"/songs/{song_id}/song_lyrics/{song_lyrics_id}")
     response = single_song_single_lyrics(request, song_id, song_lyrics_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song lyrics with song_lyrics_id={song_lyrics_id}'
 

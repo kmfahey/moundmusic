@@ -1,10 +1,9 @@
 #!/usr/bin/python
 
 import bcrypt
+import json
 
 from datetime import date
-
-from json import loads as json_loads, JSONDecodeError
 
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -29,8 +28,8 @@ def validate_user_password_input(request, user_id):
         return JsonResponse({'message': f'no user with user_id={user_id}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
-        json_content = json_loads(request.body)
-    except JSONDecodeError:
+        json_content = json.loads(request.body)
+    except json.JSONDecodeError:
         return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
     keys_found = set(json_content.keys())
     keys_found.remove('password')

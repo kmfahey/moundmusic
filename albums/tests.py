@@ -3,8 +3,7 @@
 import pytest
 import re
 import random
-
-from json import loads as json_loads
+import json
 
 from django.test.client import RequestFactory
 from django.http.response import JsonResponse
@@ -24,7 +23,7 @@ def test_index_GET():
     request = request_factory.get("/albums/")
     response = index(request)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, list)
     sample_album_jsobject = json_content[0]
@@ -48,7 +47,7 @@ def test_index_POST():
     request = request_factory.post("/albums/", data=new_album_dict, content_type="application/json")
     response = index(request)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, dict)
     try:
@@ -73,7 +72,7 @@ def test_index_POST_error_invalid_args():
     response = index(request)
     assert response.status_code == 400
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, dict)
     assert json_content['message'] == "value for 'title' is a string of zero length"
@@ -87,12 +86,13 @@ def test_single_album_GET():
         "number_of_tracks": 12,
         "release_date": "1998-01-01"
     }
-    album = Album(**new_album_dict)
+    max_album_id = max(album.album_id for album in Album.objects.filter())
+    album = Album(album_id=max_album_id, **new_album_dict)
     album.save()
     album_id = album.album_id
     request = request_factory.get(f"/albums/{album_id}")
     response = single_album(request, album_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert json_content["title"] == album.title
     assert json_content["number_of_discs"] == album.number_of_discs
     assert json_content["number_of_tracks"] == album.number_of_tracks
@@ -112,7 +112,7 @@ def test_single_album_GET_error_nonexistent_album_id():
     request = request_factory.get(f"/albums/{album_id}")
     response = single_album(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert "message" in json_content and json_content["message"] == f'no album with album_id={album_id}'
 
 
@@ -124,13 +124,14 @@ def test_single_album_PATCH():
         "number_of_tracks": 12,
         "release_date": "1998-01-01"
     }
-    album = Album(**new_album_dict)
+    max_album_id = max(album.album_id for album in Album.objects.filter())
+    album = Album(album_id=max_album_id + 1, **new_album_dict)
     album.save()
     album_id = album.album_id
     album_patch_dict = {"title": "Some Other Album"}
     request = request_factory.patch(f"/albums/{album_id}", data=album_patch_dict, content_type="application/json")
     response = single_album(request, album_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     album = Album.objects.get(album_id=album_id)
     assert json_content["title"] == "Some Other Album"
     assert json_content["number_of_discs"] == new_album_dict["number_of_discs"]
@@ -154,7 +155,7 @@ def test_single_album_PATCH_error_nonexistent_album_id():
     request = request_factory.patch(f"/albums/{album_id}", data=album_patch_dict, content_type="application/json")
     response = single_album(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert "message" in json_content and json_content["message"] == f'no album with album_id={album_id}'
 
 
@@ -168,7 +169,7 @@ def test_single_album_PATCH_error_invalid_args():
     response = single_album(request, album_id)
     assert response.status_code == 400
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, dict)
     assert json_content['message'] == "value for 'title' is a string of zero length"
@@ -180,7 +181,7 @@ def test_single_album_DELETE():
     album_id = album.album_id
     request = request_factory.delete(f"/albums/{album_id}")
     response = single_album(request, album_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'album with album_id={album_id} deleted'
     try:
@@ -201,7 +202,7 @@ def test_single_album_DELETE_error_nonexistent_album_id():
     request = request_factory.delete(f"/albums/{album_id}")
     response = single_album(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no album with album_id={album_id}'
 
@@ -214,7 +215,7 @@ def test_single_album_songs_GET():
     request = request_factory.get(f"/albums/{album_id}/songs")
     response = single_album_songs(request, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert "disc_1" in json_content
     disc_dict = json_content["disc_1"]
@@ -238,7 +239,7 @@ def test_single_album_songs_GET_error_nonexistent_album_id():
     request = request_factory.get(f"/albums/{album_id}/songs")
     response = single_album_songs(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no songs with album_id={album_id}'
 
@@ -255,7 +256,7 @@ def test_single_album_single_song_GET():
     request = request_factory.get(f"/albums/{album_id}/songs/{song_id}")
     response = single_album_single_song(request, album_id, song_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert 'song_id' in json_content and json_content['song_id'] == song_id
     assert 'title' in json_content and isinstance(json_content['title'], str)
@@ -280,7 +281,7 @@ def test_single_album_single_song_GET_error_nonexistent_album_id():
     response = single_album_single_song(request, album_id, song_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no album with album_id={album_id}'
 
@@ -293,7 +294,7 @@ def test_single_album_genres_GET():
     request = request_factory.get(f"/albums/{album_id}/genres")
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert isinstance(json_content, list)
     sample_genre_dict = random.choice(json_content)
     assert 'genre_id' in sample_genre_dict and isinstance(sample_genre_dict['genre_id'], int)
@@ -311,7 +312,7 @@ def test_single_album_genres_GET_error_nonexistent_album_id():
     request = request_factory.get(f"/albums/{album_id}/genres")
     response = single_album_genres(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no album with album_id={album_id}'
 
@@ -335,7 +336,7 @@ def test_single_album_genres_POST():
                                    content_type="application/json")
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, dict)
     assert 'genre_id' in json_content and json_content['genre_id'] == genre.genre_id
@@ -360,7 +361,7 @@ def test_single_album_genres_POST_error_nonexistent_album_id():
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no album with album_id={album_id}"
 
@@ -381,7 +382,7 @@ def test_single_album_genres_POST_error_nonexistent_genre_id():
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no genre with genre_id={genre_id}"
 
@@ -400,7 +401,7 @@ def test_single_album_genres_POST_error_bridge_row_already_exists():
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 400
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f"association between album with album_id={album_id} and "
                                        f"genre with genre_id={genre_id} already exists")
@@ -419,7 +420,7 @@ def test_single_album_genres_POST_error_invalid_args():
     response = single_album_genres(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 400
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == "unexpected property in input: 'foo'"
 
@@ -436,7 +437,7 @@ def test_single_album_single_song_DELETE():
     song_id = song.song_id
     request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
     response = single_album_single_song(request, album_id, song_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'association between album with album_id={album_id} '
                                        f'and song with song_id={song_id} deleted')
@@ -459,7 +460,7 @@ def test_single_album_single_song_DELETE_error_nonexistent_album_id():
     request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
     response = single_album_single_song(request, album_id, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no album with album_id={album_id}"
 
@@ -476,7 +477,7 @@ def test_single_album_single_song_DELETE_error_nonexistent_song_id():
     request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
     response = single_album_single_song(request, album_id, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no song with song_id={song_id}"
 
@@ -495,7 +496,7 @@ def test_single_album_single_song_DELETE_error_album_not_assoc_w_song():
     request = request_factory.delete(f"/albums/{album_id}/songs/{song_id}")
     response = single_album_single_song(request, album_id, song_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'album with album_id={album_id} not associated with '
                                        f'song with song_id={song_id}')
@@ -512,7 +513,7 @@ def test_single_album_single_genre_DELETE():
     genre_id = genre.genre_id
     request = request_factory.delete(f"/albums/{album_id}/genres/{genre_id}")
     response = single_album_single_genre(request, album_id, genre_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'association between album with album_id={album_id} '
                                        f'and genre with genre_id={genre_id} deleted')
@@ -535,7 +536,7 @@ def test_single_album_single_genre_DELETE_error_nonexistent_album_id():
     request = request_factory.delete(f"/albums/{album_id}/genres/{genre_id}")
     response = single_album_single_genre(request, album_id, genre_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no album with album_id={album_id}"
 
@@ -552,7 +553,7 @@ def test_single_album_single_genre_DELETE_error_nonexistent_genre_id():
     request = request_factory.delete(f"/albums/{album_id}/genres/{genre_id}")
     response = single_album_single_genre(request, album_id, genre_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no genre with genre_id={genre_id}"
 
@@ -571,7 +572,7 @@ def test_single_album_single_genre_DELETE_error_album_not_assoc_w_genre():
     request = request_factory.delete(f"/albums/{album_id}/genres/{genre_id}")
     response = single_album_single_genre(request, album_id, genre_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'album with album_id={album_id} not associated with '
                                        f'genre with genre_id={genre_id}')
@@ -585,7 +586,7 @@ def test_single_album_artists_GET():
     request = request_factory.get(f"/albums/{album_id}/artists")
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, list)
     sample_artist_dict = random.choice(json_content)
@@ -607,7 +608,7 @@ def test_single_album_artists_GET_error_nonexistent_album_id():
     request = request_factory.get(f"/albums/{album_id}/artists")
     response = single_album_artists(request, album_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no album with album_id={album_id}'
 
@@ -630,7 +631,7 @@ def test_single_album_artists_POST():
                                    content_type="application/json")
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert len(json_content)
     assert isinstance(json_content, dict)
     assert 'artist_id' in json_content and json_content['artist_id'] == artist.artist_id
@@ -658,7 +659,7 @@ def test_single_album_artists_POST_error_nonexistent_album_id():
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no album with album_id={album_id}"
 
@@ -679,7 +680,7 @@ def test_single_album_artists_POST_error_nonexistent_artist_id():
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no artist with artist_id={artist_id}"
 
@@ -701,7 +702,7 @@ def test_single_album_artists_POST_error_bridge_row_already_exists():
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 400
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f"association between album with album_id={album_id} and "
                                        f"artist with artist_id={artist_id} already exists")
@@ -720,7 +721,7 @@ def test_single_album_artists_POST_error_invalid_args():
     response = single_album_artists(request, album_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 400
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == "unexpected property in input: 'foo'"
 
@@ -736,7 +737,7 @@ def test_single_album_single_artist_DELETE():
     artist_id = artist.artist_id
     request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
     response = single_album_single_artist(request, album_id, artist_id)
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'association between album with album_id={album_id} '
                                        f'and artist with artist_id={artist_id} deleted')
@@ -759,7 +760,7 @@ def test_single_album_single_artist_DELETE_error_nonexistent_album_id():
     request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
     response = single_album_single_artist(request, album_id, artist_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no album with album_id={album_id}"
 
@@ -776,7 +777,7 @@ def test_single_album_single_artist_DELETE_error_nonexistent_artist_id():
     request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
     response = single_album_single_artist(request, album_id, artist_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f"no artist with artist_id={artist_id}"
 
@@ -795,7 +796,7 @@ def test_single_album_single_artist_DELETE_error_album_not_assoc_w_artist():
     request = request_factory.delete(f"/albums/{album_id}/artists/{artist_id}")
     response = single_album_single_artist(request, album_id, artist_id)
     assert response.status_code == 404
-    json_content = json_loads(response.content)
+    json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == (f'album with album_id={album_id} not associated '
                                        f'with artist with artist_id={artist_id}')

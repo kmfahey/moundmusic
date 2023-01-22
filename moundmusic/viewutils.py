@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
+import json
+
 from datetime import date
 
 from django.http import HttpResponse
 from django.http.response import JsonResponse
-
-from json import loads as json_loads, JSONDecodeError
 
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -67,7 +67,7 @@ def dispatch_funcs_by_method(functions, request):
 
 def validate_post_request(request, model_class, all_nullable=False):
     try:
-        posted_json = json_loads(request.body)
+        posted_json = json.loads(request.body)
     except JSONDecodeError:
         return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -85,7 +85,7 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
                                         f'{model_id_attr_name}={model_id_attr_val}'},
                             status=status.HTTP_404_NOT_FOUND)
     try:
-        posted_json = json_loads(request.body)
+        posted_json = json.loads(request.body)
     except JSONDecodeError as exception:
         return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
     if not len(posted_json):
@@ -142,7 +142,10 @@ def define_GET_POST_index_closure(model_class, model_id_attr_name):
                 return JsonResponse({'message': f'a new {model_class.__name__.lower()} object '
                                                 f'must not have a {model_id_attr_name} value'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            new_model_obj = model_class(**validated_args)
+            max_id_attr_value = max(getattr(row_obj, model_id_attr_name) for row_obj in model_class.objects.filter())
+            new_args = validated_args.copy()
+            new_args[model_id_attr_name] = max_id_attr_value + 1
+            new_model_obj = model_class(**new_args)
             new_model_obj.save()
             return JsonResponse(new_model_obj.serialize(), status=status.HTTP_201_CREATED)
 
@@ -223,7 +226,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                                 f'with {outer_model_id_attr_name}={outer_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             try:
-                posted_json = json_loads(request.body)
+                posted_json = json.loads(request.body)
             except JSONDecodeError as exception:
                 return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
             diff = set(posted_json.keys()) - set((inner_model_id_attr_name,))
@@ -251,7 +254,11 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                                 f'{inner_model_id_attr_name}={inner_model_obj_id} '
                                                  'already exists'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            bridge_row = bridge_class(**{outer_model_id_attr_name: outer_model_obj_id,
+            bridge_table_name = bridge_class._meta.db_table
+            bridge_table_id_col = f"{bridge_table_name}_id"
+            max_bridge_row_id = max(getattr(bridge_row, bridge_table_id_col) for bridge_row in bridge_class.objects.filter())
+            bridge_row = bridge_class(**{bridge_table_id_col: max_bridge_row_id + 1,
+                                         outer_model_id_attr_name: outer_model_obj_id,
                                          inner_model_id_attr_name: inner_model_obj_id})
             bridge_row.save()
             return JsonResponse(inner_model_obj.serialize(), status=status.HTTP_200_OK)
@@ -319,7 +326,12 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_sel
                 return JsonResponse({"message": f"user with user_id={outer_model_obj_id} has "
                                                  "no associated buyer account"},
                                     content_type="application/json", status=status.HTTP_404_NOT_FOUND)
-            buyer_account = buyer_or_seller_account_class.objects.get(user_id=outer_model_obj_id)
+            try:
+                buyer_account = buyer_or_seller_account_class.objects.get(user_id=outer_model_obj_id)
+            except buyer_or_seller_account_class.DoesNotExist:
+                return JsonResponse({"message": f"user with user_id={outer_model_obj_id} has "
+                                                 "no associated buyer account"},
+                                    content_type="application/json", status=status.HTTP_404_NOT_FOUND)
             return JsonResponse(buyer_account.serialize(), status=status.HTTP_200_OK, safe=False)
 
         def _single_user_any_buyer_or_seller_account_POST():
@@ -451,7 +463,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                                                 f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             try:
-                json_content = json_loads(request.body)
+                json_content = json.loads(request.body)
             except JSONDecodeError:
                 return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
             try:
