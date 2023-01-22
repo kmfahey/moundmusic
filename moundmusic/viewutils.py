@@ -10,7 +10,7 @@ from django.http.response import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from users.models import User, BuyerAccount
+from users.models import User, BuyerAccount, ToBuyListing
 
 def validate_input(model_class, input_argd, all_nullable=False):
     validatedDict = dict()
@@ -346,7 +346,7 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_sel
                 return JsonResponse({"message": f"user with user_id={outer_model_obj_id} already has "
                                                 f"a {kind_of_account} account with "
                                                 f"{buyer_or_seller_id_col_name}={buyer_or_seller_id} associated"},
-                                    content_type="application/json", status=status.HTTP_404_NOT_FOUND)
+                                    content_type="application/json", status=status.HTTP_409_CONFLICT)
             result = validate_post_request(request, buyer_or_seller_account_class)
             if isinstance(result, JsonResponse):
                 return result
@@ -363,7 +363,11 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_sel
                                     status=status.HTTP_400_BAD_REQUEST)
             json_content['date_created'] = date.today()
             json_content['user_id'] = user.user_id
-            buyer_or_seller_account = buyer_or_seller_account_class(**json_content)
+            max_buyer_or_seller_account_id = max(getattr(buyer_or_seller_account, buyer_or_seller_id_col_name)
+                                                 for buyer_or_seller_account in buyer_or_seller_account_class.objects.filter())
+            new_args = json_content.copy()
+            new_args[buyer_or_seller_id_col_name] = max_buyer_or_seller_account_id + 1
+            buyer_or_seller_account = buyer_or_seller_account_class(**new_args)
             buyer_or_seller_account.user_id = user.user_id
             buyer_or_seller_account.save()
             setattr(user, buyer_or_seller_id_col_name, getattr(buyer_or_seller_account, buyer_or_seller_id_col_name))
@@ -392,7 +396,7 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(buyer_o
                                               **{buyer_or_seller_id_col_name: inner_model_obj_id})
             except buyer_or_seller_account_class.DoesNotExist:
                 return JsonResponse({'message': f"no buyer account with "
-                                                f"{buyer_or_seller_id_col_name}={outer_model_obj_id}"},
+                                                f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"},
                                     status=status.HTTP_404_NOT_FOUND)
             return JsonResponse(buyer_or_seller_account.serialize(), status=status.HTTP_200_OK, safe=False)
 
@@ -406,8 +410,8 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(buyer_o
                 buyer_or_seller_account = buyer_or_seller_account_class.objects.get(
                                               **{buyer_or_seller_id_col_name: inner_model_obj_id})
             except buyer_or_seller_account_class.DoesNotExist:
-                return JsonResponse({'message': f'no buyer accout with '
-                                                f'{buyer_or_seller_id_col_name}={outer_model_obj_id}'},
+                return JsonResponse({'message': f'no buyer account with '
+                                                f'{buyer_or_seller_id_col_name}={inner_model_obj_id}'},
                                     status=status.HTTP_404_NOT_FOUND)
             setattr(user, buyer_or_seller_id_col_name, None)
             user.save()
@@ -487,8 +491,17 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                 return JsonResponse({'message': f'unexpected propert{"ies" if len(diff) > 1 else "y"} '
                                                 f'in input: {prop_expr}'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            json_content['date_posted'] = date.today()
-            listing = to_buy_or_to_sell_listing_class(**json_content)
+            pricing_key = "max_accepting_price" if buyer_or_seller_class is BuyerAccount else "asking_price"
+            pricing_value = json_content[pricing_key]
+            if len(pricing_value.split('.')[1]) > 2:
+                return JsonResponse({'message': f"error in input, property '{pricing_key}': must have only two decimal places"},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            new_args = json_content.copy()
+            listing_id_col_name = "to_buy_listing_id" if to_buy_or_to_sell_listing_class is ToBuyListing else "to_sell_listing_id"
+            max_listing_id = max(getattr(listing, listing_id_col_name) for listing in to_buy_or_to_sell_listing_class.objects.filter())
+            new_args[listing_id_col_name] = max_listing_id + 1
+            new_args['date_posted'] = date.today()
+            listing = to_buy_or_to_sell_listing_class(**new_args)
             setattr(listing, buyer_or_seller_id_col_name, getattr(buyer_or_seller_account, buyer_or_seller_id_col_name))
             listing.save()
             return JsonResponse(listing.serialize(), status=status.HTTP_200_OK)
