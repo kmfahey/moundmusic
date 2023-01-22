@@ -1,19 +1,23 @@
 #!/usr/bin/python3
 
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-# Feel free to rename the models, but don't rename db_table values or field names.
-
 import codecs
 
 from datetime import date
 from django.db import models
 
 
+# IMPORTANT:
+# 
+# The django table model classes are defined in this file for the only time.
+# The other apps reuse these model classes by importing them and individually
+# re-setting the {model_class}._meta.app_label value to the name of their own
+# app.
 
+
+# This class is multi-inherited from by a model class if its objects need to
+# be able to convert their attribute/value pairs to a dict. This is used by
+# the JSON interface to interpolate a python object into a JSON object when
+# returning a value at a REST endpoint.
 class serializable(object):
     def serialize(self):
         serialization = dict()
@@ -26,7 +30,18 @@ class serializable(object):
 
 
 class Album(models.Model, serializable):
+    # Every model that inherits from serialiable implements this
+    # double-underscore value so that the serialize() method
+    # knows what to serialize. Moreover, it's also used by
+    # moundmusic.viewutils.validate_input(), q.v. (This is why it's a dict.)
+    # The values of the dict are the expected data types of each column, which
+    # validate_input() uses to determine which tests to apply.
     __columns__ = {'album_id': int, 'title': str, 'number_of_discs': int, 'number_of_tracks': int, 'release_date': date}
+
+    # This double-underscore value is also used by
+    # moundmusic.viewutils.validate_input(). That utility is used when
+    # evaluating POST input content; this tuple indicates which input properties
+    # may be skipped or have null values.
     __nullable_cols__ = ('album_id',)
 
     album_id = models.AutoField(primary_key=True)
@@ -66,6 +81,10 @@ class AlbumSongBridge(models.Model):
 
 
 class Artist(models.Model, serializable):
+    # The value for 'gender' in this value is special; the 'gender' column is
+    # a postgres ENUM type with values ('male', 'female', 'nonbinary'). When
+    # moundmusic.viewutils.validate_input() encounters this key value, it tests
+    # the input property value whether it's in that tuple.
     __columns__ = {'artist_id': int, 'first_name': str, 'last_name': str, 'gender': ('male','female','nonbinary'),
                    'birth_date': date}
     __nullable_cols__ = ()
@@ -73,6 +92,7 @@ class Artist(models.Model, serializable):
     artist_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
+
     # The column below is actually a ENUM('male', 'female', 'nonbinary')
     # postgresql custom type, but django can't handle those. So long as it's
     # only ever set to (png|jpg|gif) there won't be any problems leaving it as a
@@ -244,6 +264,7 @@ class User(models.Model, serializable):
     user_name = models.CharField(max_length=16)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
+
     # The column below is actually a ENUM('male', 'female', 'nonbinary')
     # postgresql custom type, but django can't handle those. So long as it's
     # only ever set to (png|jpg|gif) there won't be any problems leaving it as a

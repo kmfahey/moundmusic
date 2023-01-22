@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view
 
 from users.models import User, BuyerAccount, ToBuyListing
 
+
 def validate_input(model_class, input_argd, all_nullable=False):
     validatedDict = dict()
     diff = set(input_argd.keys()) - set(model_class.__columns__)
@@ -87,7 +88,8 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
     try:
         posted_json = json.loads(request.body)
     except JSONDecodeError as exception:
-        return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'message': exception.args[0]},
+                            status=status.HTTP_400_BAD_REQUEST)
     if not len(posted_json):
         return JsonResponse({'message': 'empty JSON object'}, status=status.HTTP_400_BAD_REQUEST)
     try:
@@ -228,7 +230,8 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
             try:
                 posted_json = json.loads(request.body)
             except JSONDecodeError as exception:
-                return JsonResponse({'message': exception.args[0]}, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'message': exception.args[0]},
+                                    status=status.HTTP_400_BAD_REQUEST)
             diff = set(posted_json.keys()) - set((inner_model_id_attr_name,))
             if diff:
                 prop_expr = ', '.join(f"'{property}'" for property in diff)
@@ -256,7 +259,8 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                     status=status.HTTP_400_BAD_REQUEST)
             bridge_table_name = bridge_class._meta.db_table
             bridge_table_id_col = f"{bridge_table_name}_id"
-            max_bridge_row_id = max(getattr(bridge_row, bridge_table_id_col) for bridge_row in bridge_class.objects.filter())
+            max_bridge_row_id = max(getattr(bridge_row, bridge_table_id_col)
+                                    for bridge_row in bridge_class.objects.filter())
             bridge_row = bridge_class(**{bridge_table_id_col: max_bridge_row_id + 1,
                                          outer_model_id_attr_name: outer_model_obj_id,
                                          inner_model_id_attr_name: inner_model_obj_id})
@@ -267,6 +271,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(outer_model_cl
                                           _single_outer_model_all_of_inner_model_POST), request)
 
     return single_outer_model_all_of_inner_model
+
 
 def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_class, outer_model_id_attr_name,
                                                                     inner_model_class, inner_model_id_attr_name,
@@ -313,7 +318,8 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(outer_model_
     return single_outer_model_single_inner_model
 
 
-def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_seller_account_class, buyer_or_seller_id_col_name):
+def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_seller_account_class,
+                                                                    buyer_or_seller_id_col_name):
     @api_view(['GET', 'POST'])
     def single_user_any_buyer_or_seller_account(request, outer_model_obj_id):
         def _single_user_any_buyer_or_seller_account_GET():
@@ -364,7 +370,8 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(buyer_or_sel
             json_content['date_created'] = date.today()
             json_content['user_id'] = user.user_id
             max_buyer_or_seller_account_id = max(getattr(buyer_or_seller_account, buyer_or_seller_id_col_name)
-                                                 for buyer_or_seller_account in buyer_or_seller_account_class.objects.filter())
+                                                 for buyer_or_seller_account
+                                                 in buyer_or_seller_account_class.objects.filter())
             new_args = json_content.copy()
             new_args[buyer_or_seller_id_col_name] = max_buyer_or_seller_account_id + 1
             buyer_or_seller_account = buyer_or_seller_account_class(**new_args)
@@ -468,7 +475,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                                     status=status.HTTP_404_NOT_FOUND)
             try:
                 json_content = json.loads(request.body)
-            except JSONDecodeError:
+            except json.JSONDecodeError:
                 return JsonResponse({'message': 'JSON did not parse'}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 json_content = validate_input(to_buy_or_to_sell_listing_class, json_content, all_nullable=True)
@@ -494,11 +501,16 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
             pricing_key = "max_accepting_price" if buyer_or_seller_class is BuyerAccount else "asking_price"
             pricing_value = json_content[pricing_key]
             if len(pricing_value.split('.')[1]) > 2:
-                return JsonResponse({'message': f"error in input, property '{pricing_key}': must have only two decimal places"},
+                return JsonResponse({'message': f"error in input, property '{pricing_key}': "
+                                                 "must have only two decimal places"},
                                     status=status.HTTP_400_BAD_REQUEST)
             new_args = json_content.copy()
-            listing_id_col_name = "to_buy_listing_id" if to_buy_or_to_sell_listing_class is ToBuyListing else "to_sell_listing_id"
-            max_listing_id = max(getattr(listing, listing_id_col_name) for listing in to_buy_or_to_sell_listing_class.objects.filter())
+            if to_buy_or_to_sell_listing_class is ToBuyListing:
+                listing_id_col_name = "to_buy_listing_id" 
+            else:
+                listing_id_col_name = "to_sell_listing_id"
+            max_listing_id = max(getattr(listing, listing_id_col_name)
+                                 for listing in to_buy_or_to_sell_listing_class.objects.filter())
             new_args[listing_id_col_name] = max_listing_id + 1
             new_args['date_posted'] = date.today()
             listing = to_buy_or_to_sell_listing_class(**new_args)
@@ -512,10 +524,9 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
     return single_user_single_buyer_or_seller_account_any_listing
 
 
-def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure(buyer_or_seller_class,
-                                                                                              buyer_or_seller_id_col_name,
-                                                                                              to_buy_or_to_sell_listing_class,
-                                                                                              to_buy_or_to_sell_listing_id_col_name):
+def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure(
+        buyer_or_seller_class, buyer_or_seller_id_col_name, to_buy_or_to_sell_listing_class,
+        to_buy_or_to_sell_listing_id_col_name):
     @api_view(['GET', 'PATCH', 'DELETE'])
     def single_user_single_buyer_or_seller_account_single_listing(request, outer_model_obj_id, inner_model_obj_id,
                                                                   third_model_obj_id):
@@ -569,7 +580,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return result
             json_content = result
             if not len(json_content):
-                return JsonResponse({'message': f'PATCH request submitted with empty JSON object'},
+                return JsonResponse({'message': 'PATCH request submitted with empty JSON object'},
                                     status=status.HTTP_400_BAD_REQUEST)
             for column in json_content:
                 setattr(listing, column, json_content[column])
@@ -602,10 +613,8 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                                             f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id} deleted"},
                                 status=status.HTTP_200_OK)
 
-
         return dispatch_funcs_by_method((_single_user_single_buyer_or_seller_account_single_listing_GET,
                                          _single_user_single_buyer_or_seller_account_single_listing_PATCH,
                                          _single_user_single_buyer_or_seller_account_single_listing_DELETE), request)
 
     return single_user_single_buyer_or_seller_account_single_listing
-

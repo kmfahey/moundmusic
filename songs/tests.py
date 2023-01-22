@@ -35,7 +35,8 @@ def test_single_song_albums_GET():
     assert 'title' in album_object and isinstance(album_object['title'], str)
     assert 'number_of_tracks' in album_object and isinstance(album_object['number_of_tracks'], int)
     assert 'number_of_discs' in album_object and isinstance(album_object['number_of_discs'], int)
-    assert 'release_date' in album_object and isinstance(album_object['release_date'], str) and matches_date_isoformat(album_object['release_date'])
+    assert 'release_date' in album_object and isinstance(album_object['release_date'], str)\
+            and matches_date_isoformat(album_object['release_date'])
 
 
 @pytest.mark.django_db
@@ -75,7 +76,8 @@ def test_single_song_single_album_GET():
     assert 'title' in album_object and isinstance(album_object['title'], str)
     assert 'number_of_tracks' in album_object and isinstance(album_object['number_of_tracks'], int)
     assert 'number_of_discs' in album_object and isinstance(album_object['number_of_discs'], int)
-    assert 'release_date' in album_object and isinstance(album_object['release_date'], str) and matches_date_isoformat(album_object['release_date'])
+    assert 'release_date' in album_object and isinstance(album_object['release_date'], str)\
+            and matches_date_isoformat(album_object['release_date'])
 
 
 @pytest.mark.django_db
@@ -308,5 +310,3 @@ def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_lyrics_id(
     json_content = json.loads(response.content)
     assert 'message' in json_content
     assert json_content['message'] == f'no song lyrics with song_lyrics_id={song_lyrics_id}'
-
-

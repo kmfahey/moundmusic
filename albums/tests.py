@@ -425,7 +425,6 @@ def test_single_album_genres_POST_error_invalid_args():
     assert json_content['message'] == "unexpected property in input: 'foo'"
 
 
-#--
 @pytest.mark.django_db
 def test_single_album_single_song_DELETE():
     albums = Album.objects.filter()

@@ -199,10 +199,11 @@ endpoints_help = {
             "/users/{{userId}}/buyer_account/{{buyerAccountId}}/listings/{{toBuyListingId}}": {
                 "GET": "Returns the to-buy listing with id {{toBuyListingId}} associated with the buyer account "
                        "with id {{buyerAccountId}} associated with the user with id {{userId}}.",
-                "PATCH": "Updates the to-buy listing with id {{toBuyListingId}} associated with the buyer account with id "
-                         "{{buyerAccountId}} associated with the user with id {{userId}} according to the data submitted.",
-                "DELETE": "Deletes the to-buy listing with id {{toBuyListingId}} associated with the buyer account listing "
-                          "with id {{toBuyListingId}} associated with the user with id {{userId}}."
+                "PATCH": "Updates the to-buy listing with id {{toBuyListingId}} associated with the buyer account "
+                         "with id {{buyerAccountId}} associated with the user with id {{userId}} according to the "
+                         "data submitted.",
+                "DELETE": "Deletes the to-buy listing with id {{toBuyListingId}} associated with the buyer account "
+                          "listing with id {{toBuyListingId}} associated with the user with id {{userId}}."
             },
             "/users/{{userId}}/seller_account": {
                 "GET": "Returns the seller account associated with the user with id {{userId}}.",
@@ -224,10 +225,11 @@ endpoints_help = {
             "/users/{{userId}}/seller_account/{{sellerAccountId}}/listings/{{toSellListingId}}": {
                 "GET": "Returns the to-sell listing with id {{toSellListingId}} associated with the seller account "
                        "with id {{sellerAccountId}} associated with the user with id {{userId}}.",
-                "PATCH": "Updates the to-sell listing with id {{toSellListingId}} associated with the seller account with "
-                         "id {{sellerAccountId}} associated with the user with id {{userId}} according to the data submitted.",
-                "DELETE": "Deletes the to-sell listing with id {{toSellListingId}} associated with the seller account with "
-                          "id {{sellerAccountId}} associated with the user with id {{userId}}."
+                "PATCH": "Updates the to-sell listing with id {{toSellListingId}} associated with the seller account "
+                         "with id {{sellerAccountId}} associated with the user with id {{userId}} according to the "
+                         "data submitted.",
+                "DELETE": "Deletes the to-sell listing with id {{toSellListingId}} associated with the seller account "
+                          "with id {{sellerAccountId}} associated with the user with id {{userId}}."
             }
         }
     }

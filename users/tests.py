@@ -23,13 +23,15 @@ matches_date_isoformat = lambda strval: bool(re.match(r"^\d{4}-\d{2}-\d{2}$", st
 
 matches_2plc_decimal_format = lambda strval: bool(re.match(r"^\d+\.\d{1,2}$", strval))
 
+
 @pytest.mark.django_db
 def test_single_user_password_set_password_POST():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
     password = "password123"
-    request = request_factory.post(f"/users/{user_id}/password", data={"password":password}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password", data={"password": password},
+                                   content_type="application/json")
     response = single_user_password_set_password(request, user_id)
     assert response.status_code == 200
     assert isinstance(response, JsonResponse)
@@ -51,7 +53,8 @@ def test_single_user_password_set_password_POST_error_nonexistent_user_id():
         if user_id not in user_ids:
             break
     password = "password123"
-    request = request_factory.post(f"/users/{user_id}/password", data={"password":password}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password", data={"password": password},
+                                   content_type="application/json")
     response = single_user_password_set_password(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
@@ -65,12 +68,13 @@ def test_single_user_password_set_password_POST_error_extra_properties():
     user = random.choice(users)
     user_id = user.user_id
     password = "password123"
-    request = request_factory.post(f"/users/{user_id}/password", data={"password":password, "foo":"bar"}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password", data={"password": password, "foo": "bar"},
+                                   content_type="application/json")
     response = single_user_password_set_password(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 400
     json_content = json.loads(response.content)
-    assert "message" in json_content and json_content["message"] == f"unexpected property in input: 'foo'"
+    assert "message" in json_content and json_content["message"] == "unexpected property in input: 'foo'"
 
 
 @pytest.mark.django_db
@@ -81,7 +85,8 @@ def test_single_user_password_set_password_POST_conditional_user_has_no_password
     user_password = UserPassword.objects.get(user_id=user_id)
     user_password.delete()
     password = "password123"
-    request = request_factory.post(f"/users/{user_id}/password", data={"password":password}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password", data={"password": password},
+                                   content_type="application/json")
     response = single_user_password_set_password(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
@@ -104,7 +109,8 @@ def test_single_user_password_authenticate_POST():
     salt = bcrypt.gensalt()
     user_password.encrypted_password = bcrypt.hashpw(password.encode("utf-8"), salt)
     user_password.save()
-    request = request_factory.post(f"/users/{user_id}/password/authenticate", data={"password":password}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password/authenticate", data={"password": password},
+                                   content_type="application/json")
     response = single_user_password_authenticate(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
@@ -120,7 +126,8 @@ def test_single_user_password_authenticate_POST_error_no_password_set():
     user_password = UserPassword.objects.get(user_id=user_id)
     user_password.delete()
     password = "password123"
-    request = request_factory.post(f"/users/{user_id}/password/authenticate", data={"password":password}, content_type="application/json")
+    request = request_factory.post(f"/users/{user_id}/password/authenticate", data={"password": password},
+                                   content_type="application/json")
     response = single_user_password_authenticate(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
@@ -140,9 +147,6 @@ def test_single_user_any_buyer_account_GET():
     response = single_user_any_buyer_account(request, user_id)
     assert isinstance(response, JsonResponse)
     json_content = json.loads(response.content)
-    if response.status_code == 404:
-        content = dict(user_id=user_id, buyer_id=buyer_id)
-        assert content == json_content
     assert response.status_code == 200
     assert 'buyer_id' in json_content and isinstance(json_content['buyer_id'], int)
     assert 'postboard_name' in json_content and isinstance(json_content['postboard_name'], str)
@@ -188,8 +192,9 @@ def test_single_user_any_buyer_account_POST():
     users = User.objects.filter(buyer_id__isnull=True)
     user = random.choice(users)
     user_id = user.user_id
-    new_buyer_acct_args = {"postboard_name":"A Postboard"}
-    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args, content_type="application/json")
+    new_buyer_acct_args = {"postboard_name": "A Postboard"}
+    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args,
+                                   content_type="application/json")
     response = single_user_any_buyer_account(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
@@ -209,8 +214,9 @@ def test_single_user_any_buyer_account_POST_error_nonexistent_user_id():
         user_id = random.randint(1, 9999)
         if user_id not in user_ids:
             break
-    new_buyer_acct_args = {"postboard_name":"A Postboard"}
-    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args, content_type="application/json")
+    new_buyer_acct_args = {"postboard_name": "A Postboard"}
+    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args,
+                                   content_type="application/json")
     response = single_user_any_buyer_account(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
@@ -223,8 +229,9 @@ def test_single_user_any_buyer_account_POST_error_user_already_has_a_buyer_accou
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
-    new_buyer_acct_args = {"postboard_name":"A Postboard"}
-    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args, content_type="application/json")
+    new_buyer_acct_args = {"postboard_name": "A Postboard"}
+    request = request_factory.post(f"/users/{user_id}/buyer_account", data=new_buyer_acct_args,
+                                   content_type="application/json")
     response = single_user_any_buyer_account(request, user_id)
     assert isinstance(response, JsonResponse)
     assert response.status_code == 409
@@ -296,9 +303,9 @@ def test_single_user_single_buyer_account_DELETE():
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
     json_content = json.loads(response.content)
-    assert "message" in json_content and json_content["message"] == f"buyer account with buyer_id={buyer_id} associated"\
-                                                                    f" with user with user_id={user_id} disassociated "\
-                                                                     "and deleted"
+    assert "message" in json_content and json_content["message"] == \
+            f"buyer account with buyer_id={buyer_id} associated with user with user_id={user_id} "\
+             "disassociated and deleted"
 
 
 @pytest.mark.django_db
@@ -400,7 +407,7 @@ def test_single_user_single_buyer_account_any_listing_POST():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
-    max_accepting_price = round(1.0 + random.randint(0,400)/100, 2)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100, 2)
     new_listing_args = dict(max_accepting_price=str(max_accepting_price), album_id=album_id)
     request = request_factory.post(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=new_listing_args,
                                    content_type="application/json")
@@ -427,7 +434,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_use
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
-    max_accepting_price = round(1.0 + random.randint(0,400)/100, 2)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100, 2)
     new_listing_args = dict(max_accepting_price=str(max_accepting_price), album_id=album_id)
     request = request_factory.post(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=new_listing_args,
                                    content_type="application/json")
@@ -450,7 +457,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_buy
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
-    max_accepting_price = round(1.0 + random.randint(0,400)/100, 2)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100, 2)
     new_listing_args = dict(max_accepting_price=str(max_accepting_price), album_id=album_id)
     request = request_factory.post(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=new_listing_args,
                                    content_type="application/json")
@@ -474,8 +481,8 @@ def test_single_user_single_buyer_account_any_listing_POST_error_missing_require
                                    content_type="application/json")
     response = single_user_single_buyer_account_any_listing(request, user_id, buyer_id)
     assert isinstance(response, JsonResponse)
-    assert response.status_code == 400, json_content
     json_content = json.loads(response.content)
+    assert response.status_code == 400, json_content
     assert "message" in json_content and json_content["message"] == "json object missing required property: 'max_accepting_price'"
 
 
@@ -487,14 +494,14 @@ def test_single_user_single_buyer_account_any_listing_POST_error_unexpected_prop
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
-    max_accepting_price = round(1.0 + random.randint(0,400)/100, 2)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100, 2)
     new_listing_args = dict(max_accepting_price=str(max_accepting_price), album_id=album_id, foo="bar")
     request = request_factory.post(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=new_listing_args,
                                    content_type="application/json")
     response = single_user_single_buyer_account_any_listing(request, user_id, buyer_id)
     assert isinstance(response, JsonResponse)
-    assert response.status_code == 400, json_content
     json_content = json.loads(response.content)
+    assert response.status_code == 400, json_content
     assert "message" in json_content and json_content["message"] == "unexpected property in input: 'foo'"
 
 
@@ -512,8 +519,8 @@ def test_single_user_single_buyer_account_any_listing_POST_error_max_accepting_p
                                    content_type="application/json")
     response = single_user_single_buyer_account_any_listing(request, user_id, buyer_id)
     assert isinstance(response, JsonResponse)
-    assert response.status_code == 400, json_content
     json_content = json.loads(response.content)
+    assert response.status_code == 400, json_content
     assert "message" in json_content and json_content["message"] == "error in input, property 'max_accepting_price': "\
                                                                     "must have only two decimal places"
 
@@ -570,7 +577,7 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_b
         if buyer_id not in buyer_ids:
             break
     listing_ids = [listing.to_buy_listing_id for listing in ToBuyListing.objects.filter(buyer_id=buyer_id)]
-    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1,99)
+    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1, 99)
     request = request_factory.get(f"/users/{user_id}/buyer_account/{buyer_id}/listings/{listing_id}")
     response = single_user_single_buyer_account_single_listing(request, user_id, buyer_id, listing_id)
     assert isinstance(response, JsonResponse)
@@ -594,7 +601,8 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_l
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
     json_content = json.loads(response.content)
-    assert "message" in json_content and json_content["message"] == f"no to-buy listing with to_buy_listing_id={listing_id}"
+    assert "message" in json_content and json_content["message"] == \
+            f"no to-buy listing with to_buy_listing_id={listing_id}"
 
 
 # TEST single_user_single_buyer_account_any_listing()
@@ -605,7 +613,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH():
     user_id, buyer_id = user.user_id, user.buyer_id
     listing_ids = [listing.to_buy_listing_id for listing in ToBuyListing.objects.filter(buyer_id=buyer_id)]
     listing_id = random.choice(listing_ids)
-    max_accepting_price = round(1.0 + random.randint(0,400)/100)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100)
     patching_args = dict(max_accepting_price=str(max_accepting_price))
     request = request_factory.patch(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=patching_args,
                                     content_type="application/json")
@@ -632,7 +640,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
     buyer_id = random.choice(buyer_ids)
     listing_ids = [listing.to_buy_listing_id for listing in ToBuyListing.objects.filter(buyer_id=buyer_id)]
     listing_id = random.choice(listing_ids)
-    max_accepting_price = round(1.0 + random.randint(0,400)/100)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100)
     patching_args = dict(max_accepting_price=str(max_accepting_price))
     request = request_factory.patch(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=patching_args,
                                     content_type="application/json")
@@ -653,8 +661,8 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
         if buyer_id not in buyer_ids:
             break
     listing_ids = [listing.to_buy_listing_id for listing in ToBuyListing.objects.filter(buyer_id=buyer_id)]
-    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1,99)
-    max_accepting_price = round(1.0 + random.randint(0,400)/100)
+    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1, 99)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100)
     patching_args = dict(max_accepting_price=str(max_accepting_price))
     request = request_factory.patch(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=patching_args,
                                     content_type="application/json")
@@ -675,7 +683,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
         listing_id = random.randint(1, 9999)
         if listing_id not in listing_ids:
             break
-    max_accepting_price = round(1.0 + random.randint(0,400)/100)
+    max_accepting_price = round(1.0 + random.randint(0, 400)/100)
     patching_args = dict(max_accepting_price=str(max_accepting_price))
     request = request_factory.patch(f"/users/{user_id}/buyer_account/{buyer_id}/listings", data=patching_args,
                                     content_type="application/json")
@@ -683,7 +691,8 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
     assert isinstance(response, JsonResponse)
     json_content = json.loads(response.content)
     assert response.status_code == 404, json_content
-    assert "message" in json_content and json_content["message"] == f"no to-buy listing with to_buy_listing_id={listing_id}"
+    assert "message" in json_content and json_content["message"] ==\
+            f"no to-buy listing with to_buy_listing_id={listing_id}"
 
 
 @pytest.mark.django_db
@@ -698,7 +707,8 @@ def test_single_user_single_buyer_account_single_listing_DELETE():
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
     json_content = json.loads(response.content)
-    assert "message" in json_content and json_content["message"] == f"to-buy listing with to_buy_listing_id={listing_id} deleted"
+    assert "message" in json_content and json_content["message"] ==\
+            f"to-buy listing with to_buy_listing_id={listing_id} deleted"
 
 
 # TEST single_user_single_buyer_account_single_listing()
@@ -731,7 +741,7 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
         if buyer_id not in buyer_ids:
             break
     listing_ids = [listing.to_buy_listing_id for listing in ToBuyListing.objects.filter(buyer_id=buyer_id)]
-    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1,99)
+    listing_id = random.choice(listing_ids) if listing_ids else random.randint(1, 99)
     request = request_factory.delete(f"/users/{user_id}/buyer_account/{buyer_id}/listings/{listing_id}")
     response = single_user_single_buyer_account_single_listing(request, user_id, buyer_id, listing_id)
     assert isinstance(response, JsonResponse)
@@ -755,5 +765,5 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
     assert isinstance(response, JsonResponse)
     assert response.status_code == 404
     json_content = json.loads(response.content)
-    assert "message" in json_content and json_content["message"] == f"no to-buy listing with to_buy_listing_id={listing_id}"
-
+    assert "message" in json_content and json_content["message"] ==\
+            f"no to-buy listing with to_buy_listing_id={listing_id}"

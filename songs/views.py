@@ -85,7 +85,7 @@ def single_song_lyrics(request, outer_model_obj_id):
 
     def _single_song_lyrics_GET():
         try:
-            song = Song.objects.get(song_id=outer_model_obj_id)
+            Song.objects.get(song_id=outer_model_obj_id)
         except Song.DoesNotExist:
             return JsonResponse({'message': f'no song with song_id={outer_model_obj_id}'},
                                 status=status.HTTP_404_NOT_FOUND)
