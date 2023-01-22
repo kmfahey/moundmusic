@@ -6,6 +6,16 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 
+# This view is for the / endpoint. It returns a large object containing a list
+# of all endpoints, the methods they accept and a short blurb describing what
+# each endpoint+method combination does.
+
+
+@api_view(['GET'])
+def site_index(request):
+    return JsonResponse(endpoints_help, status=status.HTTP_200_OK)
+
+
 endpoints_help = {
     "endpoints": {
         "site": {
@@ -234,8 +244,3 @@ endpoints_help = {
         }
     }
 }
-
-
-@api_view(['GET'])
-def site_index(request):
-    return JsonResponse(endpoints_help, status=status.HTTP_200_OK)

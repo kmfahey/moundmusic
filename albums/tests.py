@@ -86,6 +86,11 @@ def test_single_album_GET():
         "number_of_tracks": 12,
         "release_date": "1998-01-01"
     }
+    # This handles a bug where attempting to save a new model class object
+    # yields an IntegrityError that claims a pre-existing primary key
+    # column value was used. This when no primary key column value was
+    # set. (This bug is likely in pytest-django, not psycopg2.) This
+    # workaround pre-determines the next primary key column value.
     max_album_id = max(album.album_id for album in Album.objects.filter())
     album = Album(album_id=max_album_id, **new_album_dict)
     album.save()
@@ -124,6 +129,11 @@ def test_single_album_PATCH():
         "number_of_tracks": 12,
         "release_date": "1998-01-01"
     }
+    # This handles a bug where attempting to save a new model class object
+    # yields an IntegrityError that claims a pre-existing primary key
+    # column value was used. This when no primary key column value was
+    # set. (This bug is likely in pytest-django, not psycopg2.) This
+    # workaround pre-determines the next primary key column value.
     max_album_id = max(album.album_id for album in Album.objects.filter())
     album = Album(album_id=max_album_id + 1, **new_album_dict)
     album.save()
