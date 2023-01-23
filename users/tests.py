@@ -599,8 +599,8 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_l
     request = request_factory.get(f"/users/{user_id}/buyer_account/{buyer_id}/listings/{listing_id}")
     response = single_user_single_buyer_account_single_listing(request, user_id, buyer_id, listing_id)
     assert isinstance(response, JsonResponse)
-    assert response.status_code == 404
     json_content = json.loads(response.content)
+    assert response.status_code == 404, json_content
     assert "message" in json_content and json_content["message"] == \
             f"no to-buy listing with to_buy_listing_id={listing_id}"
 
@@ -767,3 +767,21 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
     json_content = json.loads(response.content)
     assert "message" in json_content and json_content["message"] ==\
             f"no to-buy listing with to_buy_listing_id={listing_id}"
+
+# NOTE
+#
+# The corresponding endpoint functions for the *seller* subordinate endpoint
+# suite are not tested.
+#
+# This is because the endpoint functions that *were* just tested,
+# single_user_single_buyer_account(), single_user_any_buyer_account(),
+# single_user_single_buyer_account_any_listing(), and
+# single_user_single_buyer_account_single_listing(), are implemented
+# using closures returned by higher-order functions (implemented in
+# moundmusic.viewutils, q.v.) that are also called to return the corresponding
+# seller-side endpoint functions.
+#
+# Testing the aforementioned closures implicitly tests the higher-order
+# functions that returned them; that ensures the seller-side functions are
+# correct, since it's the same code either way. Testing the seller-side
+# endpoint functions would be duplicative.
