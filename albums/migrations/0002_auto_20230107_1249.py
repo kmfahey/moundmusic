@@ -8,21 +8,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('albums', '0001_initial'),
+        ("albums", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ArtistsAlbums',
+            name="ArtistsAlbums",
             fields=[
-                ('artists_albums_id', models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "artists_albums_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
             ],
             options={
-                'db_table': 'artists_albums',
-                'managed': False,
+                "db_table": "artists_albums",
+                "managed": False,
             },
         ),
         migrations.DeleteModel(
-            name='AlbumsArtists',
+            name="AlbumsArtists",
         ),
     ]

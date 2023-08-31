@@ -6,62 +6,62 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('albums', '0004_auto_20230107_1930'),
+        ("albums", "0004_auto_20230107_1930"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='Album',
+            name="Album",
         ),
         migrations.DeleteModel(
-            name='AlbumCover',
+            name="AlbumCover",
         ),
         migrations.DeleteModel(
-            name='AlbumGenreBridge',
+            name="AlbumGenreBridge",
         ),
         migrations.DeleteModel(
-            name='AlbumSongBridge',
+            name="AlbumSongBridge",
         ),
         migrations.DeleteModel(
-            name='Artist',
+            name="Artist",
         ),
         migrations.DeleteModel(
-            name='ArtistAlbumBridge',
+            name="ArtistAlbumBridge",
         ),
         migrations.DeleteModel(
-            name='ArtistGenreBridge',
+            name="ArtistGenreBridge",
         ),
         migrations.DeleteModel(
-            name='ArtistSongBridge',
+            name="ArtistSongBridge",
         ),
         migrations.DeleteModel(
-            name='BuyerAccount',
+            name="BuyerAccount",
         ),
         migrations.DeleteModel(
-            name='Genre',
+            name="Genre",
         ),
         migrations.DeleteModel(
-            name='SellerAccount',
+            name="SellerAccount",
         ),
         migrations.DeleteModel(
-            name='Song',
+            name="Song",
         ),
         migrations.DeleteModel(
-            name='SongGenreBridge',
+            name="SongGenreBridge",
         ),
         migrations.DeleteModel(
-            name='SongLyrics',
+            name="SongLyrics",
         ),
         migrations.DeleteModel(
-            name='ToBuyListing',
+            name="ToBuyListing",
         ),
         migrations.DeleteModel(
-            name='ToSellListing',
+            name="ToSellListing",
         ),
         migrations.DeleteModel(
-            name='User',
+            name="User",
         ),
         migrations.DeleteModel(
-            name='UserPassword',
+            name="UserPassword",
         ),
     ]

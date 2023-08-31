@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from django.apps import AppConfig
 
 
 class ArtistsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'artists'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "artists"

@@ -8,219 +8,254 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Album',
+            name="Album",
             fields=[
-                ('album_id', models.AutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=256)),
-                ('number_of_discs', models.SmallIntegerField()),
-                ('number_of_tracks', models.SmallIntegerField()),
-                ('release_date', models.DateField(blank=True, null=True)),
+                ("album_id", models.AutoField(primary_key=True, serialize=False)),
+                ("title", models.CharField(max_length=256)),
+                ("number_of_discs", models.SmallIntegerField()),
+                ("number_of_tracks", models.SmallIntegerField()),
+                ("release_date", models.DateField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'album',
-                'managed': False,
+                "db_table": "album",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='AlbumGenreBridge',
+            name="AlbumGenreBridge",
             fields=[
-                ('album_genre_bridge_id', models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "album_genre_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
             ],
             options={
-                'db_table': 'album_genre_bridge',
-                'managed': False,
+                "db_table": "album_genre_bridge",
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='AlbumSongBridge',
+            name="AlbumSongBridge",
             fields=[
-                ('album_song_bridge_id', models.AutoField(primary_key=True, serialize=False)),
-                ('disc_number', models.SmallIntegerField()),
-                ('track_number', models.SmallIntegerField()),
+                (
+                    "album_song_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+                ("disc_number", models.SmallIntegerField()),
+                ("track_number", models.SmallIntegerField()),
             ],
             options={
-                'db_table': 'album_song_bridge',
-                'managed': False,
+                "db_table": "album_song_bridge",
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Artist',
+            name="Artist",
             fields=[
-                ('artist_id', models.AutoField(primary_key=True, serialize=False)),
-                ('first_name', models.CharField(max_length=64)),
-                ('last_name', models.CharField(max_length=64)),
-                ('gender', models.TextField()),
-                ('birth_date', models.DateField()),
+                ("artist_id", models.AutoField(primary_key=True, serialize=False)),
+                ("first_name", models.CharField(max_length=64)),
+                ("last_name", models.CharField(max_length=64)),
+                ("gender", models.TextField()),
+                ("birth_date", models.DateField()),
             ],
             options={
-                'db_table': 'artist',
-                'managed': False,
-            },
-            bases=(models.Model, albums.models.serializable),
-        ),
-        migrations.CreateModel(
-            name='ArtistAlbumBridge',
-            fields=[
-                ('artist_album_bridge_id', models.AutoField(primary_key=True, serialize=False)),
-            ],
-            options={
-                'db_table': 'artist_album_bridge',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ArtistGenreBridge',
-            fields=[
-                ('artist_genre_bridge_id', models.AutoField(primary_key=True, serialize=False)),
-            ],
-            options={
-                'db_table': 'artist_genre_bridge',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='ArtistSongBridge',
-            fields=[
-                ('artist_song_bridge_id', models.AutoField(primary_key=True, serialize=False)),
-            ],
-            options={
-                'db_table': 'artist_song_bridge',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='BuyerAccount',
-            fields=[
-                ('buyer_id', models.AutoField(primary_key=True, serialize=False)),
-                ('postboard_name', models.CharField(blank=True, max_length=64, null=True)),
-                ('date_created', models.DateField()),
-            ],
-            options={
-                'db_table': 'buyer_account',
-                'managed': False,
+                "db_table": "artist",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='Genre',
+            name="ArtistAlbumBridge",
             fields=[
-                ('genre_id', models.AutoField(primary_key=True, serialize=False)),
-                ('genre_name', models.CharField(max_length=64)),
+                (
+                    "artist_album_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
             ],
             options={
-                'db_table': 'genre',
-                'managed': False,
+                "db_table": "artist_album_bridge",
+                "managed": False,
+            },
+        ),
+        migrations.CreateModel(
+            name="ArtistGenreBridge",
+            fields=[
+                (
+                    "artist_genre_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+            ],
+            options={
+                "db_table": "artist_genre_bridge",
+                "managed": False,
+            },
+        ),
+        migrations.CreateModel(
+            name="ArtistSongBridge",
+            fields=[
+                (
+                    "artist_song_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+            ],
+            options={
+                "db_table": "artist_song_bridge",
+                "managed": False,
+            },
+        ),
+        migrations.CreateModel(
+            name="BuyerAccount",
+            fields=[
+                ("buyer_id", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "postboard_name",
+                    models.CharField(blank=True, max_length=64, null=True),
+                ),
+                ("date_created", models.DateField()),
+            ],
+            options={
+                "db_table": "buyer_account",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='SellerAccount',
+            name="Genre",
             fields=[
-                ('seller_id', models.AutoField(primary_key=True, serialize=False)),
-                ('storefront_name', models.CharField(blank=True, max_length=64, null=True)),
-                ('date_created', models.DateField()),
+                ("genre_id", models.AutoField(primary_key=True, serialize=False)),
+                ("genre_name", models.CharField(max_length=64)),
             ],
             options={
-                'db_table': 'seller_account',
-                'managed': False,
+                "db_table": "genre",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='Song',
+            name="SellerAccount",
             fields=[
-                ('song_id', models.AutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=256)),
-                ('length_minutes', models.SmallIntegerField()),
-                ('length_seconds', models.SmallIntegerField()),
+                ("seller_id", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "storefront_name",
+                    models.CharField(blank=True, max_length=64, null=True),
+                ),
+                ("date_created", models.DateField()),
             ],
             options={
-                'db_table': 'song',
-                'managed': False,
+                "db_table": "seller_account",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='SongGenreBridge',
+            name="Song",
             fields=[
-                ('song_genre_bridge_id', models.AutoField(primary_key=True, serialize=False)),
+                ("song_id", models.AutoField(primary_key=True, serialize=False)),
+                ("title", models.CharField(max_length=256)),
+                ("length_minutes", models.SmallIntegerField()),
+                ("length_seconds", models.SmallIntegerField()),
             ],
             options={
-                'db_table': 'song_genre_bridge',
-                'managed': False,
-            },
-        ),
-        migrations.CreateModel(
-            name='SongLyrics',
-            fields=[
-                ('song_lyrics_id', models.AutoField(primary_key=True, serialize=False)),
-                ('lyrics', models.TextField()),
-            ],
-            options={
-                'db_table': 'song_lyrics',
-                'managed': False,
+                "db_table": "song",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='ToBuyListing',
+            name="SongGenreBridge",
             fields=[
-                ('to_buy_listing_id', models.AutoField(primary_key=True, serialize=False)),
-                ('max_accepting_price', models.DecimalField(decimal_places=65535, max_digits=65535)),
-                ('date_posted', models.DateField(blank=True, null=True)),
+                (
+                    "song_genre_bridge_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
             ],
             options={
-                'db_table': 'to_buy_listing',
-                'managed': False,
+                "db_table": "song_genre_bridge",
+                "managed": False,
+            },
+        ),
+        migrations.CreateModel(
+            name="SongLyrics",
+            fields=[
+                ("song_lyrics_id", models.AutoField(primary_key=True, serialize=False)),
+                ("lyrics", models.TextField()),
+            ],
+            options={
+                "db_table": "song_lyrics",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='ToSellListing',
+            name="ToBuyListing",
             fields=[
-                ('to_sell_listing_id', models.AutoField(primary_key=True, serialize=False)),
-                ('asking_price', models.DecimalField(decimal_places=65535, max_digits=65535)),
-                ('date_posted', models.DateField(blank=True, null=True)),
+                (
+                    "to_buy_listing_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+                (
+                    "max_accepting_price",
+                    models.DecimalField(decimal_places=65535, max_digits=65535),
+                ),
+                ("date_posted", models.DateField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'to_sell_listing',
-                'managed': False,
+                "db_table": "to_buy_listing",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='User',
+            name="ToSellListing",
             fields=[
-                ('user_id', models.AutoField(primary_key=True, serialize=False)),
-                ('user_name', models.CharField(max_length=16)),
-                ('first_name', models.CharField(max_length=64)),
-                ('last_name', models.CharField(max_length=64)),
-                ('gender', models.TextField()),
-                ('date_joined', models.DateField()),
-                ('buyer_id', models.IntegerField(blank=True, null=True)),
-                ('seller_id', models.IntegerField(blank=True, null=True)),
+                (
+                    "to_sell_listing_id",
+                    models.AutoField(primary_key=True, serialize=False),
+                ),
+                (
+                    "asking_price",
+                    models.DecimalField(decimal_places=65535, max_digits=65535),
+                ),
+                ("date_posted", models.DateField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'user_',
-                'managed': False,
+                "db_table": "to_sell_listing",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),
         migrations.CreateModel(
-            name='UserPassword',
+            name="User",
             fields=[
-                ('password_id', models.AutoField(primary_key=True, serialize=False)),
-                ('encrypted_password', models.BinaryField()),
+                ("user_id", models.AutoField(primary_key=True, serialize=False)),
+                ("user_name", models.CharField(max_length=16)),
+                ("first_name", models.CharField(max_length=64)),
+                ("last_name", models.CharField(max_length=64)),
+                ("gender", models.TextField()),
+                ("date_joined", models.DateField()),
+                ("buyer_id", models.IntegerField(blank=True, null=True)),
+                ("seller_id", models.IntegerField(blank=True, null=True)),
             ],
             options={
-                'db_table': 'user_password',
-                'managed': False,
+                "db_table": "user_",
+                "managed": False,
+            },
+            bases=(models.Model, albums.models.serializable),
+        ),
+        migrations.CreateModel(
+            name="UserPassword",
+            fields=[
+                ("password_id", models.AutoField(primary_key=True, serialize=False)),
+                ("encrypted_password", models.BinaryField()),
+            ],
+            options={
+                "db_table": "user_password",
+                "managed": False,
             },
             bases=(models.Model, albums.models.serializable),
         ),

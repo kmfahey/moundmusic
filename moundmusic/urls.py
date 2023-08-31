@@ -20,17 +20,17 @@ from django.urls import include, path
 from moundmusic import views
 
 urlpatterns = [
-    path('', views.site_index),
+    path("", views.site_index),
     # /admin isn't supported because this package shares model classes between
     # apps, which makes it impossible to register them with django.contrib.admin
-    path('albums', include('albums.urls')),
-    path('albums/', include('albums.urls')),
-    path('artists', include('artists.urls')),
-    path('artists/', include('artists.urls')),
-    path('genres', include('genres.urls')),
-    path('genres/', include('genres.urls')),
-    path('songs', include('songs.urls')),
-    path('songs/', include('songs.urls')),
-    path('users', include('users.urls')),
-    path('users/', include('users.urls'))
+    path("albums", include("albums.urls")),
+    path("albums/", include("albums.urls")),
+    path("artists", include("artists.urls")),
+    path("artists/", include("artists.urls")),
+    path("genres", include("genres.urls")),
+    path("genres/", include("genres.urls")),
+    path("songs", include("songs.urls")),
+    path("songs/", include("songs.urls")),
+    path("users", include("users.urls")),
+    path("users/", include("users.urls")),
 ]

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 # Because this package reuses model classes between apps, it's not possible to
 # register the models with django.contrib.admin: it leads to an error of the
