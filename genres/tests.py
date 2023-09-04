@@ -9,4 +9,3 @@
 # of the endpoints in albums.views, and thereby indirectly tests every
 # higher-order function in moundmusic.viewutils. Testing them again here
 # would only duplicate that work.
-

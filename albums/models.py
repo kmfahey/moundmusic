@@ -111,7 +111,7 @@ class Artist(models.Model, serializable):
     # it's only ever set to (png|jpg|gif) there won't be any problems
     # leaving it as a TextField.
 
-    gender = models.TextField() # This field type is a guess.
+    gender = models.TextField()  # This field type is a guess.
     birth_date = models.DateField()
 
     class Meta:
@@ -322,7 +322,7 @@ class User(models.Model, serializable):
     # it's only ever set to (png|jpg|gif) there won't be any problems
     # leaving it as a TextField.
 
-    gender = models.TextField() # This field type is a guess.
+    gender = models.TextField()  # This field type is a guess.
     date_joined = models.DateField()
     buyer_id = models.IntegerField(blank=True, null=True)
     seller_id = models.IntegerField(blank=True, null=True)
