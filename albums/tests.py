@@ -480,8 +480,8 @@ def test_single_album_genres_POST_error_bridge_row_already_exists():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"association between album with album_id={album_id} and "
-        f"genre with genre_id={genre_id} already exists"
+        f"association between album with album_id={album_id} and genre with "
+        + f"genre_id={genre_id} already exists"
     )
 
 
@@ -519,8 +519,8 @@ def test_single_album_single_song_DELETE():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"association between album with album_id={album_id} "
-        f"and song with song_id={song_id} deleted"
+        f"association between album with album_id={album_id} and song with "
+        + f"song_id={song_id} deleted"
     )
     try:
         AlbumSongBridge.objects.get(album_id=album_id, song_id=song_id)
@@ -580,8 +580,8 @@ def test_single_album_single_song_DELETE_error_album_not_assoc_w_song():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"album with album_id={album_id} not associated with "
-        f"song with song_id={song_id}"
+        f"album with album_id={album_id} not associated with song with "
+        + f"song_id={song_id}"
     )
 
 
@@ -599,8 +599,8 @@ def test_single_album_single_genre_DELETE():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"association between album with album_id={album_id} "
-        f"and genre with genre_id={genre_id} deleted"
+        f"association between album with album_id={album_id} and genre with "
+        + f"genre_id={genre_id} deleted"
     )
     try:
         AlbumGenreBridge.objects.get(album_id=album_id, genre_id=genre_id)
@@ -660,8 +660,8 @@ def test_single_album_single_genre_DELETE_error_album_not_assoc_w_genre():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"album with album_id={album_id} not associated with "
-        f"genre with genre_id={genre_id}"
+        f"album with album_id={album_id} not associated with genre with "
+        + f"genre_id={genre_id}"
     )
 
 
@@ -817,8 +817,8 @@ def test_single_album_artists_POST_error_bridge_row_already_exists():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"association between album with album_id={album_id} and "
-        f"artist with artist_id={artist_id} already exists"
+        f"association between album with album_id={album_id} and artist with "
+        + f"artist_id={artist_id} already exists"
     )
 
 
@@ -856,8 +856,8 @@ def test_single_album_single_artist_DELETE():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"association between album with album_id={album_id} "
-        f"and artist with artist_id={artist_id} deleted"
+        f"association between album with album_id={album_id} and artist with "
+        + f"artist_id={artist_id} deleted"
     )
     try:
         ArtistAlbumBridge.objects.get(album_id=album_id, artist_id=artist_id)
@@ -917,6 +917,6 @@ def test_single_album_single_artist_DELETE_error_album_not_assoc_w_artist():
     json_content = json.loads(response.content)
     assert "message" in json_content
     assert json_content["message"] == (
-        f"album with album_id={album_id} not associated "
-        f"with artist with artist_id={artist_id}"
+        f"album with album_id={album_id} not associated with artist with "
+        + f"artist_id={artist_id}"
     )

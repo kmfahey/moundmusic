@@ -247,7 +247,7 @@ def test_single_song_song_lyrics_POST_song_already_has_song_lyrics_associated():
     assert (
         json_content["message"]
         == f"song with song_id={song_id} already has song lyrics with "
-        f"song_lyrics_id={song.song_lyrics_id} associated with it"
+        + f"song_lyrics_id={song.song_lyrics_id} associated with it"
     )
 
 

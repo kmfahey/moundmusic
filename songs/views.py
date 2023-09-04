@@ -158,7 +158,8 @@ def single_song_lyrics(request, outer_model_obj_id):
         except SongLyrics.DoesNotExist:
             return JsonResponse(
                 {
-                    "message": f"no song lyrics associated with song with song_id={outer_model_obj_id}"
+                    "message": f"no song lyrics associated with song with "
+                    + f"song_id={outer_model_obj_id}"
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
@@ -182,8 +183,10 @@ def single_song_lyrics(request, outer_model_obj_id):
             else:
                 return JsonResponse(
                     {
-                        "message": f"song with song_id={outer_model_obj_id} already has song lyrics with "
-                        f"song_lyrics_id={song.song_lyrics_id} associated with it"
+                        "message": f"song with song_id={outer_model_obj_id} "
+                        + "already has song lyrics with "
+                        + f"song_lyrics_id={song.song_lyrics_id} associated "
+                        + "with it"
                     },
                     status=status.HTTP_409_CONFLICT,
                 )
@@ -228,7 +231,10 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
             song_lyrics = SongLyrics.objects.get(song_lyrics_id=inner_model_obj_id)
         except SongLyrics.DoesNotExist:
             return JsonResponse(
-                {"message": f"no song lyrics with song_lyrics_id={inner_model_obj_id}"},
+                {
+                    "message": f"no song lyrics with "
+                    + f"song_lyrics_id={inner_model_obj_id}"
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
@@ -245,7 +251,10 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
             song_lyrics = SongLyrics.objects.get(song_lyrics_id=inner_model_obj_id)
         except SongLyrics.DoesNotExist:
             return JsonResponse(
-                {"message": f"no song lyrics with song_lyrics_id={inner_model_obj_id}"},
+                {
+                    "message": f"no song lyrics with "
+                    + f"song_lyrics_id={inner_model_obj_id}"
+                },
                 status=status.HTTP_404_NOT_FOUND,
             )
         song.song_lyrics_id = None
@@ -253,8 +262,9 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
         song_lyrics.delete()
         return JsonResponse(
             {
-                "message": f"song lyrics with song_lyrics_id={inner_model_obj_id} "
-                f"associated with song with song_id={outer_model_obj_id} deleted"
+                "message": f"song lyrics with "
+                + f"song_lyrics_id={inner_model_obj_id} associated with song "
+                + f"with song_id={outer_model_obj_id} deleted"
             },
             status=status.HTTP_200_OK,
         )

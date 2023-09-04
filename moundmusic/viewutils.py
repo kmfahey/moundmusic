@@ -647,11 +647,11 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
                 {
                     "message": f"association between "
                     + outer_model_class.__name__.lower()
-                    + " with "
-                    + f"{outer_model_id_attr_name}={outer_model_obj_id} and "
+                    + f" with {outer_model_id_attr_name}={outer_model_obj_id} "
+                    + "and "
                     + inner_model_class.__name__.lower()
-                    + " with "
-                    + f"{inner_model_id_attr_name}={inner_model_obj_id} deleted"
+                    + f" with {inner_model_id_attr_name}={inner_model_obj_id} "
+                    + "deleted"
                 },
                 status=status.HTTP_200_OK,
             )
@@ -920,8 +920,8 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
                 {
                     "message": f"{kind_of_account} account with "
                     + f"{buyer_or_seller_id_col_name}={inner_model_obj_id} "
-                    + f"associated with user with user_id={outer_model_obj_id} "
-                    + "disassociated and deleted"
+                    + f"associated with user with "
+                    + f"user_id={outer_model_obj_id} disassociated and deleted"
                 },
                 status=status.HTTP_200_OK,
             )
