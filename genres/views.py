@@ -19,8 +19,8 @@ from .models import (
 
 
 # All the endpoint functions in this file are closures returned by
-# higher-order functions defined in moundmusic.viewutils. See that file for
-# the functions that are defining these endpoints.
+# higher-order functions defined in moundmusic.viewutils. See that file
+# for the functions that are defining these endpoints.
 
 
 # GET,POST /genres

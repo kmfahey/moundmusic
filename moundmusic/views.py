@@ -6,9 +6,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 
 
-# This view is for the / endpoint. It returns a large object containing a list
-# of all endpoints, the methods they accept and a short blurb describing what
-# each endpoint+method combination does.
+# This view is for the / endpoint. It returns a large object containing
+# a list of all endpoints, the methods they accept and a short blurb
+# describing what each endpoint+method combination does.
 
 
 @api_view(["GET"])

@@ -30,18 +30,20 @@ from .models import (
 
 
 # Some of the endpoint functions in this file are closures returned by
-# higher-order functions defined in moundmusic.viewutils. See that file for
-# the functions that are defining these endpoints.
+# higher-order functions defined in moundmusic.viewutils. See that file
+# for the functions that are defining these endpoints.
 
 
-# A word on the endpoint function structure used in some of these functions:
+# A word on the endpoint function structure used in some of these
+# functions:
 #
-# With django's rest framework, an endpoint function has to handle
+# With django's REST framework, an endpoint function has to handle
 # all the methods that endpoint accepts. Where that's more than one
 # method, this pattern is used: an inline function is written for
-# each method, and the body of the function consists of a tail-call to
-# moundmusic.viewutils.dispatch_funcs_by_method(), which itself tail-calls the
-# inline function that matches the method that's being handled.
+# each method, and the body of the function consists of a tail-call
+# to moundmusic.viewutils.dispatch_funcs_by_method(), which itself
+# tail-calls the inline function that matches the method that's being
+# handled.
 
 
 # GET,POST /songs
@@ -64,11 +66,11 @@ def single_song_albums(request, outer_model_obj_id):
         )
     bridge_rows = AlbumSongBridge.objects.filter(song_id=outer_model_obj_id)
 
-    # The album_song_bridge table contains the disc and track number for each
-    # song. With that info available, the return object is constructed as a
-    # list of objects with disc_number and track_number properties for the
-    # disc # & track # the song has on that album, plus an album property that
-    # points to the album.
+    # The album_song_bridge table contains the disc and track number
+    # for each song. With that info available, the return object is
+    # constructed as a list of objects with disc_number and track_number
+    # properties for the disc # & track # the song has on that album,
+    # plus an album property that points to the album.
     return_list = [
         {
             "disc_number": bridge_row.disc_number,
@@ -100,9 +102,10 @@ def single_song_single_album(request, outer_model_obj_id, inner_model_obj_id):
         song_id=outer_model_obj_id, album_id=inner_model_obj_id
     )
 
-    # The album_song_bridge table contains the disc and track number for each
-    # song. The return object has disc_number and track_number properties for the
-    # disc # & track # the song has on that album, plus the album property.
+    # The album_song_bridge table contains the disc and track number
+    # for each song. The return object has disc_number and track_number
+    # properties for the disc # & track # the song has on that album,
+    # plus the album property.
     retval = {
         "track_number": bridge_row.track_number,
         "disc_number": bridge_row.disc_number,
@@ -189,11 +192,12 @@ def single_song_lyrics(request, outer_model_obj_id):
             return result
         validated_input = result
         song_lyrics = SongLyrics(**validated_input)
-        # This handles a bug where attempting to save a new model class object
-        # yields an IntegrityError that claims a pre-existing primary key
-        # column value was used. This when no primary key column value was
-        # set. (This bug is likely in pytest-django, not psycopg2.) This
-        # workaround pre-determines the next primary key column value.
+        # This handles a bug where attempting to save a new model class
+        # object yields an IntegrityError that claims a pre-existing
+        # primary key column value was used. This when no primary key
+        # column value was set. (This bug is likely in pytest-django,
+        # not psycopg2.) This workaround pre-determines the next primary
+        # key column value.
         max_song_lyrics_id = max(
             song_lyrics.song_lyrics_id for song_lyrics in SongLyrics.objects.filter()
         )

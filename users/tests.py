@@ -1095,18 +1095,19 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
 
 # NOTE
 #
-# The corresponding endpoint functions for the *seller* subordinate endpoint
-# suite are not tested.
+# The corresponding endpoint functions for the *seller* subordinate
+# endpoint suite are not tested.
 #
 # This is because the endpoint functions that *were* just tested,
 # single_user_single_buyer_account(), single_user_any_buyer_account(),
 # single_user_single_buyer_account_any_listing(), and
 # single_user_single_buyer_account_single_listing(), are implemented
 # using closures returned by higher-order functions (implemented in
-# moundmusic.viewutils, q.v.) that are also called to return the corresponding
-# seller-side endpoint functions.
+# moundmusic.viewutils, q.v.) that are also called to return the
+# corresponding seller-side endpoint functions.
 #
 # Testing the aforementioned closures implicitly tests the higher-order
-# functions that returned them; that ensures the seller-side functions are
-# correct, since it's the same code either way. Testing the seller-side
-# endpoint functions would be duplicative.
+# functions that returned them; that ensures the seller-side functions
+# are correct, since it's the same code either way. Testing the
+# seller-side endpoint functions would be duplicative.
+

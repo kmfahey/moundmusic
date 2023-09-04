@@ -26,8 +26,8 @@ from moundmusic.viewutils import (
 
 
 # Most of the endpoint functions in this file are closures returned by
-# higher-order functions defined in moundmusic.viewutils. See that file for
-# the functions that are defining these endpoints.
+# higher-order functions defined in moundmusic.viewutils. See that file
+# for the functions that are defining these endpoints.
 
 
 # GET,POST /albums/
@@ -50,9 +50,9 @@ def single_album_songs(request, outer_model_obj_id):
     return_struct = dict()
 
     # songs are organized by disc number and track number, so it makes
-    # sense to structure the output into an object with properties named
-    # disc_{number} pointing to objects with properties named track_{number}
-    # pointing to the track objects.
+    # sense to structure the output into an object with properties
+    # named disc_{number} pointing to objects with properties named
+    # track_{number} pointing to the track objects.
     rows_by_disc_and_track_numbers = {
         (bridge_row.disc_number, bridge_row.track_number): bridge_row
         for bridge_row in bridge_rows

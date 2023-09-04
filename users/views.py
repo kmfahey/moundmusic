@@ -28,8 +28,8 @@ from .models import (
 
 
 # Most of the endpoint functions in this file are closures returned by
-# higher-order functions defined in moundmusic.viewutils. See that file for
-# the functions that are defining these endpoints.
+# higher-order functions defined in moundmusic.viewutils. See that file
+# for the functions that are defining these endpoints.
 
 
 # A utility function that represents repeated code in this file. Manages
@@ -83,16 +83,17 @@ def single_user_password_set_password(request, model_obj_id):
     salt = bcrypt.gensalt()
     encrypted_password = bcrypt.hashpw(password, salt)
 
-    # If a row exists in the user_password table then it's updated; otherwise
-    # a new one is created.
+    # If a row exists in the user_password table then it's updated;
+    # otherwise a new one is created.
     try:
         user_password = UserPassword.objects.get(user_id=model_obj_id)
     except UserPassword.DoesNotExist:
-        # This handles a bug where attempting to save a new model class object
-        # yields an IntegrityError that claims a pre-existing primary key
-        # column value was used. This when no primary key column value was
-        # set. (This bug is likely in pytest-django, not psycopg2.) This
-        # workaround pre-determines the next primary key column value.
+        # This handles a bug where attempting to save a new model class
+        # object yields an IntegrityError that claims a pre-existing
+        # primary key column value was used. This when no primary key
+        # column value was set. (This bug is likely in pytest-django,
+        # not psycopg2.) This workaround pre-determines the next primary
+        # key column value.
         max_password_id = max(
             user_password.password_id for user_password in UserPassword.objects.filter()
         )
@@ -117,7 +118,8 @@ def single_user_password_authenticate(request, model_obj_id):
         return result
     json_content = result
 
-    # If there's no password for this user stored in the database, error out.
+    # If there's no password for this user stored in the database, error
+    # out.
     try:
         user_password = UserPassword.objects.get(user_id=model_obj_id)
     except UserPassword.DoesNotExist:

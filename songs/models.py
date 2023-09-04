@@ -21,8 +21,9 @@ from albums.models import (
 )
 
 
-# This package reuses models between apps, through the simple expedient of
-# importing them and setting their ._meta.app_label to this app's name.
+# This package reuses models between apps, through the simple expedient
+# of importing them and setting their ._meta.app_label to this app's
+# name.
 
 for model_class in (
     Album,

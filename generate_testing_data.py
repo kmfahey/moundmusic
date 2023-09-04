@@ -121,18 +121,20 @@ def title_case(strval):
         "with",
         "yet",
     }
-    # Splitting on the zero-width spot where the previous character is in
-    # [A-Za-zÀ-ÿ0-9._'ʼ’] and the next character is not in [A-Za-zÀ-ÿ0-9._'ʼ’],
-    # or the previous character is *not* in [A-Za-zÀ-ÿ0-9._'ʼ’] and the next
-    # character *is* in [A-Za-zÀ-ÿ0-9._'ʼ’]. A more advanced form of \b
-    # that allows numerics and some punctuation.
+    # Splitting on the zero-width spot where the previous character
+    # is in [A-Za-zÀ-ÿ0-9._'ʼ’] and the next character is not in
+    # [A-Za-zÀ-ÿ0-9._'ʼ’], or the previous character is *not*
+    # in [A-Za-zÀ-ÿ0-9._'ʼ’] and the next character *is* in
+    # [A-Za-zÀ-ÿ0-9._'ʼ’]. A more advanced form of \b that allows
+    # numerics and some punctuation.
     tokens = re.split(
         "(?<=[A-Za-zÀ-ÿ0-9._'ʼ’])(?=[^A-Za-zÀ-ÿ0-9._'ʼ’])"
         "|"
         "(?<=[^A-Za-zÀ-ÿ0-9._'ʼ’])(?=[A-Za-zÀ-ÿ0-9._'ʼ’])",
         strval,
     )
-    # This ends up capitalizing a lot of whitespace but it hardly matters.
+    # This ends up capitalizing a lot of whitespace but it hardly
+    # matters.
     return "".join(
         token.lower() if token.lower() in title_case_lc_words else token.capitalize()
         for token in tokens
