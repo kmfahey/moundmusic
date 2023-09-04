@@ -39,7 +39,9 @@ def validate_input(model_class, input_argd, all_nullable=False):
     if diff:
         diff_expr = ", ".join(f"'{key}'" for key in diff)
         raise ValueError(
-            f'unexpected propert{"ies" if len(diff) > 1 else "y"} in input: {diff_expr}'
+            f"unexpected propert"
+            + ("ies" if len(diff) > 1 else "y")
+            + f" in input: {diff_expr}"
         )
 
     # Iterating across __columns__, testing each value in input_argd
@@ -58,12 +60,16 @@ def validate_input(model_class, input_argd, all_nullable=False):
             try:
                 value = int(value)
             except ValueError:
-                raise ValueError(f"value for '{column}' isn't an integer: {value}")
+                raise ValueError(
+                    f"value for '{column}' isn't an integer: " + str(value)
+                )
             # Testing whether the value is nonnegative. There's no use
             # of integers in this package that doesn't require them to
             # be nonnegative.
             if value <= 0:
-                raise ValueError(f"value for '{column}' isn't greater than 0: {value}")
+                raise ValueError(
+                    f"value for '{column}' isn't greater than 0: " + str(value)
+                )
         elif column_type is str and not len(value):
             # If the value is a zero-length string, error out.
             raise ValueError(f"value for '{column}' is a string of zero length")
@@ -74,7 +80,8 @@ def validate_input(model_class, input_argd, all_nullable=False):
                 value = date.fromisoformat(value)
             except ValueError:
                 raise ValueError(
-                    f"value for '{column}' isn't in format YYYY-MM-DD and column is a DATE"
+                    f"value for '{column}' isn't in format YYYY-MM-DD and "
+                    + "column is a DATE"
                 )
         elif isinstance(column_type, tuple):
             # If the __columns__ value is a tuple, then this is a
@@ -86,7 +93,8 @@ def validate_input(model_class, input_argd, all_nullable=False):
                     + f" or '{column_type[-1]}'"
                 )
                 raise ValueError(
-                    f"value for '{column}' not one of {enum_expr} and column is an ENUM type"
+                    f"value for '{column}' not one of {enum_expr} and column "
+                    + "is an ENUM type"
                 )
         validatedDict[column] = value
     return validatedDict
@@ -199,7 +207,7 @@ def validate_bridged_table_column_value_pair(
         return JsonResponse(
             {
                 "message": f"no {left_model_class.__name__.lower()} with "
-                f"{left_model_attr_name}={left_model_attr_value}"
+                + f"{left_model_attr_name}={left_model_attr_value}"
             },
             status=status.HTTP_404_NOT_FOUND,
         )
@@ -214,7 +222,7 @@ def validate_bridged_table_column_value_pair(
         return JsonResponse(
             {
                 "message": f"no {right_model_class.__name__.lower()} with "
-                f"{right_model_attr_name}={right_model_attr_value}"
+                + f"{right_model_attr_name}={right_model_attr_value}"
             },
             status=status.HTTP_404_NOT_FOUND,
         )
@@ -233,9 +241,9 @@ def validate_bridged_table_column_value_pair(
         return JsonResponse(
             {
                 "message": f"{left_model_class.__name__.lower()} with "
-                f"{left_model_attr_name}={left_model_attr_value} not associated with "
-                f"{right_model_class.__name__.lower()} with "
-                f"{right_model_attr_name}={right_model_attr_value}"
+                + f"{left_model_attr_name}={left_model_attr_value} not "
+                + f"associated with {right_model_class.__name__.lower()} with "
+                + f"{right_model_attr_name}={right_model_attr_value}"
             },
             status=status.HTTP_404_NOT_FOUND,
         )
@@ -273,8 +281,8 @@ def define_GET_POST_index_closure(model_class, model_id_attr_name):
             if model_id_attr_name in validated_args:
                 return JsonResponse(
                     {
-                        "message": f"a new {model_class.__name__.lower()} object "
-                        f"must not have a {model_id_attr_name} value"
+                        "message": f"a new {model_class.__name__.lower()} "
+                        + f"object must not have a {model_id_attr_name} value"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -319,8 +327,8 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
             except model_class.DoesNotExist:
                 return JsonResponse(
                     {
-                        "message": f"no {model_class.__name__.lower()} "
-                        f"with {model_id_attr_name}={model_obj_id}"
+                        "message": f"no {model_class.__name__.lower()} with "
+                        + f"{model_id_attr_name}={model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -342,8 +350,9 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
             if model_id_attr_name in validated_input:
                 return JsonResponse(
                     {
-                        "message": f"an updated {model_class.__name__.lower()} object "
-                        f"must not have a {model_id_attr_name} value"
+                        "message": f"an updated "
+                        + f"{model_class.__name__.lower()} object must not "
+                        + f"have a {model_id_attr_name} value"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -365,8 +374,8 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
             except model_class.DoesNotExist:
                 return JsonResponse(
                     {
-                        "message": f"no {model_class.__name__.lower()} "
-                        f"with {model_id_attr_name}={model_obj_id}"
+                        "message": f"no {model_class.__name__.lower()} with "
+                        + f"{model_id_attr_name}={model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -375,8 +384,8 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
             model_obj.delete()
             return JsonResponse(
                 {
-                    "message": f"{model_class.__name__.lower()} "
-                    f"with {model_id_attr_name}={model_obj_id} deleted"
+                    "message": f"{model_class.__name__.lower()} with "
+                    + f"{model_id_attr_name}={model_obj_id} deleted"
                 },
                 status=status.HTTP_200_OK,
             )
@@ -420,8 +429,9 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
             except outer_model_class.DoesNotExist:
                 return JsonResponse(
                     {
-                        "message": f"no {outer_model_class.__name__.lower()} with "
-                        f"{outer_model_id_attr_name}={outer_model_obj_id}"
+                        "message": f"no {outer_model_class.__name__.lower()} "
+                        + f"with {outer_model_id_attr_name}="
+                        + str(outer_model_obj_id)
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -462,7 +472,8 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
                 return JsonResponse(
                     {
                         "message": f"no {outer_model_class.__name__.lower()} "
-                        f"with {outer_model_id_attr_name}={outer_model_obj_id}"
+                        + f"with {outer_model_id_attr_name}="
+                        + str(outer_model_obj_id)
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -483,8 +494,9 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
                 prop_expr = ", ".join(f"'{property}'" for property in diff)
                 return JsonResponse(
                     {
-                        "message": f'unexpected propert{"ies" if len(diff) > 1 else "y"} '
-                        f"in input: {prop_expr}"
+                        "message": f"unexpected propert"
+                        + ("ies" if len(diff) > 1 else "y")
+                        + f" in input: {prop_expr}"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -502,7 +514,8 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
                 return JsonResponse(
                     {
                         "message": f"no {inner_model_class.__name__.lower()} "
-                        f"with {inner_model_id_attr_name}={inner_model_obj_id}"
+                        + f"with {inner_model_id_attr_name}="
+                        + str(inner_model_obj_id)
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -525,11 +538,13 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
             else:
                 return JsonResponse(
                     {
-                        "message": f"association between {outer_model_class.__name__.lower()} with "
-                        f"{outer_model_id_attr_name}={outer_model_obj_id} "
-                        f"and {inner_model_class.__name__.lower()} with "
-                        f"{inner_model_id_attr_name}={inner_model_obj_id} "
-                        "already exists"
+                        "message": f"association between "
+                        + outer_model_class.__name__.lower()
+                        + " with "
+                        + f"{outer_model_id_attr_name}={outer_model_obj_id} "
+                        + f"and {inner_model_class.__name__.lower()} with "
+                        + f"{inner_model_id_attr_name}={inner_model_obj_id} "
+                        + "already exists"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -630,10 +645,13 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
             bridge_row.delete()
             return JsonResponse(
                 {
-                    "message": f"association between {outer_model_class.__name__.lower()} with "
-                    f"{outer_model_id_attr_name}={outer_model_obj_id} "
-                    f"and {inner_model_class.__name__.lower()} with "
-                    f"{inner_model_id_attr_name}={inner_model_obj_id} deleted"
+                    "message": f"association between "
+                    + outer_model_class.__name__.lower()
+                    + " with "
+                    + f"{outer_model_id_attr_name}={outer_model_obj_id} and "
+                    + inner_model_class.__name__.lower()
+                    + " with "
+                    + f"{inner_model_id_attr_name}={inner_model_obj_id} deleted"
                 },
                 status=status.HTTP_200_OK,
             )
@@ -686,8 +704,8 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
             if getattr(user, buyer_or_seller_id_col_name) is None:
                 return JsonResponse(
                     {
-                        "message": f"user with user_id={outer_model_obj_id} has "
-                        "no associated buyer account"
+                        "message": f"user with user_id={outer_model_obj_id} "
+                        + "has no associated buyer account"
                     },
                     content_type="application/json",
                     status=status.HTTP_404_NOT_FOUND,
@@ -701,8 +719,8 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
             except buyer_or_seller_account_class.DoesNotExist:
                 return JsonResponse(
                     {
-                        "message": f"user with user_id={outer_model_obj_id} has "
-                        "no associated buyer account"
+                        "message": f"user with user_id={outer_model_obj_id} "
+                        + "has no associated buyer account"
                     },
                     content_type="application/json",
                     status=status.HTTP_404_NOT_FOUND,
@@ -734,9 +752,10 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
             if buyer_or_seller_id is not None:
                 return JsonResponse(
                     {
-                        "message": f"user with user_id={outer_model_obj_id} already has "
-                        f"a {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={buyer_or_seller_id} associated"
+                        "message": f"user with user_id={outer_model_obj_id} "
+                        + f"already has a {kind_of_account} account with "
+                        + f"{buyer_or_seller_id_col_name}={buyer_or_seller_id} "
+                        + "associated"
                     },
                     content_type="application/json",
                     status=status.HTTP_409_CONFLICT,
@@ -760,8 +779,9 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
                 prop_expr = ", ".join(f"'{property}'" for property in keys_found)
                 return JsonResponse(
                     {
-                        "message": f'unexpected propert{"ies" if len(keys_found) > 1 else "y"} '
-                        f"in input: {prop_expr}"
+                        "message": f"unexpected propert"
+                        + ("ies" if len(keys_found) > 1 else "y")
+                        + f" in input: {prop_expr}"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -848,7 +868,7 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
                 return JsonResponse(
                     {
                         "message": f"no buyer account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -886,7 +906,7 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
                 return JsonResponse(
                     {
                         "message": f"no buyer account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -899,8 +919,9 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
             return JsonResponse(
                 {
                     "message": f"{kind_of_account} account with "
-                    f"{buyer_or_seller_id_col_name}={inner_model_obj_id} associated with "
-                    f"user with user_id={outer_model_obj_id} disassociated and deleted"
+                    + f"{buyer_or_seller_id_col_name}={inner_model_obj_id} "
+                    + f"associated with user with user_id={outer_model_obj_id} "
+                    + "disassociated and deleted"
                 },
                 status=status.HTTP_200_OK,
             )
@@ -957,7 +978,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1004,7 +1025,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1043,8 +1064,9 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                 prop_expr = ", ".join(f"'{property}'" for property in diff)
                 return JsonResponse(
                     {
-                        "message": f"json object missing required "
-                        f'propert{"ies" if len(diff) > 1 else "y"}: {prop_expr}'
+                        "message": f"json object missing required propert"
+                        + ("ies" if len(diff) > 1 else "y")
+                        + f": {prop_expr}"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -1055,8 +1077,9 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
                 prop_expr = ", ".join(f"'{property}'" for property in diff)
                 return JsonResponse(
                     {
-                        "message": f'unexpected propert{"ies" if len(diff) > 1 else "y"} '
-                        f"in input: {prop_expr}"
+                        "message": f"unexpected propert"
+                        + ("ies" if len(diff) > 1 else "y")
+                        + f" in input: {prop_expr}"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -1073,8 +1096,9 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
             if len(pricing_value.split(".")[1]) > 2:
                 return JsonResponse(
                     {
-                        "message": f"error in input, property '{pricing_key}': "
-                        "must have only two decimal places"
+                        "message": f"error in input, property "
+                        + f"'{pricing_key}': must have only two decimal "
+                        + "places"
                     },
                     status=status.HTTP_400_BAD_REQUEST,
                 )
@@ -1167,7 +1191,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1190,7 +1214,8 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_listing} with "
-                        f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}"
+                        + f"{to_buy_or_to_sell_listing_id_col_name}="
+                        + str(third_model_obj_id)
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1229,7 +1254,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1252,7 +1277,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_listing} with "
-                        f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}"
+                        + f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1305,7 +1330,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_account} account with "
-                        f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
+                        + f"{buyer_or_seller_id_col_name}={inner_model_obj_id}"
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1328,7 +1353,8 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 return JsonResponse(
                     {
                         "message": f"no {kind_of_listing} with "
-                        f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id}"
+                        + f"{to_buy_or_to_sell_listing_id_col_name}="
+                        + str(third_model_obj_id)
                     },
                     status=status.HTTP_404_NOT_FOUND,
                 )
@@ -1338,7 +1364,8 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
             return JsonResponse(
                 {
                     "message": f"{kind_of_listing} with "
-                    f"{to_buy_or_to_sell_listing_id_col_name}={third_model_obj_id} deleted"
+                    + f"{to_buy_or_to_sell_listing_id_col_name}="
+                    + f"{third_model_obj_id} deleted"
                 },
                 status=status.HTTP_200_OK,
             )
