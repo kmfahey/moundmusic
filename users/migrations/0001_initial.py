@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 "db_table": "album",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="AlbumGenreBridge",
@@ -67,7 +67,7 @@ class Migration(migrations.Migration):
                 "db_table": "artist",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="ArtistAlbumBridge",
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
                 "db_table": "buyer_account",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="Genre",
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
                 "db_table": "genre",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="SellerAccount",
@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
                 "db_table": "seller_account",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="Song",
@@ -164,7 +164,7 @@ class Migration(migrations.Migration):
                 "db_table": "song",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="SongGenreBridge",
@@ -189,7 +189,7 @@ class Migration(migrations.Migration):
                 "db_table": "song_lyrics",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="ToBuyListing",
@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
                 "db_table": "to_buy_listing",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="ToSellListing",
@@ -227,7 +227,7 @@ class Migration(migrations.Migration):
                 "db_table": "to_sell_listing",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="User",
@@ -245,7 +245,7 @@ class Migration(migrations.Migration):
                 "db_table": "user_",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
         migrations.CreateModel(
             name="UserPassword",
@@ -257,6 +257,6 @@ class Migration(migrations.Migration):
                 "db_table": "user_password",
                 "managed": False,
             },
-            bases=(models.Model, albums.models.serializable),
+            bases=(models.Model, albums.models.Serializable),
         ),
     ]

@@ -18,7 +18,7 @@ from django.db import models
 # to be able to convert their attribute/value pairs to a dict. This is
 # used by the JSON interface to interpolate a python object into a JSON
 # object when returning a value at a REST endpoint.
-class serializable(object):
+class Serializable(object):
     def serialize(self):
         serialization = dict()
         for column in self.__columns__.keys():
@@ -29,8 +29,8 @@ class serializable(object):
         return serialization
 
 
-class Album(models.Model, serializable):
-    # Every model that inherits from serialiable implements this
+class Album(models.Model, Serializable):
+    # Every model that inherits from serializable implements this
     # double-underscore value so that the serialize() method
     # knows what to serialize. Moreover, it's also used by
     # moundmusic.viewutils.validate_input(), q.v. (This is why it's a
@@ -87,7 +87,7 @@ class AlbumSongBridge(models.Model):
         app_label = "albums"
 
 
-class Artist(models.Model, serializable):
+class Artist(models.Model, Serializable):
     # The value for 'gender' in this value is special; the 'gender'
     # column is a postgres ENUM type with values ('male', 'female',
     # 'nonbinary'). When moundmusic.viewutils.validate_input()
@@ -153,7 +153,7 @@ class ArtistSongBridge(models.Model):
         app_label = "albums"
 
 
-class BuyerAccount(models.Model, serializable):
+class BuyerAccount(models.Model, Serializable):
     __columns__ = {
         "buyer_id": int,
         "postboard_name": str,
@@ -173,7 +173,7 @@ class BuyerAccount(models.Model, serializable):
         app_label = "albums"
 
 
-class Genre(models.Model, serializable):
+class Genre(models.Model, Serializable):
     __columns__ = {"genre_id": int, "genre_name": str}
     __nullable_cols__ = ("genre_id",)
 
@@ -186,7 +186,7 @@ class Genre(models.Model, serializable):
         app_label = "albums"
 
 
-class SellerAccount(models.Model, serializable):
+class SellerAccount(models.Model, Serializable):
     __columns__ = {
         "seller_id": int,
         "storefront_name": str,
@@ -206,7 +206,7 @@ class SellerAccount(models.Model, serializable):
         app_label = "albums"
 
 
-class Song(models.Model, serializable):
+class Song(models.Model, Serializable):
     __columns__ = {
         "song_id": int,
         "title": str,
@@ -241,7 +241,7 @@ class SongGenreBridge(models.Model):
         app_label = "albums"
 
 
-class SongLyrics(models.Model, serializable):
+class SongLyrics(models.Model, Serializable):
     __columns__ = {"song_lyrics_id": int, "lyrics": str, "song_id": int}
     __nullable_cols__ = ("song_lyrics_id", "song_id")
 
@@ -255,7 +255,7 @@ class SongLyrics(models.Model, serializable):
         app_label = "albums"
 
 
-class ToBuyListing(models.Model, serializable):
+class ToBuyListing(models.Model, Serializable):
     __columns__ = {
         "to_buy_listing_id": int,
         "max_accepting_price": str,
@@ -277,7 +277,7 @@ class ToBuyListing(models.Model, serializable):
         app_label = "albums"
 
 
-class ToSellListing(models.Model, serializable):
+class ToSellListing(models.Model, Serializable):
     __columns__ = {
         "to_sell_listing_id": int,
         "asking_price": str,
@@ -299,7 +299,7 @@ class ToSellListing(models.Model, serializable):
         app_label = "albums"
 
 
-class User(models.Model, serializable):
+class User(models.Model, Serializable):
     __columns__ = {
         "user_id": int,
         "user_name": str,
@@ -333,7 +333,7 @@ class User(models.Model, serializable):
         app_label = "albums"
 
 
-class UserPassword(models.Model, serializable):
+class UserPassword(models.Model, Serializable):
     __columns__ = {"password_id": int, "encrypted_password": str, "user_id": int}
     __nullable_cols__ = ("password_id", "user_id")
 
