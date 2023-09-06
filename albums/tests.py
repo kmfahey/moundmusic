@@ -37,7 +37,7 @@ def matches_date_isoformat(strval):
 
 
 @pytest.mark.django_db
-def test_index_GET():
+def test_index_get():
     request = request_factory.get("/albums/")
     response = index(request)
     assert isinstance(response, JsonResponse)
@@ -63,7 +63,7 @@ def test_index_GET():
 
 
 @pytest.mark.django_db
-def test_index_POST():
+def test_index_post():
     new_album_dict = {
         "title": "Some Album",
         "number_of_discs": 1,

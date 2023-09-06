@@ -290,7 +290,7 @@ def test_song_lyrics_id_get_nonext_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_single_lyrics_GET_error_nonexistent_song_lyrics_id():
+def test_song_lyrics_get_nonext_lyrics_id():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id

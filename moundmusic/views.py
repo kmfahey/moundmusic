@@ -12,7 +12,7 @@ from rest_framework.decorators import api_view
 
 
 @api_view(["GET"])
-def site_index(request):
+def site_index(_):
     return JsonResponse(endpoints_help, status=status.HTTP_200_OK)
 
 

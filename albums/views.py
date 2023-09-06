@@ -40,7 +40,7 @@ single_album = single_model_defclo(Album, "album_id")
 
 # GET /albums/<album_id>/songs
 @api_view(["GET"])
-def single_album_songs(request, outer_model_obj_id):
+def single_album_songs(_, outer_model_obj_id):
     bridge_rows = AlbumSongBridge.objects.filter(album_id=outer_model_obj_id)
     if not len(bridge_rows):
         return JsonResponse(
@@ -71,10 +71,8 @@ def single_album_songs(request, outer_model_obj_id):
 
 
 # GET,DELETE /albums/<album_id>/songs/<song_id>
-single_album_single_song = (
-    single_single_defclo(
-        Album, "album_id", Song, "song_id", AlbumSongBridge
-    )
+single_album_single_song = single_single_defclo(
+    Album, "album_id", Song, "song_id", AlbumSongBridge
 )
 
 
@@ -85,10 +83,8 @@ single_album_genres = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /albums/<album_id>/genres/<genre_id>
-single_album_single_genre = (
-    single_single_defclo(
-        Album, "album_id", Genre, "genre_id", AlbumGenreBridge
-    )
+single_album_single_genre = single_single_defclo(
+    Album, "album_id", Genre, "genre_id", AlbumGenreBridge
 )
 
 
@@ -99,8 +95,6 @@ single_album_artists = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /albums/<album_id>/artists/<artist_id>/
-single_album_single_artist = (
-    single_single_defclo(
-        Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
-    )
+single_album_single_artist = single_single_defclo(
+    Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
 )

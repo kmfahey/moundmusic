@@ -56,7 +56,7 @@ single_song = single_model_defclo(Song, "song_id")
 
 # GET /songs/<song_id>/albums
 @api_view(["GET"])
-def single_song_albums(request, outer_model_obj_id):
+def single_song_albums(_, outer_model_obj_id):
     try:
         Song.objects.get(song_id=outer_model_obj_id)
     except Song.DoesNotExist:
@@ -84,7 +84,7 @@ def single_song_albums(request, outer_model_obj_id):
 
 # GET /songs/<song_id>/albums/<album_id>
 @api_view(["GET"])
-def single_song_single_album(request, outer_model_obj_id, inner_model_obj_id):
+def single_song_single_album(_, outer_model_obj_id, inner_model_obj_id):
     result = validate_bridgetab_models(
         Song,
         "song_id",
@@ -121,10 +121,8 @@ single_song_artists = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /songs/<song_id>/artists/<artist_id>
-single_song_single_artist = (
-    single_single_defclo(
-        Song, "song_id", Artist, "artist_id", ArtistSongBridge
-    )
+single_song_single_artist = single_single_defclo(
+    Song, "song_id", Artist, "artist_id", ArtistSongBridge
 )
 
 
@@ -135,10 +133,8 @@ single_song_genres = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /songs/<song_id>/genres/<genre_id>
-single_song_single_genre = (
-    single_single_defclo(
-        Song, "song_id", Genre, "genre_id", SongGenreBridge
-    )
+single_song_single_genre = single_single_defclo(
+    Song, "song_id", Genre, "genre_id", SongGenreBridge
 )
 
 
@@ -211,9 +207,7 @@ def single_song_lyrics(request, outer_model_obj_id):
         song.save()
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
 
-    return func_dispatch(
-        (_single_song_lyrics_get, _single_song_lyrics_post), request
-    )
+    return func_dispatch((_single_song_lyrics_get, _single_song_lyrics_post), request)
 
 
 # GET,DELETE /songs/<song_id>/lyrics/<lyrics_id>
@@ -269,6 +263,4 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
             status=status.HTTP_200_OK,
         )
 
-    return func_dispatch(
-        (_single_song_lyrics_get, _single_song_lyrics_delete), request
-    )
+    return func_dispatch((_single_song_lyrics_get, _single_song_lyrics_delete), request)
