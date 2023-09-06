@@ -13,8 +13,8 @@ from moundmusic.viewutils import (
 from moundmusic.viewutils import (
     index_defclo,
     single_model_defclo,
-    one_outer_all_inner_defclo,
-    single_single_defclo,
+    outer_id_inner_list_defclo,
+    outer_id_inner_id_defclo,
 )
 
 from .models import (
@@ -115,25 +115,25 @@ def single_song_single_album(_, outer_model_obj_id, inner_model_obj_id):
 
 
 # GET,POST /songs/<song_id>/artists
-single_song_artists = one_outer_all_inner_defclo(
+single_song_artists = outer_id_inner_list_defclo(
     Song, "song_id", Artist, "artist_id", ArtistSongBridge
 )
 
 
 # GET,DELETE /songs/<song_id>/artists/<artist_id>
-single_song_single_artist = single_single_defclo(
+single_song_single_artist = outer_id_inner_id_defclo(
     Song, "song_id", Artist, "artist_id", ArtistSongBridge
 )
 
 
 # GET,POST /songs/<song_id>/genres
-single_song_genres = one_outer_all_inner_defclo(
+single_song_genres = outer_id_inner_list_defclo(
     Song, "song_id", Genre, "genre_id", SongGenreBridge
 )
 
 
 # GET,DELETE /songs/<song_id>/genres/<genre_id>
-single_song_single_genre = single_single_defclo(
+single_song_single_genre = outer_id_inner_id_defclo(
     Song, "song_id", Genre, "genre_id", SongGenreBridge
 )
 

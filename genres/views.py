@@ -3,8 +3,8 @@
 from moundmusic.viewutils import (
     index_defclo,
     single_model_defclo,
-    one_outer_all_inner_defclo,
-    single_single_defclo,
+    outer_id_inner_list_defclo,
+    outer_id_inner_id_defclo,
 )
 
 from .models import (
@@ -32,36 +32,36 @@ single_genre = single_model_defclo(Genre, "genre_id")
 
 
 # GET,POST /genres/<genre_id>/albums
-single_genre_albums = one_outer_all_inner_defclo(
+single_genre_albums = outer_id_inner_list_defclo(
     Genre, "genre_id", Album, "album_id", AlbumGenreBridge
 )
 
 
 # GET,DELETE /genres/<genre_id>/albums/<album_id>
-single_genre_single_album = single_single_defclo(
+single_genre_single_album = outer_id_inner_id_defclo(
     Genre, "genre_id", Album, "album_id", AlbumGenreBridge
 )
 
 
 # GET,POST /genres/<genre_id>/artists
-single_genre_artists = one_outer_all_inner_defclo(
+single_genre_artists = outer_id_inner_list_defclo(
     Genre, "genre_id", Artist, "artist_id", ArtistGenreBridge
 )
 
 
 # GET,DELETE /genres/<genre_id>/artists/<artist_id>
-single_genre_single_artist = single_single_defclo(
+single_genre_single_artist = outer_id_inner_id_defclo(
     Genre, "genre_id", Artist, "artist_id", ArtistGenreBridge
 )
 
 
 # GET,POST /genres/<genre_id>/songs
-single_genre_songs = one_outer_all_inner_defclo(
+single_genre_songs = outer_id_inner_list_defclo(
     Genre, "genre_id", Song, "song_id", SongGenreBridge
 )
 
 
 # GET,DELETE /genres/<genre_id>/songs/<song_id>
-single_genre_single_song = single_single_defclo(
+single_genre_single_song = outer_id_inner_id_defclo(
     Genre, "genre_id", Song, "song_id", SongGenreBridge
 )

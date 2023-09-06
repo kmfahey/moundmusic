@@ -20,8 +20,8 @@ from .models import (
 from moundmusic.viewutils import (
     index_defclo,
     single_model_defclo,
-    one_outer_all_inner_defclo,
-    single_single_defclo,
+    outer_id_inner_list_defclo,
+    outer_id_inner_id_defclo,
 )
 
 
@@ -71,30 +71,30 @@ def single_album_songs(_, outer_model_obj_id):
 
 
 # GET,DELETE /albums/<album_id>/songs/<song_id>
-single_album_single_song = single_single_defclo(
+single_album_single_song = outer_id_inner_id_defclo(
     Album, "album_id", Song, "song_id", AlbumSongBridge
 )
 
 
 # GET,POST /albums/<album_id>/genres
-single_album_genres = one_outer_all_inner_defclo(
+single_album_genres = outer_id_inner_list_defclo(
     Album, "album_id", Genre, "genre_id", AlbumGenreBridge
 )
 
 
 # GET,DELETE /albums/<album_id>/genres/<genre_id>
-single_album_single_genre = single_single_defclo(
+single_album_single_genre = outer_id_inner_id_defclo(
     Album, "album_id", Genre, "genre_id", AlbumGenreBridge
 )
 
 
 # GET,POST /albums/<album_id>/artists/
-single_album_artists = one_outer_all_inner_defclo(
+single_album_artists = outer_id_inner_list_defclo(
     Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
 )
 
 
 # GET,DELETE /albums/<album_id>/artists/<artist_id>/
-single_album_single_artist = single_single_defclo(
+single_album_single_artist = outer_id_inner_id_defclo(
     Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
 )
