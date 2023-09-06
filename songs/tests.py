@@ -25,7 +25,7 @@ def matches_date_isoformat(strval):
 
 
 @pytest.mark.django_db
-def test_single_song_albums_GET():
+def test_song_albums_get():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id
@@ -58,7 +58,7 @@ def test_single_song_albums_GET():
 
 
 @pytest.mark.django_db
-def test_single_song_albums_GET_error_nonexistent_song_id():
+def test_song_albums_get_nonext_id():
     songs = Song.objects.filter()
     song_ids = [song.song_id for song in songs]
     while True:
@@ -74,7 +74,7 @@ def test_single_song_albums_GET_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_single_album_GET():
+def test_song_album_get():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id
@@ -110,7 +110,7 @@ def test_single_song_single_album_GET():
 
 
 @pytest.mark.django_db
-def test_single_song_single_album_GET_error_nonexistent_song_id():
+def test_song_album_get_nonext_id():
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
         song_id = random.randint(1, 9999)
@@ -131,7 +131,7 @@ def test_single_song_single_album_GET_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_lyrics_GET():
+def test_song_lyrics_any_get():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id
@@ -148,7 +148,7 @@ def test_single_song_lyrics_GET():
 
 
 @pytest.mark.django_db
-def test_single_song_lyrics_GET_error_nonexistent_song_id():
+def test_song_lyrics_any_get_nonext_song_id():
     songs = Song.objects.filter()
     song_ids = [song.song_id for song in songs]
     while True:
@@ -164,7 +164,7 @@ def test_single_song_lyrics_GET_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_lyrics_GET_error_nonexistent_song_lyrics_id():
+def test_song_lyrics_any_get_nonext_lyrics_id():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id, song_lyrics_id = song.song_id, song.song_lyrics_id
@@ -184,7 +184,7 @@ def test_single_song_lyrics_GET_error_nonexistent_song_lyrics_id():
 
 
 @pytest.mark.django_db
-def test_single_song_song_lyrics_POST():
+def test_song_lyrics_post():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id
@@ -207,7 +207,7 @@ def test_single_song_song_lyrics_POST():
 
 
 @pytest.mark.django_db
-def test_single_song_song_lyrics_POST_error_nonexistent_song_id():
+def test_song_lyrics_post_nonext_id():
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
         song_id = random.randint(1, 9999)
@@ -232,7 +232,7 @@ def test_single_song_song_lyrics_POST_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_song_lyrics_POST_song_already_has_song_lyrics_associated():
+def test_song_lyrics_post_existing_lyrics():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id = song.song_id
@@ -254,7 +254,7 @@ def test_single_song_song_lyrics_POST_song_already_has_song_lyrics_associated():
 
 
 @pytest.mark.django_db
-def test_single_song_single_song_lyrics_GET():
+def test_song_lyrics_id_get():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id, song_lyrics_id = song.song_id, song.song_lyrics_id
@@ -272,7 +272,7 @@ def test_single_song_single_song_lyrics_GET():
 
 
 @pytest.mark.django_db
-def test_single_song_single_lyrics_GET_error_nonexistent_song_id():
+def test_song_lyrics_id_get_nonext_song_id():
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
         song_id = random.randint(1, 9999)
@@ -313,7 +313,7 @@ def test_single_song_single_lyrics_GET_error_nonexistent_song_lyrics_id():
 
 
 @pytest.mark.django_db
-def test_single_song_single_song_lyrics_DELETE():
+def test_song_lyrics_delete():
     songs = Song.objects.filter()
     song = random.choice(songs)
     song_id, song_lyrics_id = song.song_id, song.song_lyrics_id
@@ -334,7 +334,7 @@ def test_single_song_single_song_lyrics_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_id():
+def test_song_lyrics_delete_nonext_song_id():
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
         song_id = random.randint(1, 9999)
@@ -352,7 +352,7 @@ def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_song_single_song_lyrics_DELETE_error_nonexistent_song_lyrics_id():
+def test_song_lyrics_delete_nonext_lyrics_id():
     song_objs = Song.objects.filter()
     song = random.choice(song_objs)
     song_id = song.song_id

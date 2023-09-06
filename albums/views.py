@@ -18,10 +18,10 @@ from .models import (
 )
 
 from moundmusic.viewutils import (
-    define_GET_POST_index_closure,
-    define_single_model_GET_PATCH_DELETE_closure,
-    define_single_outer_model_all_of_inner_model_GET_POST_closure,
-    define_single_outer_model_single_inner_model_GET_DELETE_closure,
+    index_defclo,
+    single_model_defclo,
+    one_outer_all_inner_defclo,
+    single_single_defclo,
 )
 
 
@@ -31,11 +31,11 @@ from moundmusic.viewutils import (
 
 
 # GET,POST /albums/
-index = define_GET_POST_index_closure(Album, "album_id")
+index = index_defclo(Album, "album_id")
 
 
 # GET,PATCH,DELETE /albums/<album_id>/
-single_album = define_single_model_GET_PATCH_DELETE_closure(Album, "album_id")
+single_album = single_model_defclo(Album, "album_id")
 
 
 # GET /albums/<album_id>/songs
@@ -72,35 +72,35 @@ def single_album_songs(request, outer_model_obj_id):
 
 # GET,DELETE /albums/<album_id>/songs/<song_id>
 single_album_single_song = (
-    define_single_outer_model_single_inner_model_GET_DELETE_closure(
+    single_single_defclo(
         Album, "album_id", Song, "song_id", AlbumSongBridge
     )
 )
 
 
 # GET,POST /albums/<album_id>/genres
-single_album_genres = define_single_outer_model_all_of_inner_model_GET_POST_closure(
+single_album_genres = one_outer_all_inner_defclo(
     Album, "album_id", Genre, "genre_id", AlbumGenreBridge
 )
 
 
 # GET,DELETE /albums/<album_id>/genres/<genre_id>
 single_album_single_genre = (
-    define_single_outer_model_single_inner_model_GET_DELETE_closure(
+    single_single_defclo(
         Album, "album_id", Genre, "genre_id", AlbumGenreBridge
     )
 )
 
 
 # GET,POST /albums/<album_id>/artists/
-single_album_artists = define_single_outer_model_all_of_inner_model_GET_POST_closure(
+single_album_artists = one_outer_all_inner_defclo(
     Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
 )
 
 
 # GET,DELETE /albums/<album_id>/artists/<artist_id>/
 single_album_single_artist = (
-    define_single_outer_model_single_inner_model_GET_DELETE_closure(
+    single_single_defclo(
         Album, "album_id", Artist, "artist_id", ArtistAlbumBridge
     )
 )

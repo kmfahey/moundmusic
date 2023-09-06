@@ -34,7 +34,7 @@ def matches_2plc_decimal_format(strval):
 
 
 @pytest.mark.django_db
-def test_single_user_password_set_password_POST():
+def test_user_passwd_set_post():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
@@ -61,7 +61,7 @@ def test_single_user_password_set_password_POST():
 
 
 @pytest.mark.django_db
-def test_single_user_password_set_password_POST_error_nonexistent_user_id():
+def test_user_passwd_set_post_nonext_user_id():
     users = User.objects.filter()
     user_ids = [user.user_id for user in users]
     while True:
@@ -85,7 +85,7 @@ def test_single_user_password_set_password_POST_error_nonexistent_user_id():
 
 
 @pytest.mark.django_db
-def test_single_user_password_set_password_POST_error_extra_properties():
+def test_user_passwd_set_post_error_extra_properties():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
@@ -106,7 +106,7 @@ def test_single_user_password_set_password_POST_error_extra_properties():
 
 
 @pytest.mark.django_db
-def test_single_user_password_set_password_POST_conditional_user_has_no_password():
+def test_user_passwd_set_post_conditional_user_has_no_passwd():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
@@ -135,7 +135,7 @@ def test_single_user_password_set_password_POST_conditional_user_has_no_password
 
 
 @pytest.mark.django_db
-def test_single_user_password_authenticate_POST():
+def test_user_passwd_authpost():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
@@ -157,7 +157,7 @@ def test_single_user_password_authenticate_POST():
 
 
 @pytest.mark.django_db
-def test_single_user_password_authenticate_POST_error_no_password_set():
+def test_user_passwd_authpost_error_no_passwd_set():
     users = User.objects.filter()
     user = random.choice(users)
     user_id = user.user_id
@@ -182,7 +182,7 @@ def test_single_user_password_authenticate_POST_error_no_password_set():
 
 # TEST single_user_any_buyer_account()
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_GET():
+def test_user_any_buyer_acct_get():
     users = User.objects.filter()
     user = random.choice(users)
     while user.buyer_id is None:
@@ -206,7 +206,7 @@ def test_single_user_any_buyer_account_GET():
 
 
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_GET_error_nonexistent_user_id():
+def test_user_any_buyer_acct_get_nonext_user_id():
     users = User.objects.filter()
     user_ids = [user.user_id for user in users]
     while True:
@@ -225,7 +225,7 @@ def test_single_user_any_buyer_account_GET_error_nonexistent_user_id():
 
 
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_GET_error_user_has_no_buyer_account():
+def test_user_any_buyer_acct_no_buy_acct():
     users = User.objects.filter(buyer_id__isnull=True)
     user = random.choice(users)
     while user.buyer_id is not None:
@@ -244,7 +244,7 @@ def test_single_user_any_buyer_account_GET_error_user_has_no_buyer_account():
 
 
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_POST():
+def test_user_any_buyer_acct_post():
     users = User.objects.filter(buyer_id__isnull=True)
     user = random.choice(users)
     user_id = user.user_id
@@ -272,7 +272,7 @@ def test_single_user_any_buyer_account_POST():
 
 
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_POST_error_nonexistent_user_id():
+def test_user_any_buyer_acct_post_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -295,7 +295,7 @@ def test_single_user_any_buyer_account_POST_error_nonexistent_user_id():
 
 
 @pytest.mark.django_db
-def test_single_user_any_buyer_account_POST_error_user_already_has_a_buyer_account():
+def test_user_any_buyer_acct_post_ext_buy_acct():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -320,7 +320,7 @@ def test_single_user_any_buyer_account_POST_error_user_already_has_a_buyer_accou
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_GET():
+def test_user_buyer_acct_get():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -342,7 +342,7 @@ def test_single_user_single_buyer_account_GET():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_GET_error_nonexistent_user_id():
+def test_user_buyer_acct_get_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -364,7 +364,7 @@ def test_single_user_single_buyer_account_GET_error_nonexistent_user_id():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_GET_error_nonexistent_buyer_id():
+def test_user_buyer_acct_get_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -386,7 +386,7 @@ def test_single_user_single_buyer_account_GET_error_nonexistent_buyer_id():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_DELETE():
+def test_user_buyer_acct_delete():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -404,7 +404,7 @@ def test_single_user_single_buyer_account_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_DELETE_error_nonexistent_user_id():
+def test_user_buyer_acct_delete_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -426,7 +426,7 @@ def test_single_user_single_buyer_account_DELETE_error_nonexistent_user_id():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_DELETE_error_nonexistent_buyer_id():
+def test_user_buyer_acct_delete_nonext_buy_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -449,7 +449,7 @@ def test_single_user_single_buyer_account_DELETE_error_nonexistent_buyer_id():
 
 # TEST single_user_single_buyer_account_any_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_GET():
+def test_user_buyer_acct_any_listing_get():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -478,7 +478,7 @@ def test_single_user_single_buyer_account_any_listing_GET():
 
 # TEST single_user_single_buyer_account_any_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_GET_error_nonexistent_user_id():
+def test_user_buyer_acct_any_listing_get_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -500,7 +500,7 @@ def test_single_user_single_buyer_account_any_listing_GET_error_nonexistent_user
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_GET_error_nonexistent_buyer_id():
+def test_user_buyer_acct_any_listing_get_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -523,7 +523,7 @@ def test_single_user_single_buyer_account_any_listing_GET_error_nonexistent_buye
 
 # TEST single_user_single_buyer_account_any_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST():
+def test_user_buyer_acct_any_listing_post():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -559,7 +559,7 @@ def test_single_user_single_buyer_account_any_listing_POST():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_user_id():
+def test_user_buyer_acct_any_listing_post_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -592,7 +592,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_use
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_buyer_id():
+def test_user_buyer_acct_any_listing_post_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -625,7 +625,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_nonexistent_buy
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST_error_missing_required_properties():
+def test_user_buyer_acct_any_listing_post_missing_req_prop():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -650,7 +650,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_missing_require
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST_error_unexpected_properties():
+def test_user_buyer_acct_any_listing_post_unexpect_props():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -677,7 +677,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_unexpected_prop
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_any_listing_POST_error_max_accepting_price():
+def test_user_buyer_acct_any_listing_post_max_price():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -707,7 +707,7 @@ def test_single_user_single_buyer_account_any_listing_POST_error_max_accepting_p
 
 # TEST single_user_single_buyer_account_single_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_GET():
+def test_user_buyer_acct_listing_get():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -745,7 +745,7 @@ def test_single_user_single_buyer_account_single_listing_GET():
 
 # TEST single_user_single_buyer_account_single_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_user_id():
+def test_user_buyer_acct_listing_get_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -776,7 +776,7 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_u
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_buyer_id():
+def test_user_buyer_acct_listing_get_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -807,7 +807,7 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_b
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_listing_id():
+def test_user_buyer_acct_listing_get_nonext_listing_id():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -837,7 +837,7 @@ def test_single_user_single_buyer_account_single_listing_GET_error_nonexistent_l
 
 # TEST single_user_single_buyer_account_any_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_PATCH():
+def test_user_buyer_acct_listing_patch():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -877,7 +877,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH():
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent_user_id():
+def test_user_buyer_acct_listing_patch_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -912,7 +912,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent_buyer_id():
+def test_user_buyer_acct_listing_patch_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -947,7 +947,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent_listing_id():
+def test_user_buyer_acct_listing_patch_nonext_listing_id():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -980,7 +980,7 @@ def test_single_user_single_buyer_account_single_listing_PATCH_error_nonexistent
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_DELETE():
+def test_user_buyer_acct_listing_delete():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id
@@ -1007,7 +1007,7 @@ def test_single_user_single_buyer_account_single_listing_DELETE():
 
 # TEST single_user_single_buyer_account_single_listing()
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexistent_user_id():
+def test_user_buyer_acct_listing_delete_nonext_user_id():
     user_ids = [user.user_id for user in User.objects.filter(buyer_id__isnull=True)]
     while True:
         user_id = random.randint(1, 9999)
@@ -1038,7 +1038,7 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexistent_buyer_id():
+def test_user_buyer_acct_listing_delete_nonext_buyer_id():
     user_ids = [user_account.user_id for user_account in User.objects.filter()]
     user_id = random.choice(user_ids)
     buyer_ids = [
@@ -1069,7 +1069,7 @@ def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexisten
 
 
 @pytest.mark.django_db
-def test_single_user_single_buyer_account_single_listing_DELETE_error_nonexistent_listing_id():
+def test_user_buyer_acct_listing_delete_nonext_listing_id():
     users = User.objects.filter(buyer_id__isnull=False)
     user = random.choice(users)
     user_id, buyer_id = user.user_id, user.buyer_id

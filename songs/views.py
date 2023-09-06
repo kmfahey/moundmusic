@@ -6,15 +6,15 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from moundmusic.viewutils import (
-    dispatch_funcs_by_method,
+    func_dispatch,
     validate_post_request,
-    validate_bridged_table_column_value_pair,
+    validate_bridgetab_models,
 )
 from moundmusic.viewutils import (
-    define_GET_POST_index_closure,
-    define_single_model_GET_PATCH_DELETE_closure,
-    define_single_outer_model_all_of_inner_model_GET_POST_closure,
-    define_single_outer_model_single_inner_model_GET_DELETE_closure,
+    index_defclo,
+    single_model_defclo,
+    one_outer_all_inner_defclo,
+    single_single_defclo,
 )
 
 from .models import (
@@ -41,17 +41,17 @@ from .models import (
 # all the methods that endpoint accepts. Where that's more than one
 # method, this pattern is used: an inline function is written for
 # each method, and the body of the function consists of a tail-call
-# to moundmusic.viewutils.dispatch_funcs_by_method(), which itself
+# to moundmusic.viewutils.func_dispatch(), which itself
 # tail-calls the inline function that matches the method that's being
 # handled.
 
 
 # GET,POST /songs
-index = define_GET_POST_index_closure(Song, "song_id")
+index = index_defclo(Song, "song_id")
 
 
 # GET,PATCH,DELETE /songs/<song_id>
-single_song = define_single_model_GET_PATCH_DELETE_closure(Song, "song_id")
+single_song = single_model_defclo(Song, "song_id")
 
 
 # GET /songs/<song_id>/albums
@@ -85,7 +85,7 @@ def single_song_albums(request, outer_model_obj_id):
 # GET /songs/<song_id>/albums/<album_id>
 @api_view(["GET"])
 def single_song_single_album(request, outer_model_obj_id, inner_model_obj_id):
-    result = validate_bridged_table_column_value_pair(
+    result = validate_bridgetab_models(
         Song,
         "song_id",
         outer_model_obj_id,
@@ -115,28 +115,28 @@ def single_song_single_album(request, outer_model_obj_id, inner_model_obj_id):
 
 
 # GET,POST /songs/<song_id>/artists
-single_song_artists = define_single_outer_model_all_of_inner_model_GET_POST_closure(
+single_song_artists = one_outer_all_inner_defclo(
     Song, "song_id", Artist, "artist_id", ArtistSongBridge
 )
 
 
 # GET,DELETE /songs/<song_id>/artists/<artist_id>
 single_song_single_artist = (
-    define_single_outer_model_single_inner_model_GET_DELETE_closure(
+    single_single_defclo(
         Song, "song_id", Artist, "artist_id", ArtistSongBridge
     )
 )
 
 
 # GET,POST /songs/<song_id>/genres
-single_song_genres = define_single_outer_model_all_of_inner_model_GET_POST_closure(
+single_song_genres = one_outer_all_inner_defclo(
     Song, "song_id", Genre, "genre_id", SongGenreBridge
 )
 
 
 # GET,DELETE /songs/<song_id>/genres/<genre_id>
 single_song_single_genre = (
-    define_single_outer_model_single_inner_model_GET_DELETE_closure(
+    single_single_defclo(
         Song, "song_id", Genre, "genre_id", SongGenreBridge
     )
 )
@@ -211,7 +211,7 @@ def single_song_lyrics(request, outer_model_obj_id):
         song.save()
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
 
-    return dispatch_funcs_by_method(
+    return func_dispatch(
         (_single_song_lyrics_GET, _single_song_lyrics_POST), request
     )
 
@@ -269,6 +269,6 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
             status=status.HTTP_200_OK,
         )
 
-    return dispatch_funcs_by_method(
+    return func_dispatch(
         (_single_song_lyrics_GET, _single_song_lyrics_DELETE), request
     )

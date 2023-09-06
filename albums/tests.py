@@ -90,7 +90,7 @@ def test_index_POST():
 
 
 @pytest.mark.django_db
-def test_index_POST_error_invalid_args():
+def test_index_post_inval_args():
     new_album_dict = {
         "title": "",
         "number_of_discs": 1,
@@ -110,7 +110,7 @@ def test_index_POST_error_invalid_args():
 
 
 @pytest.mark.django_db
-def test_single_album_GET():
+def test_album_get():
     new_album_dict = {
         "title": "Some Album",
         "number_of_discs": 1,
@@ -138,7 +138,7 @@ def test_single_album_GET():
 
 
 @pytest.mark.django_db
-def test_single_album_GET_error_nonexistent_album_id():
+def test_album_get_nonext_id():
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
     while True:
@@ -156,7 +156,7 @@ def test_single_album_GET_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_PATCH():
+def test_album_patch():
     new_album_dict = {
         "title": "Some Album",
         "number_of_discs": 1,
@@ -190,7 +190,7 @@ def test_single_album_PATCH():
 
 
 @pytest.mark.django_db
-def test_single_album_PATCH_error_nonexistent_album_id():
+def test_album_patch_nonxt_id():
     album_patch_dict = {"title": "Foo"}
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
@@ -211,7 +211,7 @@ def test_single_album_PATCH_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_PATCH_error_invalid_args():
+def test_album_patch_inval_args():
     album_patch_dict = {"title": ""}
     albums = Album.objects.filter()
     album = random.choice(albums)
@@ -229,7 +229,7 @@ def test_single_album_PATCH_error_invalid_args():
 
 
 @pytest.mark.django_db
-def test_single_album_DELETE():
+def test_album_delete():
     album = Album.objects.filter()[0]
     album_id = album.album_id
     request = request_factory.delete(f"/albums/{album_id}")
@@ -245,7 +245,7 @@ def test_single_album_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_album_DELETE_error_nonexistent_album_id():
+def test_album_delete_nonext_id():
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
     while True:
@@ -261,7 +261,7 @@ def test_single_album_DELETE_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_songs_GET():
+def test_album_songs_get():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -288,7 +288,7 @@ def test_single_album_songs_GET():
 
 
 @pytest.mark.django_db
-def test_single_album_songs_GET_error_nonexistent_album_id():
+def test_album_songs_get_nonext_id():
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
     while True:
@@ -304,7 +304,7 @@ def test_single_album_songs_GET_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_GET():
+def test_album_song_get():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -331,7 +331,7 @@ def test_single_album_single_song_GET():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_GET_error_nonexistent_album_id():
+def test_album_song_get_nonext_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -352,7 +352,7 @@ def test_single_album_single_song_GET_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_GET():
+def test_album_genres_get():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -371,7 +371,7 @@ def test_single_album_genres_GET():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_GET_error_nonexistent_album_id():
+def test_album_genres_get_nonext_id():
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
     while True:
@@ -387,7 +387,7 @@ def test_single_album_genres_GET_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_POST():
+def test_album_genres_post():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -419,7 +419,7 @@ def test_single_album_genres_POST():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_POST_error_nonexistent_album_id():
+def test_album_genres_post_nonext_album_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -442,7 +442,7 @@ def test_single_album_genres_POST_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_POST_error_nonexistent_genre_id():
+def test_album_genres_post_nonext_genre_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
@@ -465,7 +465,7 @@ def test_single_album_genres_POST_error_nonexistent_genre_id():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_POST_error_bridge_row_already_exists():
+def test_album_genres_post_error_bridge_row_already_exists():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     bridge_rows = AlbumGenreBridge.objects.filter(album_id=album_id)
@@ -489,7 +489,7 @@ def test_single_album_genres_POST_error_bridge_row_already_exists():
 
 
 @pytest.mark.django_db
-def test_single_album_genres_POST_error_invalid_args():
+def test_album_genres_post_error_inval_args():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
@@ -509,7 +509,7 @@ def test_single_album_genres_POST_error_invalid_args():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_DELETE():
+def test_album_song_delete():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -533,7 +533,7 @@ def test_single_album_single_song_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_DELETE_error_nonexistent_album_id():
+def test_album_song_delete_nonext_album_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -550,7 +550,7 @@ def test_single_album_single_song_DELETE_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_DELETE_error_nonexistent_song_id():
+def test_album_song_delete_nonext_song_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     song_ids = [song.song_id for song in Song.objects.filter()]
@@ -567,7 +567,7 @@ def test_single_album_single_song_DELETE_error_nonexistent_song_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_song_DELETE_error_album_not_assoc_w_song():
+def test_album_song_delete_not_assoc():
     album_ids = [album.album_id for album in Album.objects.filter()]
     song_ids = [song.song_id for song in Song.objects.filter()]
     while True:
@@ -589,7 +589,7 @@ def test_single_album_single_song_DELETE_error_album_not_assoc_w_song():
 
 
 @pytest.mark.django_db
-def test_single_album_single_genre_DELETE():
+def test_album_genre_delete():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -613,7 +613,7 @@ def test_single_album_single_genre_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_album_single_genre_DELETE_error_nonexistent_album_id():
+def test_album_genre_delete_nonext_album_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -630,7 +630,7 @@ def test_single_album_single_genre_DELETE_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_genre_DELETE_error_nonexistent_genre_id():
+def test_album_genre_delete_nonext_genre_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
@@ -647,7 +647,7 @@ def test_single_album_single_genre_DELETE_error_nonexistent_genre_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_genre_DELETE_error_album_not_assoc_w_genre():
+def test_album_genre_delete_not_assoc():
     album_ids = [album.album_id for album in Album.objects.filter()]
     genre_ids = [genre.genre_id for genre in Genre.objects.filter()]
     while True:
@@ -669,7 +669,7 @@ def test_single_album_single_genre_DELETE_error_album_not_assoc_w_genre():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_GET():
+def test_album_artists_get():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -700,7 +700,7 @@ def test_single_album_artists_GET():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_GET_error_nonexistent_album_id():
+def test_album_artists_get_nonext_id():
     albums = Album.objects.filter()
     album_ids = [album.album_id for album in albums]
     while True:
@@ -716,7 +716,7 @@ def test_single_album_artists_GET_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_POST():
+def test_album_artists_post():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -753,7 +753,7 @@ def test_single_album_artists_POST():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_POST_error_nonexistent_album_id():
+def test_album_artists_post_nonext_album_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -776,7 +776,7 @@ def test_single_album_artists_POST_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_POST_error_nonexistent_artist_id():
+def test_album_artists_post_nonext_artist_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
@@ -799,7 +799,7 @@ def test_single_album_artists_POST_error_nonexistent_artist_id():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_POST_error_bridge_row_already_exists():
+def test_album_artists_post_already_ext():
     while True:
         album_ids = [album.album_id for album in Album.objects.filter()]
         album_id = random.choice(album_ids)
@@ -826,7 +826,7 @@ def test_single_album_artists_POST_error_bridge_row_already_exists():
 
 
 @pytest.mark.django_db
-def test_single_album_artists_POST_error_invalid_args():
+def test_album_artists_post_inval_args():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
@@ -846,7 +846,7 @@ def test_single_album_artists_POST_error_invalid_args():
 
 
 @pytest.mark.django_db
-def test_single_album_single_artist_DELETE():
+def test_album_artist_delete():
     albums = Album.objects.filter()
     album = random.choice(albums)
     album_id = album.album_id
@@ -870,7 +870,7 @@ def test_single_album_single_artist_DELETE():
 
 
 @pytest.mark.django_db
-def test_single_album_single_artist_DELETE_error_nonexistent_album_id():
+def test_album_artist_delete_nonext_album_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     while True:
         album_id = random.randint(1, 9999)
@@ -887,7 +887,7 @@ def test_single_album_single_artist_DELETE_error_nonexistent_album_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_artist_DELETE_error_nonexistent_artist_id():
+def test_album_artist_delete_nonext_artist_id():
     album_ids = [album.album_id for album in Album.objects.filter()]
     album_id = random.choice(album_ids)
     artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
@@ -904,7 +904,7 @@ def test_single_album_single_artist_DELETE_error_nonexistent_artist_id():
 
 
 @pytest.mark.django_db
-def test_single_album_single_artist_DELETE_error_album_not_assoc_w_artist():
+def test_album_artist_delete_not_assoc():
     album_ids = [album.album_id for album in Album.objects.filter()]
     artist_ids = [artist.artist_id for artist in Artist.objects.filter()]
     while True:

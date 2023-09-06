@@ -9,12 +9,12 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 from moundmusic.viewutils import (
-    define_GET_POST_index_closure,
-    define_single_model_GET_PATCH_DELETE_closure,
-    define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure,
-    define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closure,
-    define_single_user_single_buyer_or_seller_account_GET_DELETE_closure,
-    define_single_user_any_buyer_or_seller_account_GET_POST_closure,
+    index_defclo,
+    single_model_defclo,
+    buyer_seller_listing_defclo,
+    buyer_seller_all_defclo,
+    single_buyer_seller_defclo,
+    buyer_seller_acct_defclo,
 )
 
 from .models import (
@@ -63,11 +63,11 @@ def validate_user_password_input(request, user_id):
 
 
 # GET,POST /users
-index = define_GET_POST_index_closure(User, "user_id")
+index = index_defclo(User, "user_id")
 
 
 # GET,PATCH,DELETE /users/<user_id>
-single_user = define_single_model_GET_PATCH_DELETE_closure(User, "user_id")
+single_user = single_model_defclo(User, "user_id")
 
 
 # POST /users/<user_id>/password
@@ -141,7 +141,7 @@ def single_user_password_authenticate(request, model_obj_id):
 
 # GET,POST /users/<user_id>/buyer_account
 single_user_any_buyer_account = (
-    define_single_user_any_buyer_or_seller_account_GET_POST_closure(
+    buyer_seller_acct_defclo(
         BuyerAccount, "buyer_id"
     )
 )
@@ -149,28 +149,28 @@ single_user_any_buyer_account = (
 
 # GET,DELETE /users/<user_id>/buyer_account/<buyer_id>
 single_user_single_buyer_account = (
-    define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
+    single_buyer_seller_defclo(
         BuyerAccount, "buyer_id"
     )
 )
 
 # GET,POST /users/<user_id>/buyer_account/<buyer_id>/listings
 single_user_single_buyer_account_any_listing = (
-    define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closure(
+    buyer_seller_all_defclo(
         BuyerAccount, "buyer_id", ToBuyListing
     )
 )
 
 
 # GET,DELETE /users/<user_id>/buyer_account/<ID>/listings/<listing_id>
-single_user_single_buyer_account_single_listing = define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure(
+single_user_single_buyer_account_single_listing = buyer_seller_listing_defclo(
     BuyerAccount, "buyer_id", ToBuyListing, "to_buy_listing_id"
 )
 
 
 # GET,POST /users/<user_id>/seller_account
 single_user_any_seller_account = (
-    define_single_user_any_buyer_or_seller_account_GET_POST_closure(
+    buyer_seller_acct_defclo(
         SellerAccount, "seller_id"
     )
 )
@@ -178,7 +178,7 @@ single_user_any_seller_account = (
 
 # GET,DELETE /users/<user_id>/seller_account/<seller_id>
 single_user_single_seller_account = (
-    define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
+    single_buyer_seller_defclo(
         SellerAccount, "seller_id"
     )
 )
@@ -186,13 +186,13 @@ single_user_single_seller_account = (
 
 # GET,POST /users/<user_id>/seller_account/<seller_id>/listings
 single_user_single_seller_account_any_listing = (
-    define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closure(
+    buyer_seller_all_defclo(
         SellerAccount, "seller_id", ToSellListing
     )
 )
 
 
 # GET,DELETE /users/<user_id>/seller_account/<seller_id>/listings/<listing_id>
-single_user_single_seller_account_single_listing = define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure(
+single_user_single_seller_account_single_listing = buyer_seller_listing_defclo(
     SellerAccount, "seller_id", ToSellListing, "to_sell_listing_id"
 )

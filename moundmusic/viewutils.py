@@ -20,7 +20,7 @@ from users.models import User, BuyerAccount, ToBuyListing
 # all the methods that endpoint accepts. Where that's more than one
 # method, this pattern is used: an inline function is written for
 # each method, and the body of the function consists of a tail-call
-# to moundmusic.viewutils.dispatch_funcs_by_method(), which itself
+# to moundmusic.viewutils.func_dispatch(), which itself
 # tail-calls the inline function that matches the method that's being
 # handled.
 
@@ -104,7 +104,7 @@ def validate_input(model_class, input_argd, all_nullable=False):
 # more than one http method. They're written with inline functions for
 # each http method, and then this function is tail-called to dispatch
 # the correct one.
-def dispatch_funcs_by_method(functions, request):
+def func_dispatch(functions, request):
     # Building a dispatch table.
     dispatch_table = dict()
     for function in functions:
@@ -187,7 +187,7 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
 
 # A utility function used to validate two model classes with id values
 # and the model class for the bridge table that connects them.
-def validate_bridged_table_column_value_pair(
+def validate_bridgetab_models(
     left_model_class,
     left_model_attr_name,
     left_model_attr_value,
@@ -258,7 +258,7 @@ def validate_bridged_table_column_value_pair(
 
 
 # Handles index endpoints.
-def define_GET_POST_index_closure(model_class, model_id_attr_name):
+def index_defclo(model_class, model_id_attr_name):
 
     # BEGIN closure
     @api_view(["GET", "POST"])
@@ -304,7 +304,7 @@ def define_GET_POST_index_closure(model_class, model_id_attr_name):
                 new_model_obj.serialize(), status=status.HTTP_201_CREATED
             )
 
-        return dispatch_funcs_by_method((_index_GET, _index_POST), request)
+        return func_dispatch((_index_GET, _index_POST), request)
 
     # END closure
 
@@ -312,7 +312,7 @@ def define_GET_POST_index_closure(model_class, model_id_attr_name):
 
 
 # Handles endpoints of the form "GET,PATCH,DELETE /<model_class>"
-def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name):
+def single_model_defclo(model_class, model_id_attr_name):
     # BEGIN closure
     @api_view(["GET", "PATCH", "DELETE"])
     def single_model(request, model_obj_id):
@@ -390,7 +390,7 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
                 status=status.HTTP_200_OK,
             )
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (_single_model_GET, _single_model_PATCH, _single_model_DELETE), request
         )
 
@@ -401,7 +401,7 @@ def define_single_model_GET_PATCH_DELETE_closure(model_class, model_id_attr_name
 
 # Handle endpoints of the form
 # "GET,POST /<outer_model>/<outer_id>/<inner_model>"
-def define_single_outer_model_all_of_inner_model_GET_POST_closure(
+def one_outer_all_inner_defclo(
     outer_model_class,
     outer_model_id_attr_name,
     inner_model_class,
@@ -573,7 +573,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
             bridge_row.save()
             return JsonResponse(inner_model_obj.serialize(), status=status.HTTP_200_OK)
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_outer_model_all_of_inner_model_GET,
                 _single_outer_model_all_of_inner_model_POST,
@@ -587,7 +587,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
 
 # Handles requests of the form
 # "GET,DELETE /<outer_model>/<outer_id>/<inner_model>/<inner_id>"
-def define_single_outer_model_single_inner_model_GET_DELETE_closure(
+def single_single_defclo(
     outer_model_class,
     outer_model_id_attr_name,
     inner_model_class,
@@ -606,7 +606,7 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
         # /albums/<albumId>/songs/<songId> would return a JSON object of
         # the song with that songId.
         def _single_outer_model_single_inner_model_GET():
-            result = validate_bridged_table_column_value_pair(
+            result = validate_bridgetab_models(
                 outer_model_class,
                 outer_model_id_attr_name,
                 outer_model_obj_id,
@@ -629,7 +629,7 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
         def _single_outer_model_single_inner_model_DELETE():
             # Validating input for bridge-table-specific operations like
             # this one.
-            result = validate_bridged_table_column_value_pair(
+            result = validate_bridgetab_models(
                 outer_model_class,
                 outer_model_id_attr_name,
                 outer_model_obj_id,
@@ -656,7 +656,7 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
                 status=status.HTTP_200_OK,
             )
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_outer_model_single_inner_model_GET,
                 _single_outer_model_single_inner_model_DELETE,
@@ -678,7 +678,7 @@ def define_single_outer_model_single_inner_model_GET_DELETE_closure(
 
 # Handles requests of the form
 # "GET,POST /users/<user_id>/(buyer|seller)_account"
-def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
+def buyer_seller_acct_defclo(
     buyer_or_seller_account_class, buyer_or_seller_id_col_name
 ):
     # BEGIN closure
@@ -815,7 +815,7 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
                 buyer_or_seller_account.serialize(), status=status.HTTP_200_OK
             )
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_user_any_buyer_or_seller_account_GET,
                 _single_user_any_buyer_or_seller_account_POST,
@@ -830,7 +830,7 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
 
 # Handles requests of the form "GET,DELETE
 # /users/<user_id>/(buyer|seller)_account/<(buyer|seller)_id>"
-def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
+def single_buyer_seller_defclo(
     buyer_or_seller_account_class, buyer_or_seller_id_col_name
 ):
 
@@ -926,7 +926,7 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
                 status=status.HTTP_200_OK,
             )
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_user_single_buyer_or_seller_account_GET,
                 _single_user_single_buyer_or_seller_account_DELETE,
@@ -941,7 +941,7 @@ def define_single_user_single_buyer_or_seller_account_GET_DELETE_closure(
 
 # Handles requests of the form "GET,POST
 # /users/<user_id>/(buyer|seller)_account/<(buyer|seller)_id>/listings"
-def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closure(
+def buyer_seller_all_defclo(
     buyer_or_seller_class, buyer_or_seller_id_col_name, to_buy_or_to_sell_listing_class
 ):
 
@@ -1132,7 +1132,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
             listing.save()
             return JsonResponse(listing.serialize(), status=status.HTTP_200_OK)
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_user_single_buyer_or_seller_account_any_listing_GET,
                 _single_user_single_buyer_or_seller_account_any_listing_POST,
@@ -1148,7 +1148,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
 # Handles requests of the form "GET,PATCH,DELETE
 # /users/<user_id>/(buyer|seller)_account/<(buyer|seller)_id>/listings/<
 # listing_id>"
-def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_DELETE_closure(
+def buyer_seller_listing_defclo(
     buyer_or_seller_class,
     buyer_or_seller_id_col_name,
     to_buy_or_to_sell_listing_class,
@@ -1370,7 +1370,7 @@ def define_single_user_single_buyer_or_seller_account_single_listing_GET_PATCH_D
                 status=status.HTTP_200_OK,
             )
 
-        return dispatch_funcs_by_method(
+        return func_dispatch(
             (
                 _single_user_single_buyer_or_seller_account_single_listing_GET,
                 _single_user_single_buyer_or_seller_account_single_listing_PATCH,
