@@ -113,7 +113,7 @@ def func_dispatch(functions, request):
         func_name = function.__name__
         _, method = func_name.rsplit("_", 1)
         dispatch_table[method] = function
-    method = request.method
+    method = request.method.lower()
     # Tail calling the inline function for this http method, or erroring
     # out if it's not defined (ie. this endpoint was accessed using an
     # unsupported http method).
@@ -263,14 +263,14 @@ def index_defclo(model_class, model_id_attr_name):
     # BEGIN closure
     @api_view(["GET", "POST"])
     def index(request):
-        def _index_GET():
+        def _index_get():
             return JsonResponse(
                 [model_obj.serialize() for model_obj in model_class.objects.all()],
                 status=status.HTTP_200_OK,
                 safe=False,
             )
 
-        def _index_POST():
+        def _index_post():
             result = validate_post_request(request, model_class)
             if isinstance(result, JsonResponse):
                 return result
@@ -304,7 +304,7 @@ def index_defclo(model_class, model_id_attr_name):
                 new_model_obj.serialize(), status=status.HTTP_201_CREATED
             )
 
-        return func_dispatch((_index_GET, _index_POST), request)
+        return func_dispatch((_index_get, _index_post), request)
 
     # END closure
 
@@ -316,7 +316,7 @@ def single_model_defclo(model_class, model_id_attr_name):
     # BEGIN closure
     @api_view(["GET", "PATCH", "DELETE"])
     def single_model(request, model_obj_id):
-        def _single_model_GET():
+        def _single_model_get():
             # If the `model_class._meta.db_table` table doesn't have a
             # row where the `model_id_attr_name` column (ie. the primary
             # key) has the value `model_obj_id`, error out.
@@ -334,7 +334,7 @@ def single_model_defclo(model_class, model_id_attr_name):
                 )
             return JsonResponse(model_obj.serialize(), status=status.HTTP_200_OK)
 
-        def _single_model_PATCH():
+        def _single_model_patch():
 
             # Validating input using a shorthand function.
             retval = validate_patch_request(
@@ -363,7 +363,7 @@ def single_model_defclo(model_class, model_id_attr_name):
             model_obj.save()
             return JsonResponse(model_obj.serialize(), status=status.HTTP_200_OK)
 
-        def _single_model_DELETE():
+        def _single_model_delete():
             # If the `model_class._meta.db_table` table doesn't have a
             # row where the `model_id_attr_name` column (ie. the primary
             # key) has the value `model_obj_id`, error out.
@@ -391,7 +391,7 @@ def single_model_defclo(model_class, model_id_attr_name):
             )
 
         return func_dispatch(
-            (_single_model_GET, _single_model_PATCH, _single_model_DELETE), request
+            (_single_model_get, _single_model_patch, _single_model_delete), request
         )
 
     # END closure
@@ -417,7 +417,7 @@ def one_outer_all_inner_defclo(
         # GET /albums/<albumId>/songs would return all songs with rows
         # in the albums_songs_bridge table associating them with that
         # albumId.
-        def _single_outer_model_all_of_inner_model_GET():
+        def _single_outer_model_all_of_inner_model_get():
             # If the `outer_model_class._meta.db_table` table doesn't
             # have a row where the `outer_model_id_attr_name` column
             # (ie. the primary key) has the value `outer_model_obj_id`,
@@ -459,7 +459,7 @@ def one_outer_all_inner_defclo(
         # {song_id:<songId>} to /albums/<albumId>/songs would attempt
         # to add a row in the albums_songs_bridge table associating
         # <songId> with <albumId>.
-        def _single_outer_model_all_of_inner_model_POST():
+        def _single_outer_model_all_of_inner_model_post():
             # If the `outer_model_class._meta.db_table` table doesn't
             # have a row where the `outer_model_id_attr_name` column
             # (ie. the primary key) has the value `outer_model_obj_id`,
@@ -575,8 +575,8 @@ def one_outer_all_inner_defclo(
 
         return func_dispatch(
             (
-                _single_outer_model_all_of_inner_model_GET,
-                _single_outer_model_all_of_inner_model_POST,
+                _single_outer_model_all_of_inner_model_get,
+                _single_outer_model_all_of_inner_model_post,
             ),
             request,
         )
@@ -605,7 +605,7 @@ def single_single_defclo(
         # ID, where the 2nd member is returned. For example, a GET
         # /albums/<albumId>/songs/<songId> would return a JSON object of
         # the song with that songId.
-        def _single_outer_model_single_inner_model_GET():
+        def _single_outer_model_single_inner_model_get():
             result = validate_bridgetab_models(
                 outer_model_class,
                 outer_model_id_attr_name,
@@ -626,7 +626,7 @@ def single_single_defclo(
         # where the two are disassociated in the relevant bridge table.
         # For example, a DELETE /genres/<genreId>/songs/<songId> would
         # remove the bridge table row that linked <genreId> to <songId>.
-        def _single_outer_model_single_inner_model_DELETE():
+        def _single_outer_model_single_inner_model_delete():
             # Validating input for bridge-table-specific operations like
             # this one.
             result = validate_bridgetab_models(
@@ -658,8 +658,8 @@ def single_single_defclo(
 
         return func_dispatch(
             (
-                _single_outer_model_single_inner_model_GET,
-                _single_outer_model_single_inner_model_DELETE,
+                _single_outer_model_single_inner_model_get,
+                _single_outer_model_single_inner_model_delete,
             ),
             request,
         )
@@ -689,7 +689,7 @@ def buyer_seller_acct_defclo(
         # and the associated buyer/seller account is expected. For
         # example, a GET /users/<user_id>/buyer_account would return the
         # associated buyer account.
-        def _single_user_any_buyer_or_seller_account_GET():
+        def _single_user_any_buyer_or_seller_account_get():
             # Tests whether a User with user_id=<outer_model_obj_id>
             # exists, or errors out.
             try:
@@ -734,7 +734,7 @@ def buyer_seller_acct_defclo(
         # for it. For example, a POST to /users/<user_id>/buyer_account
         # would create a new buyer_account and associate it with the
         # user with user_id=<user_id>.
-        def _single_user_any_buyer_or_seller_account_POST():
+        def _single_user_any_buyer_or_seller_account_post():
 
             # Tests whether a user with that id exists, or errors out.
             try:
@@ -817,8 +817,8 @@ def buyer_seller_acct_defclo(
 
         return func_dispatch(
             (
-                _single_user_any_buyer_or_seller_account_GET,
-                _single_user_any_buyer_or_seller_account_POST,
+                _single_user_any_buyer_or_seller_account_get,
+                _single_user_any_buyer_or_seller_account_post,
             ),
             request,
         )
@@ -846,7 +846,7 @@ def single_buyer_seller_defclo(
         # would return a serialization of the buyer_account table row
         # with a buyer_id value equal to the buyer_id value set on that
         # user object.
-        def _single_user_single_buyer_or_seller_account_GET():
+        def _single_user_single_buyer_or_seller_account_get():
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
             try:
@@ -884,7 +884,7 @@ def single_buyer_seller_defclo(
         # would disassociate the buyer account with id <buyer_id>
         # from the user with user_id <user_id>, and delete that buyer
         # account.
-        def _single_user_single_buyer_or_seller_account_DELETE():
+        def _single_user_single_buyer_or_seller_account_delete():
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
             try:
@@ -928,8 +928,8 @@ def single_buyer_seller_defclo(
 
         return func_dispatch(
             (
-                _single_user_single_buyer_or_seller_account_GET,
-                _single_user_single_buyer_or_seller_account_DELETE,
+                _single_user_single_buyer_or_seller_account_get,
+                _single_user_single_buyer_or_seller_account_delete,
             ),
             request,
         )
@@ -955,7 +955,7 @@ def buyer_seller_all_defclo(
         # members of the third class. For example, GET
         # /users/<user_id>/buyer_account/<buyer_id>/listings would
         # return all to-buy listings associated with that buyer_id.
-        def _single_user_single_buyer_or_seller_account_any_listing_GET():
+        def _single_user_single_buyer_or_seller_account_any_listing_get():
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
             try:
@@ -1000,7 +1000,7 @@ def buyer_seller_all_defclo(
         # members of the third class. For example, POST
         # /users/<user_id>/buyer_account/<buyer_id>/listings would
         # create a new listing and associate it with that buyer_id.
-        def _single_user_single_buyer_or_seller_account_any_listing_POST():
+        def _single_user_single_buyer_or_seller_account_any_listing_post():
 
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
@@ -1134,8 +1134,8 @@ def buyer_seller_all_defclo(
 
         return func_dispatch(
             (
-                _single_user_single_buyer_or_seller_account_any_listing_GET,
-                _single_user_single_buyer_or_seller_account_any_listing_POST,
+                _single_user_single_buyer_or_seller_account_any_listing_get,
+                _single_user_single_buyer_or_seller_account_any_listing_post,
             ),
             request,
         )
@@ -1165,7 +1165,7 @@ def buyer_seller_listing_defclo(
         # or seller id, and a listing id. For example, GET
         # /users/<user_id>/buyer_account/<buyer_id>/listings/<to_buy_lis
         # ting_id> would return the listing.
-        def _single_user_single_buyer_or_seller_account_single_listing_GET():
+        def _single_user_single_buyer_or_seller_account_single_listing_get():
 
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
@@ -1229,7 +1229,7 @@ def buyer_seller_listing_defclo(
         # seller id, and a listing id. For example, PATCH {json}
         # /users/<user_id>/buyer_account/<buyer_id>/listings/<to_buy_lis
         # ting_id> would update the listing.
-        def _single_user_single_buyer_or_seller_account_single_listing_PATCH():
+        def _single_user_single_buyer_or_seller_account_single_listing_patch():
 
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
@@ -1305,7 +1305,7 @@ def buyer_seller_listing_defclo(
         # or seller id, and a listing id. For example, DELETE
         # /users/<user_id>/buyer_account/<buyer_id>/listings/<to_buy_lis
         # ting_id> would delete the listing.
-        def _single_user_single_buyer_or_seller_account_single_listing_DELETE():
+        def _single_user_single_buyer_or_seller_account_single_listing_delete():
 
             # Tests whether a matching user with
             # user_id=`outer_model_obj_id` exists, or errors out.
@@ -1372,9 +1372,9 @@ def buyer_seller_listing_defclo(
 
         return func_dispatch(
             (
-                _single_user_single_buyer_or_seller_account_single_listing_GET,
-                _single_user_single_buyer_or_seller_account_single_listing_PATCH,
-                _single_user_single_buyer_or_seller_account_single_listing_DELETE,
+                _single_user_single_buyer_or_seller_account_single_listing_get,
+                _single_user_single_buyer_or_seller_account_single_listing_patch,
+                _single_user_single_buyer_or_seller_account_single_listing_delete,
             ),
             request,
         )

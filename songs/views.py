@@ -145,7 +145,7 @@ single_song_single_genre = (
 # GET,POST /songs/<song_id>/lyrics
 @api_view(["GET", "POST"])
 def single_song_lyrics(request, outer_model_obj_id):
-    def _single_song_lyrics_GET():
+    def _single_song_lyrics_get():
         try:
             Song.objects.get(song_id=outer_model_obj_id)
         except Song.DoesNotExist:
@@ -167,7 +167,7 @@ def single_song_lyrics(request, outer_model_obj_id):
             song_lyrics.serialize(), status=status.HTTP_200_OK, safe=False
         )
 
-    def _single_song_lyrics_POST():
+    def _single_song_lyrics_post():
         try:
             song = Song.objects.get(song_id=outer_model_obj_id)
         except Song.DoesNotExist:
@@ -212,14 +212,14 @@ def single_song_lyrics(request, outer_model_obj_id):
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
 
     return func_dispatch(
-        (_single_song_lyrics_GET, _single_song_lyrics_POST), request
+        (_single_song_lyrics_get, _single_song_lyrics_post), request
     )
 
 
 # GET,DELETE /songs/<song_id>/lyrics/<lyrics_id>
 @api_view(["GET", "DELETE"])
 def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
-    def _single_song_lyrics_GET():
+    def _single_song_lyrics_get():
         try:
             Song.objects.get(song_id=outer_model_obj_id)
         except Song.DoesNotExist:
@@ -239,7 +239,7 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
             )
         return JsonResponse(song_lyrics.serialize(), status=status.HTTP_200_OK)
 
-    def _single_song_lyrics_DELETE():
+    def _single_song_lyrics_delete():
         try:
             song = Song.objects.get(song_id=outer_model_obj_id)
         except Song.DoesNotExist:
@@ -270,5 +270,5 @@ def single_song_single_lyrics(request, outer_model_obj_id, inner_model_obj_id):
         )
 
     return func_dispatch(
-        (_single_song_lyrics_GET, _single_song_lyrics_DELETE), request
+        (_single_song_lyrics_get, _single_song_lyrics_delete), request
     )
