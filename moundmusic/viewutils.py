@@ -33,7 +33,7 @@ from users.models import User, BuyerAccount, ToBuyListing
 # class's __nullable__ value, which is a tuple listing keys whose values
 # may be None.
 def validate_input(model_class, input_argd, all_nullable=False):
-    validatedDict = dict()
+    validated_dict = dict()
     # Checking for property names not germane to this table.
     diff = set(input_argd.keys()) - set(model_class.__columns__)
     if diff:
@@ -96,8 +96,8 @@ def validate_input(model_class, input_argd, all_nullable=False):
                     f"value for '{column}' not one of {enum_expr} and column "
                     + "is an ENUM type"
                 )
-        validatedDict[column] = value
-    return validatedDict
+        validated_dict[column] = value
+    return validated_dict
 
 
 # This utility function is used by every endpoint function that manages
@@ -128,7 +128,7 @@ def validate_post_request(request, model_class, all_nullable=False):
     # Testing for valid JSON or erroring out.
     try:
         posted_json = json.loads(request.body)
-    except JSONDecodeError:
+    except json.JSONDecodeError:
         return JsonResponse(
             {"message": "JSON did not parse"}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -165,7 +165,7 @@ def validate_patch_request(request, model_class, model_id_attr_name, model_id_at
     # Testing for valid JSON or erroring out.
     try:
         posted_json = json.loads(request.body)
-    except JSONDecodeError as exception:
+    except json.JSONDecodeError:
         return JsonResponse(
             {"message": "JSON did not parse"}, status=status.HTTP_400_BAD_REQUEST
         )
@@ -481,7 +481,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
             # Testing for valid JSON or erroring out.
             try:
                 posted_json = json.loads(request.body)
-            except JSONDecodeError as exception:
+            except json.JSONDecodeError:
                 return JsonResponse(
                     {"message": "JSON did not parse"},
                     status=status.HTTP_400_BAD_REQUEST,
@@ -489,9 +489,9 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
 
             # The only valid property for this request is the primary
             # key column. If any others are found, error out.
-            diff = set(posted_json.keys()) - set((inner_model_id_attr_name,))
+            diff = set(posted_json.keys()) - {inner_model_id_attr_name}
             if diff:
-                prop_expr = ", ".join(f"'{property}'" for property in diff)
+                prop_expr = ", ".join(f"'{prop}'" for prop in diff)
                 return JsonResponse(
                     {
                         "message": f"unexpected propert"
@@ -527,7 +527,7 @@ def define_single_outer_model_all_of_inner_model_GET_POST_closure(
             # If so, error out, because the association this request is
             # trying to make already exists.
             try:
-                bridge_row = bridge_class.objects.get(
+                bridge_class.objects.get(
                     **{
                         outer_model_id_attr_name: outer_model_obj_id,
                         inner_model_id_attr_name: inner_model_obj_id,
@@ -776,7 +776,7 @@ def define_single_user_any_buyer_or_seller_account_GET_POST_closure(
             else:
                 keys_found.remove("storefront_name")
             if keys_found:
-                prop_expr = ", ".join(f"'{property}'" for property in keys_found)
+                prop_expr = ", ".join(f"'{prop}'" for prop in keys_found)
                 return JsonResponse(
                     {
                         "message": f"unexpected propert"
@@ -1053,15 +1053,15 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
             # The input properties are album_id and the price value.
             # Both are required.
             if buyer_or_seller_class is BuyerAccount:
-                keys_required = set(("max_accepting_price", "album_id"))
+                keys_required = {"max_accepting_price", "album_id"}
             else:
-                keys_required = set(("asking_price", "album_id"))
+                keys_required = {"asking_price", "album_id"}
             keys_found = set(json_content.keys())
 
             # If either isn't found, error out.
             diff = keys_required - keys_found
             if diff:
-                prop_expr = ", ".join(f"'{property}'" for property in diff)
+                prop_expr = ", ".join(f"'{prop}'" for prop in diff)
                 return JsonResponse(
                     {
                         "message": f"json object missing required propert"
@@ -1074,7 +1074,7 @@ def define_single_user_single_buyer_or_seller_account_any_listing_GET_POST_closu
             # If any other property is found in the input, error out.
             diff = keys_found - keys_required
             if diff:
-                prop_expr = ", ".join(f"'{property}'" for property in diff)
+                prop_expr = ", ".join(f"'{prop}'" for prop in diff)
                 return JsonResponse(
                     {
                         "message": f"unexpected propert"

@@ -177,7 +177,7 @@ def single_song_lyrics(request, outer_model_obj_id):
             )
         if song.song_lyrics_id is not None:
             try:
-                song_lyrics = SongLyrics.objects.get(song_lyrics_id=song.song_lyrics_id)
+                SongLyrics.objects.get(song_lyrics_id=song.song_lyrics_id)
             except SongLyrics.DoesNotExist:
                 pass
             else:

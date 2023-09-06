@@ -51,7 +51,7 @@ def validate_user_password_input(request, user_id):
     keys_found = set(json_content.keys())
     keys_found.remove("password")
     if keys_found:
-        prop_expr = ", ".join(f"'{property}'" for property in keys_found)
+        prop_expr = ", ".join(f"'{prop}'" for prop in keys_found)
         return JsonResponse(
             {
                 "message": f'unexpected propert{"ies" if len(keys_found) > 1 else "y"} '

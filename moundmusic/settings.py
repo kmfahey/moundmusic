@@ -126,7 +126,7 @@ DATABASES = {
         "USER": username,
         "PASSWORD": password,
         "HOST": "localhost",
-        #'HOST': 'postgres',
+        # 'HOST': 'postgres',
         "PORT": 5432,
     }
 }

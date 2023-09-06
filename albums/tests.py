@@ -31,7 +31,9 @@ from .views import (
 
 request_factory = RequestFactory()
 
-matches_date_isoformat = lambda strval: bool(re.match(r"^\d{4}-\d{2}-\d{2}$", strval))
+
+def matches_date_isoformat(strval):
+    return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", strval))
 
 
 @pytest.mark.django_db
@@ -80,10 +82,11 @@ def test_index_POST():
         new_test_album = Album.objects.get(album_id=json_content["album_id"])
     except (KeyError, Album.DoesNotExist):
         pytest.fail()
-    assert new_test_album.title == new_album_dict["title"]
-    assert new_test_album.number_of_discs == new_album_dict["number_of_discs"]
-    assert new_test_album.number_of_tracks == new_album_dict["number_of_tracks"]
-    assert new_test_album.release_date.isoformat() == new_album_dict["release_date"]
+    else:
+        assert new_test_album.title == new_album_dict["title"]
+        assert new_test_album.number_of_discs == new_album_dict["number_of_discs"]
+        assert new_test_album.number_of_tracks == new_album_dict["number_of_tracks"]
+        assert new_test_album.release_date.isoformat() == new_album_dict["release_date"]
 
 
 @pytest.mark.django_db
