@@ -38,10 +38,8 @@ single_genre_albums = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /genres/<genre_id>/albums/<album_id>
-single_genre_single_album = (
-    single_single_defclo(
-        Genre, "genre_id", Album, "album_id", AlbumGenreBridge
-    )
+single_genre_single_album = single_single_defclo(
+    Genre, "genre_id", Album, "album_id", AlbumGenreBridge
 )
 
 
@@ -52,10 +50,8 @@ single_genre_artists = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /genres/<genre_id>/artists/<artist_id>
-single_genre_single_artist = (
-    single_single_defclo(
-        Genre, "genre_id", Artist, "artist_id", ArtistGenreBridge
-    )
+single_genre_single_artist = single_single_defclo(
+    Genre, "genre_id", Artist, "artist_id", ArtistGenreBridge
 )
 
 
@@ -66,8 +62,6 @@ single_genre_songs = one_outer_all_inner_defclo(
 
 
 # GET,DELETE /genres/<genre_id>/songs/<song_id>
-single_genre_single_song = (
-    single_single_defclo(
-        Genre, "genre_id", Song, "song_id", SongGenreBridge
-    )
+single_genre_single_song = single_single_defclo(
+    Genre, "genre_id", Song, "song_id", SongGenreBridge
 )

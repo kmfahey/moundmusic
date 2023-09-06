@@ -140,25 +140,15 @@ def single_user_password_authenticate(request, model_obj_id):
 
 
 # GET,POST /users/<user_id>/buyer_account
-single_user_any_buyer_account = (
-    buyer_seller_acct_defclo(
-        BuyerAccount, "buyer_id"
-    )
-)
+single_user_any_buyer_account = buyer_seller_acct_defclo(BuyerAccount, "buyer_id")
 
 
 # GET,DELETE /users/<user_id>/buyer_account/<buyer_id>
-single_user_single_buyer_account = (
-    single_buyer_seller_defclo(
-        BuyerAccount, "buyer_id"
-    )
-)
+single_user_single_buyer_account = single_buyer_seller_defclo(BuyerAccount, "buyer_id")
 
 # GET,POST /users/<user_id>/buyer_account/<buyer_id>/listings
-single_user_single_buyer_account_any_listing = (
-    buyer_seller_all_defclo(
-        BuyerAccount, "buyer_id", ToBuyListing
-    )
+single_user_single_buyer_account_any_listing = buyer_seller_all_defclo(
+    BuyerAccount, "buyer_id", ToBuyListing
 )
 
 
@@ -169,26 +159,18 @@ single_user_single_buyer_account_single_listing = buyer_seller_listing_defclo(
 
 
 # GET,POST /users/<user_id>/seller_account
-single_user_any_seller_account = (
-    buyer_seller_acct_defclo(
-        SellerAccount, "seller_id"
-    )
-)
+single_user_any_seller_account = buyer_seller_acct_defclo(SellerAccount, "seller_id")
 
 
 # GET,DELETE /users/<user_id>/seller_account/<seller_id>
-single_user_single_seller_account = (
-    single_buyer_seller_defclo(
-        SellerAccount, "seller_id"
-    )
+single_user_single_seller_account = single_buyer_seller_defclo(
+    SellerAccount, "seller_id"
 )
 
 
 # GET,POST /users/<user_id>/seller_account/<seller_id>/listings
-single_user_single_seller_account_any_listing = (
-    buyer_seller_all_defclo(
-        SellerAccount, "seller_id", ToSellListing
-    )
+single_user_single_seller_account_any_listing = buyer_seller_all_defclo(
+    SellerAccount, "seller_id", ToSellListing
 )
 
 
