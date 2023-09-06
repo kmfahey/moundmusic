@@ -21,7 +21,7 @@ request_factory = RequestFactory()
 
 
 def matches_date_isoformat(strval):
-    return  bool(re.match(r"^\d{4}-\d{2}-\d{2}$", strval))
+    return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", strval))
 
 
 @pytest.mark.django_db
